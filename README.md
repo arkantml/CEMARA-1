@@ -1,46 +1,94 @@
 # CEMARA — Supabase Edition
 
-CEMARA sekarang menggunakan **Supabase sebagai database sungguhan**. Netlify tetap dipakai untuk hosting frontend.
+CEMARA adalah platform literasi digital untuk membaca dan menampilkan karya seperti cerpen, puisi, esai, artikel, seni, dan karya lainnya.
 
-## Langkah pemasangan
+Versi ini menggunakan **Supabase sebagai database sungguhan**, sementara **Netlify digunakan sebagai hosting frontend**.
 
-### 1. Buat project Supabase
-Buat satu project di Supabase.
+---
 
-### 2. Jalankan database
-Buka **SQL Editor**, lalu jalankan seluruh isi `supabase_schema.sql`.
+## ✦ Fitur CEMARA
 
-SQL tersebut membuat:
-- `works` untuk karya
-- `comments` untuk komentar global
-- `admin_profiles` untuk daftar admin
-- RLS/policies untuk keamanan
-- 3 contoh karya
+- 📚 Menampilkan daftar karya
+- 🔎 Pencarian karya
+- 🏷️ Filter berdasarkan kategori
+- 📖 Reader khusus untuk membaca karya
+- 📝 Mendukung karya berbasis tulisan
+- 🖼️ Mendukung karya berbasis gambar/komik
+- 🔍 Zoom gambar pada reader
+- 🖱️ Drag gambar ketika sedang diperbesar
+- ⌨️ Navigasi halaman menggunakan keyboard
+- 🌙 Dark mode pada reader
+- 💬 Sistem komentar
+- 👤 Komentar dapat dikirim tanpa login
+- 🛡️ Sistem admin berbasis Supabase Auth
+- 🔐 Row Level Security (RLS)
 
-### 3. Buat akun admin
-Di **Authentication → Users**, buat akun email/password untuk pengelola.
+---
 
-Copy UUID user tersebut, lalu di SQL Editor jalankan:
+# ⚙️ Struktur Database
 
-`insert into public.admin_profiles (user_id) values ('UUID-USER');`
+CEMARA menggunakan tiga tabel utama:
 
-### 4. Isi config.js
-Masukkan Project URL dan **Publishable Key** dari Supabase. Jangan masukkan secret/service-role key.
+### `works`
 
-### 5. Test lokal
-Gunakan Live Server atau server lokal. Jangan mengandalkan `file://` bila browser memblokir request.
+Menyimpan data karya.
 
-### 6. Deploy ke Netlify
-Upload folder ini ke Netlify. Frontend statis tetap bisa menggunakan Supabase Data API.
+Kolom utama:
 
-## Perilaku komentar
-- Semua pengunjung dapat membaca komentar.
-- Pengunjung tanpa login dapat mengirim komentar.
-- User yang login dapat mengedit/menghapus komentarnya sendiri.
-- Admin dapat mengedit/menghapus semua komentar.
+- `id`
+- `title`
+- `author`
+- `category`
+- `description`
+- `content`
+- `cover`
+- `cover_symbol`
+- `published_at`
+- `created_at`
+- `updated_at`
 
-## Catatan keamanan
-RLS wajib aktif. Frontend hanya memakai publishable key. **Jangan pernah menaruh secret/service-role key di `config.js` atau JavaScript browser.**
+### `comments`
 
-## Tahap berikutnya
-Dashboard admin penuh dapat ditambahkan agar Duta Literasi bisa menambah/edit/hapus karya, upload cover, dan moderasi komentar langsung dari `/admin`, tanpa membuka Supabase Table Editor.
+Menyimpan komentar pembaca.
+
+Kolom utama:
+
+- `id`
+- `work_id`
+- `user_id`
+- `name`
+- `content`
+- `created_at`
+- `updated_at`
+
+### `admin_profiles`
+
+Menyimpan daftar pengguna yang memiliki hak akses administrator.
+
+Kolom:
+
+- `user_id`
+- `created_at`
+
+---
+
+# 🚀 Langkah Pemasangan
+
+## 1. Buat Project Supabase
+
+Buat satu project baru di Supabase.
+
+Setelah project selesai dibuat, buka dashboard project tersebut.
+
+---
+
+## 2. Jalankan Database
+
+Buka:
+
+**Supabase → SQL Editor**
+
+Kemudian jalankan seluruh isi file:
+
+```text
+schema.sql
