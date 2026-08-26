@@ -1,210 +1,1146 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="CEMARA — Cendekia Media Apresiasi dan Ruang Karya. Wadah digital karya siswa untuk dibaca, dilihat, dan diapresiasi.">
-  <title>CEMARA — Ruang Karya Siswa</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js"></script>
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="CEMARA — Cendekia Media Apresiasi dan Ruang Karya. Wadah digital karya siswa untuk dibaca, dilihat, dan diapresiasi."
+  >
+
+  <meta
+    name="theme-color"
+    content="#2E7D32"
+  >
+
+  <title>
+    CEMARA — Ruang Karya Siswa
+  </title>
+
+
+  <!-- FONT -->
+
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+    rel="stylesheet"
+  >
+
+
+  <!-- CSS -->
+
+  <link
+    rel="stylesheet"
+    href="styles.css"
+  >
+
+
+  <!-- SUPABASE -->
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+  <script
+    src="config.js"
+  ></script>
+
 </head>
+
+
 <body>
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+
+  <!-- =====================================================
+       TOAST
+  ====================================================== -->
+
+  <div
+    id="toast"
+    class="toast"
+    role="status"
+    aria-live="polite"
+  ></div>
+
+
+
+  <!-- =====================================================
+       HEADER
+  ====================================================== -->
 
   <header class="site-header">
-    <a class="brand" href="#beranda" aria-label="CEMARA Beranda">
-      <span class="brand-mark">C</span>
-      <span>
-        <strong>CEMARA</strong>
-        <small>Cendekia Media Apresiasi dan Ruang Karya</small>
+
+    <a
+      class="brand"
+      href="#beranda"
+      aria-label="CEMARA Beranda"
+    >
+
+      <span class="brand-mark">
+        C
       </span>
+
+      <span>
+
+        <strong>
+          CEMARA
+        </strong>
+
+        <small>
+          Cendekia Media Apresiasi dan Ruang Karya
+        </small>
+
+      </span>
+
     </a>
 
-    <nav class="main-nav" aria-label="Navigasi utama">
-      <a href="#beranda" class="active">Beranda</a>
-      <a href="#karya">Karya</a>
-      <a href="#tentang">Tentang</a>
-      <a href="#cara">Cara Kerja</a>
-      <a href="#kontak">Kontak</a>
+
+    <nav
+      class="main-nav"
+      aria-label="Navigasi utama"
+    >
+
+      <a
+        href="#beranda"
+        class="active"
+      >
+        Beranda
+      </a>
+
+      <a href="#karya">
+        Karya
+      </a>
+
+      <a href="#tentang">
+        Tentang
+      </a>
+
+      <a href="#cara">
+        Cara Kerja
+      </a>
+
+      <a href="#kontak">
+        Kontak
+      </a>
+
     </nav>
 
+
     <div class="header-actions">
-      <button class="icon-btn" id="themeToggle" type="button" aria-label="Ganti mode warna">
-        <span id="themeIcon">☾</span>
+
+      <button
+        class="icon-btn"
+        id="themeToggle"
+        type="button"
+        aria-label="Ganti mode warna"
+      >
+
+        <span id="themeIcon">
+          ☾
+        </span>
+
       </button>
-      <button class="login-btn" id="adminButton" type="button">Pengelola</button>
-      <button class="menu-btn icon-btn" id="menuToggle" type="button" aria-label="Buka menu">☰</button>
+
+
+      <button
+        class="login-btn"
+        id="adminButton"
+        type="button"
+      >
+        Akun
+      </button>
+
+
+      <button
+        class="menu-btn icon-btn"
+        id="menuToggle"
+        type="button"
+        aria-label="Buka menu"
+      >
+        ☰
+      </button>
+
     </div>
+
   </header>
 
+
+
+  <!-- =====================================================
+       MAIN
+  ====================================================== -->
+
   <main>
-    <section id="beranda" class="hero section">
+
+
+    <!-- ===================================================
+         HERO
+    ==================================================== -->
+
+    <section
+      id="beranda"
+      class="hero section"
+    >
+
       <div class="hero-copy">
-        <div class="eyebrow"><span></span> RUANG KARYA SISWA</div>
-        <h1>Setiap karya punya <em>cerita.</em><br>Biarkan CEMARA yang<br>membawanya lebih jauh.</h1>
-        <p>CEMARA adalah ruang digital untuk menampilkan, membaca, dan mengapresiasi karya siswa. Satu tempat untuk ide-ide yang layak dilihat lebih banyak orang.</p>
+
+        <div class="eyebrow">
+
+          <span></span>
+
+          RUANG KARYA SISWA
+
+        </div>
+
+
+        <h1>
+
+          Setiap karya punya
+          <em>cerita.</em>
+
+          <br>
+
+          Biarkan CEMARA yang
+
+          <br>
+
+          membawanya lebih jauh.
+
+        </h1>
+
+
+        <p>
+
+          CEMARA adalah ruang digital
+          untuk menampilkan, membaca,
+          dan mengapresiasi karya siswa.
+          Satu tempat untuk ide-ide yang
+          layak dilihat lebih banyak orang.
+
+        </p>
+
+
         <div class="hero-actions">
-          <a href="#karya" class="btn btn-primary">Jelajahi Karya <span>→</span></a>
-          <a href="#tentang" class="btn btn-ghost">Kenal CEMARA</a>
+
+          <a
+            href="#karya"
+            class="btn btn-primary"
+          >
+
+            Jelajahi Karya
+
+            <span>
+              →
+            </span>
+
+          </a>
+
+
+          <a
+            href="#tentang"
+            class="btn btn-ghost"
+          >
+
+            Kenal CEMARA
+
+          </a>
+
         </div>
+
+
         <div class="hero-meta">
-          <div><strong id="workCount">06</strong><span>Karya ditampilkan</span></div>
-          <div><strong>∞</strong><span>Ruang apresiasi</span></div>
-          <div><strong>100%</strong><span>Karya siswa</span></div>
-        </div>
-      </div>
-      <div class="hero-art" aria-label="Ilustrasi buku dan daun">
-        <div class="leaf leaf-1"></div>
-        <div class="leaf leaf-2"></div>
-        <div class="leaf leaf-3"></div>
-        <div class="book-stack">
-          <div class="book book-back"></div>
-          <div class="book book-mid"></div>
-          <div class="book book-front">
-            <div class="book-title">CEMARA</div>
-            <div class="book-sub">ruang karya</div>
-            <div class="book-line"></div>
-            <div class="book-author">— karya siswa</div>
+
+          <div>
+
+            <strong id="workCount">
+              00
+            </strong>
+
+            <span>
+              Karya ditampilkan
+            </span>
+
           </div>
+
+
+          <div>
+
+            <strong>
+              ∞
+            </strong>
+
+            <span>
+              Ruang apresiasi
+            </span>
+
+          </div>
+
+
+          <div>
+
+            <strong>
+              100%
+            </strong>
+
+            <span>
+              Karya siswa
+            </span>
+
+          </div>
+
         </div>
-        <div class="gold-spark">✦</div>
+
       </div>
+
+
+
+      <!-- HERO ART -->
+
+      <div
+        class="hero-art"
+        aria-label="Ilustrasi buku dan daun"
+      >
+
+        <div class="leaf leaf-1"></div>
+
+        <div class="leaf leaf-2"></div>
+
+        <div class="leaf leaf-3"></div>
+
+
+        <div class="book-stack">
+
+          <div class="book book-back"></div>
+
+          <div class="book book-mid"></div>
+
+          <div class="book book-front">
+
+            <div class="book-title">
+              CEMARA
+            </div>
+
+            <div class="book-sub">
+              ruang karya
+            </div>
+
+            <div class="book-line"></div>
+
+            <div class="book-author">
+              — karya siswa
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="gold-spark">
+          ✦
+        </div>
+
+      </div>
+
     </section>
 
-    <section id="karya" class="section works-section">
+
+
+    <!-- ===================================================
+         KOLEKSI KARYA
+    ==================================================== -->
+
+    <section
+      id="karya"
+      class="section works-section"
+    >
+
       <div class="section-heading">
+
         <div>
-          <div class="eyebrow"><span></span> KOLEKSI KARYA</div>
-          <h2>Temukan karya yang<br><em>menarik perhatianmu.</em></h2>
+
+          <div class="eyebrow">
+
+            <span></span>
+
+            KOLEKSI KARYA
+
+          </div>
+
+
+          <h2>
+
+            Temukan karya yang
+
+            <br>
+
+            <em>
+              menarik perhatianmu.
+            </em>
+
+          </h2>
+
         </div>
-        <p>Pratinjau karya, baca deskripsinya, lalu buka karya secara penuh ketika kamu siap.</p>
+
+
+        <p>
+
+          Pratinjau karya, baca
+          deskripsinya, lalu buka karya
+          secara penuh ketika kamu siap.
+
+        </p>
+
       </div>
+
+
+
+      <!-- TOOLBAR -->
 
       <div class="toolbar">
+
+
+        <!-- SEARCH -->
+
         <label class="search-box">
-          <span>⌕</span>
-          <input id="searchInput" type="search" placeholder="Cari judul, penulis, kategori..." autocomplete="off">
+
+          <span>
+            ⌕
+          </span>
+
+          <input
+            id="searchInput"
+            type="search"
+            placeholder="Cari judul, penulis, kategori..."
+            autocomplete="off"
+          >
+
         </label>
+
+
+
+        <!-- FILTER -->
+
         <div class="filter-wrap">
-          <button class="filter-btn active" data-filter="Semua">Semua</button>
-          <button class="filter-btn" data-filter="Cerpen">Cerpen</button>
-          <button class="filter-btn" data-filter="Puisi">Puisi</button>
-          <button class="filter-btn" data-filter="Esai">Esai</button>
-          <button class="filter-btn" data-filter="Seni">Seni</button>
+
+          <button
+            class="filter-btn active"
+            data-filter="Semua"
+            type="button"
+          >
+            Semua
+          </button>
+
+
+          <button
+            class="filter-btn"
+            data-filter="Cerpen"
+            type="button"
+          >
+            Cerpen
+          </button>
+
+
+          <button
+            class="filter-btn"
+            data-filter="Puisi"
+            type="button"
+          >
+            Puisi
+          </button>
+
+
+          <button
+            class="filter-btn"
+            data-filter="Esai"
+            type="button"
+          >
+            Esai
+          </button>
+
+
+          <button
+            class="filter-btn"
+            data-filter="Seni"
+            type="button"
+          >
+            Seni
+          </button>
+
+
+          <button
+            class="filter-btn"
+            data-filter="Komik"
+            type="button"
+          >
+            Komik
+          </button>
+
         </div>
+
       </div>
 
-      <div id="worksGrid" class="works-grid"></div>
-      <div id="emptyState" class="empty-state hidden">
-        <div>⌕</div>
-        <h3>Karyanya belum ditemukan</h3>
-        <p>Coba kata kunci atau kategori lain.</p>
-        <button class="btn btn-primary" id="resetSearch">Tampilkan Semua</button>
-      </div>
-    </section>
 
-    <section id="tentang" class="section about-section">
-      <div class="about-card">
-        <div class="eyebrow"><span></span> TENTANG CEMARA</div>
-        <h2>Cendekia Media Apresiasi dan Ruang Karya</h2>
-        <p class="lead">Bukan sekadar galeri. CEMARA dibuat sebagai rumah digital bagi gagasan, imajinasi, dan karya siswa agar dapat ditemukan, dinikmati, serta mendapat apresiasi.</p>
-        <div class="meaning-grid">
-          <article><b>C</b><strong>Cendekia</strong><p>Identitas sekolah dan semangat belajar.</p></article>
-          <article><b>M</b><strong>Media</strong><p>Wadah digital yang mudah diakses.</p></article>
-          <article><b>A</b><strong>Apresiasi</strong><p>Setiap karya layak dihargai.</p></article>
-          <article><b>R</b><strong>Ruang</strong><p>Tempat aman untuk berekspresi.</p></article>
-          <article><b>K</b><strong>Karya</strong><p>Inti dari semua yang dibagikan.</p></article>
-        </div>
-      </div>
-    </section>
 
-    <section id="cara" class="section process-section">
-      <div class="section-heading center">
+      <!-- WORKS -->
+
+      <div
+        id="worksGrid"
+        class="works-grid"
+      ></div>
+
+
+
+      <!-- EMPTY -->
+
+      <div
+        id="emptyState"
+        class="empty-state hidden"
+      >
+
         <div>
-          <div class="eyebrow"><span></span> SEDERHANA & PRAKTIS</div>
-          <h2>Menikmati karya dalam<br><em>tiga langkah.</em></h2>
+          ⌕
         </div>
+
+        <h3>
+          Karya belum ditemukan
+        </h3>
+
+        <p>
+          Coba kata kunci atau kategori lain.
+        </p>
+
+        <button
+          class="btn btn-primary"
+          id="resetSearch"
+          type="button"
+        >
+          Tampilkan Semua
+        </button>
+
       </div>
-      <div class="steps">
-        <article><span>01</span><div class="step-icon">⌕</div><h3>Temukan</h3><p>Cari karya berdasarkan judul, nama penulis, atau kategori.</p></article>
-        <article><span>02</span><div class="step-icon">◉</div><h3>Kenali</h3><p>Klik kartu karya untuk membaca prolog dan deskripsinya.</p></article>
-        <article><span>03</span><div class="step-icon">↗</div><h3>Buka & Apresiasi</h3><p>Tekan ikon mata untuk membuka karya, lalu tinggalkan komentar.</p></article>
-      </div>
+
     </section>
 
-    <section id="kontak" class="section contact-section">
-      <div>
-        <div class="eyebrow"><span></span> HUBUNGI CEMARA</div>
-        <h2>Punya karya yang<br><em>ingin dibagikan?</em></h2>
-        <p>Hubungi tim Duta Literasi untuk proses kurasi dan publikasi karya siswa.</p>
+
+
+    <!-- ===================================================
+         TENTANG CEMARA
+    ==================================================== -->
+
+    <section
+      id="tentang"
+      class="section about-section"
+    >
+
+      <div class="about-card">
+
+        <div class="eyebrow">
+
+          <span></span>
+
+          TENTANG CEMARA
+
+        </div>
+
+
+        <h2>
+
+          Cendekia Media Apresiasi
+          dan Ruang Karya
+
+        </h2>
+
+
+        <p class="lead">
+
+          Bukan sekadar galeri.
+          CEMARA dibuat sebagai rumah
+          digital bagi gagasan, imajinasi,
+          dan karya siswa agar dapat
+          ditemukan, dinikmati, serta
+          mendapat apresiasi.
+
+        </p>
+
+
+        <div class="meaning-grid">
+
+
+          <article>
+
+            <b>
+              CE
+            </b>
+
+            <strong>
+              CEndekia
+            </strong>
+
+            <p>
+              Identitas sekolah dan
+              semangat belajar.
+            </p>
+
+          </article>
+
+
+          <article>
+
+            <b>
+              M
+            </b>
+
+            <strong>
+              Media
+            </strong>
+
+            <p>
+              Wadah digital yang
+              mudah diakses.
+            </p>
+
+          </article>
+
+
+          <article>
+
+            <b>
+              A
+            </b>
+
+            <strong>
+              Apresiasi
+            </strong>
+
+            <p>
+              Setiap karya layak
+              dihargai.
+            </p>
+
+          </article>
+
+
+          <article>
+
+            <b>
+              R
+            </b>
+
+            <strong>
+              Ruang
+            </strong>
+
+            <p>
+              Tempat aman untuk
+              berekspresi.
+            </p>
+
+          </article>
+
+
+          <article>
+
+            <b>
+              A
+            </b>
+
+            <strong>
+              karyA
+            </strong>
+
+            <p>
+              Inti dari semua yang
+              dibagikan.
+            </p>
+
+          </article>
+
+
+        </div>
+
       </div>
-      <div class="contact-box">
-        <div><span>✉</span><div><small>Email</small><strong>duta.literasi@sekolah.sch.id</strong></div></div>
-        <div><span>⌂</span><div><small>Pengelola</small><strong>Duta Literasi Sekolah</strong></div></div>
-        <button class="btn btn-primary" id="copyEmail">Salin Email</button>
-      </div>
+
     </section>
+
+
+
+    <!-- ===================================================
+         CARA KERJA
+    ==================================================== -->
+
+    <section
+      id="cara"
+      class="section process-section"
+    >
+
+      <div class="section-heading center">
+
+        <div>
+
+          <div class="eyebrow">
+
+            <span></span>
+
+            SEDERHANA & PRAKTIS
+
+          </div>
+
+
+          <h2>
+
+            Menikmati karya dalam
+
+            <br>
+
+            <em>
+              tiga langkah.
+            </em>
+
+          </h2>
+
+        </div>
+
+      </div>
+
+
+      <div class="steps">
+
+
+        <article>
+
+          <span>
+            01
+          </span>
+
+          <div class="step-icon">
+            ⌕
+          </div>
+
+          <h3>
+            Temukan
+          </h3>
+
+          <p>
+            Cari karya berdasarkan
+            judul, nama penulis,
+            atau kategori.
+          </p>
+
+        </article>
+
+
+        <article>
+
+          <span>
+            02
+          </span>
+
+          <div class="step-icon">
+            ◉
+          </div>
+
+          <h3>
+            Kenali
+          </h3>
+
+          <p>
+            Klik kartu karya untuk
+            membaca deskripsi
+            dan mengenal karyanya.
+          </p>
+
+        </article>
+
+
+        <article>
+
+          <span>
+            03
+          </span>
+
+          <div class="step-icon">
+            ↗
+          </div>
+
+          <h3>
+            Buka & Apresiasi
+          </h3>
+
+          <p>
+            Tekan ikon mata untuk
+            membuka karya secara
+            penuh, lalu tinggalkan
+            komentar.
+          </p>
+
+        </article>
+
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ===================================================
+         KONTAK
+    ==================================================== -->
+
+    <section
+      id="kontak"
+      class="section contact-section"
+    >
+
+      <div>
+
+        <div class="eyebrow">
+
+          <span></span>
+
+          HUBUNGI CEMARA
+
+        </div>
+
+
+        <h2>
+
+          Punya karya yang
+
+          <br>
+
+          <em>
+            ingin dibagikan?
+          </em>
+
+        </h2>
+
+
+        <p>
+
+          Hubungi tim Duta Literasi
+          untuk proses kurasi dan
+          publikasi karya siswa.
+
+        </p>
+
+      </div>
+
+
+      <div class="contact-box">
+
+
+        <div>
+
+          <span>
+            ✉
+          </span>
+
+          <div>
+
+            <small>
+              Email
+            </small>
+
+            <strong>
+              duta.literasi.icpp@gmail.com
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            ⌂
+          </span>
+
+          <div>
+
+            <small>
+              Pengelola
+            </small>
+
+            <strong>
+              Duta Literasi Sekolah
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <button
+          class="btn btn-primary"
+          id="copyEmail"
+          type="button"
+        >
+
+          Salin Email
+
+        </button>
+
+      </div>
+
+    </section>
+
   </main>
 
+
+
+  <!-- =====================================================
+       FOOTER
+  ====================================================== -->
+
   <footer class="footer">
-    <div><strong>CEMARA</strong><span> Cendekia Media Apresiasi dan Ruang Karya</span></div>
-    <div>© <span id="year"></span> CEMARA • Duta Literasi</div>
+
+    <div>
+
+      <strong>
+        CEMARA
+      </strong>
+
+      <span>
+        Cendekia Media Apresiasi dan Ruang Karya
+      </span>
+
+    </div>
+
+
+    <div>
+
+      ©
+
+      <span id="year"></span>
+
+      CEMARA • Duta Literasi •
+
+      PJ :
+
+      <a
+        href="https://www.instagram.com/aufaatamm/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        DL.Fatamm
+      </a>
+
+    </div>
+
   </footer>
 
-  <button id="backTop" class="back-top" type="button" aria-label="Kembali ke atas">↑</button>
 
-  <div class="modal-overlay" id="workModal" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <button class="modal-close" data-close="workModal" aria-label="Tutup">×</button>
-      <div id="modalCover" class="modal-cover"></div>
+
+  <!-- =====================================================
+       BACK TO TOP
+  ====================================================== -->
+
+  <button
+    id="backTop"
+    class="back-top"
+    type="button"
+    aria-label="Kembali ke atas"
+  >
+    ↑
+  </button>
+
+
+
+  <!-- =====================================================
+       WORK DETAIL MODAL
+       
+       CATATAN:
+       Ini BUKAN reader.
+       Reader sekarang dibuka ke reader.html.
+  ====================================================== -->
+
+  <div
+    class="modal-overlay"
+    id="workModal"
+    aria-hidden="true"
+  >
+
+    <div
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalTitle"
+    >
+
+      <button
+        class="modal-close"
+        data-close="workModal"
+        type="button"
+        aria-label="Tutup"
+      >
+        ×
+      </button>
+
+
+      <div
+        id="modalCover"
+        class="modal-cover"
+      ></div>
+
+
       <div class="modal-content">
-        <div class="eyebrow"><span></span><span id="modalCategory"></span></div>
-        <h2 id="modalTitle"></h2>
-        <div class="work-byline" id="modalByline"></div>
-        <p id="modalDescription"></p>
-        <div class="modal-date" id="modalDate"></div>
-        <div class="modal-actions">
-          <button class="btn btn-primary" id="openWorkBtn">◉ Buka Karya</button>
-          <button class="btn btn-ghost" id="modalCommentBtn">♡ Komentar</button>
+
+
+        <div class="eyebrow">
+
+          <span></span>
+
+          <span id="modalCategory"></span>
+
         </div>
+
+
+        <h2 id="modalTitle">
+        </h2>
+
+
+        <div
+          class="work-byline"
+          id="modalByline"
+        >
+        </div>
+
+
+        <p id="modalDescription">
+        </p>
+
+
+        <div
+          class="modal-date"
+          id="modalDate"
+        >
+        </div>
+
+
+        <div class="modal-actions">
+
+
+          <button
+            class="btn btn-primary"
+            id="openWorkBtn"
+            type="button"
+          >
+
+            See More →
+
+          </button>
+
+
+          <button
+            class="btn btn-ghost"
+            id="modalCommentBtn"
+            type="button"
+          >
+
+            ♡ Komentar
+
+          </button>
+
+
+        </div>
+
       </div>
+
     </div>
+
   </div>
 
-  <div class="modal-overlay" id="readerModal" aria-hidden="true">
-    <div class="reader-modal" role="dialog" aria-modal="true" aria-labelledby="readerTitle">
-      <div class="reader-head">
-        <div><span class="eyebrow"><span></span> MEMBACA KARYA</div><h2 id="readerTitle"></h2></div>
-        <button class="modal-close" data-close="readerModal" aria-label="Tutup">×</button>
+
+
+  <!-- =====================================================
+       ACCOUNT / ADMIN MODAL
+  ====================================================== -->
+
+  <div
+    class="modal-overlay"
+    id="adminModal"
+    aria-hidden="true"
+  >
+
+    <div
+      class="admin-modal modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="adminModalTitle"
+    >
+
+
+      <button
+        class="modal-close"
+        data-close="adminModal"
+        type="button"
+        aria-label="Tutup"
+      >
+        ×
+      </button>
+
+
+      <div class="eyebrow">
+
+        <span></span>
+
+        PENGELOLA
+
       </div>
-      <div id="readerBody" class="reader-body"></div>
-      <div class="comments-panel">
-        <div class="comments-head"><h3>Komentar & Apresiasi</h3><span id="commentCount">0 komentar</span></div>
-        <form id="commentForm" class="comment-form">
-          <input id="commentName" maxlength="40" required placeholder="Nama kamu">
-          <textarea id="commentText" maxlength="300" required placeholder="Tulis apresiasi atau tanggapanmu..."></textarea>
-          <button class="btn btn-primary" type="submit">Kirim Komentar</button>
-        </form>
-        <div id="commentsList" class="comments-list"></div>
-      </div>
+
+
+      <h2 id="adminModalTitle">
+        Kelola CEMARA
+      </h2>
+
+
+      <!--
+        app.js akan mengisi bagian ini
+        dengan Login / Register / Account.
+      -->
+
+      <div id="authView"></div>
+
+
+      <!--
+        app.js hanya menampilkan
+        form upload jika user adalah admin.
+      -->
+
+      <div id="uploadView"></div>
+
+
     </div>
+
   </div>
 
-  <div class="modal-overlay" id="adminModal" aria-hidden="true">
-    <div class="admin-modal modal" role="dialog" aria-modal="true">
-      <button class="modal-close" data-close="adminModal" aria-label="Tutup">×</button>
-      <div class="eyebrow"><span></span> PENGELOLA</div>
-      <h2>Kelola CEMARA</h2>
-      <p>Demo lokal untuk pengelolaan komentar. Data komentar tersimpan di browser ini menggunakan localStorage.</p>
-      <div class="admin-note">Untuk publikasi nyata, fitur tambah/edit/hapus karya dan komentar sebaiknya dihubungkan ke backend/database sekolah.</div>
-      <button class="btn btn-primary" id="clearAllComments">Hapus Semua Komentar di Perangkat Ini</button>
-    </div>
-  </div>
+
+
+  <!-- =====================================================
+       APP JS
+  ====================================================== -->
 
   <script src="app.js"></script>
+
+
 </body>
+
 </html>
