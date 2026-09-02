@@ -91,4 +91,8 @@ Buka:
 Kemudian jalankan seluruh isi file:
 
 ```text
+<<<<<<< HEAD
 schema.sql
+=======
+schema.sql
+>>>>>>> 92de7e3 (amz)
