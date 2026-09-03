@@ -46,13 +46,9 @@ body {
   color: var(--text);
   font-family: "DM Sans", sans-serif;
   line-height: 1.6;
-<<<<<<< HEAD
-  transition: background 0.25s, color 0.25s;
-=======
   transition:
     background 0.25s,
     color 0.25s;
->>>>>>> 92de7e3 (amz)
 }
 
 button,
@@ -95,15 +91,7 @@ img {
 
   padding: 16px 5.8%;
 
-<<<<<<< HEAD
-  background: color-mix(
-    in srgb,
-    var(--surface) 91%,
-    transparent
-  );
-=======
   background: color-mix(in srgb, var(--surface) 91%, transparent);
->>>>>>> 92de7e3 (amz)
 
   backdrop-filter: blur(16px);
 
@@ -241,24 +229,11 @@ img {
 
   overflow: hidden;
 
-<<<<<<< HEAD
-  background:
-    radial-gradient(
-      circle at 85% 30%,
-      color-mix(
-        in srgb,
-        var(--secondary) 25%,
-        transparent
-      ),
-      transparent 30%
-    );
-=======
   background: radial-gradient(
     circle at 85% 30%,
     color-mix(in srgb, var(--secondary) 25%, transparent),
     transparent 30%
   );
->>>>>>> 92de7e3 (amz)
 }
 
 .eyebrow {
@@ -397,91 +372,6 @@ img {
   place-items: center;
 }
 
-<<<<<<< HEAD
-.book-stack {
-  position: relative;
-
-  width: 300px;
-  height: 360px;
-
-  transform: rotate(-5deg);
-}
-
-.book {
-  position: absolute;
-
-  left: 50%;
-
-  width: 245px;
-  height: 325px;
-
-  border-radius: 6px 13px 13px 6px;
-
-  box-shadow: 0 24px 40px rgba(0, 0, 0, 0.15);
-}
-
-.book-back {
-  top: 31px;
-
-  background: #a2c8a4;
-
-  transform:
-    translateX(-47%)
-    rotate(7deg);
-}
-
-.book-mid {
-  top: 15px;
-
-  background: #477d4d;
-
-  transform:
-    translateX(-53%)
-    rotate(2deg);
-}
-
-.book-front {
-  top: 0;
-
-  display: flex;
-  flex-direction: column;
-
-  padding: 40px 27px;
-
-  background:
-    linear-gradient(
-      145deg,
-      #f6f3df,
-      #d9ead8
-    );
-}
-
-.book-title {
-  font-family: "Playfair Display", serif;
-
-  font-size: 42px;
-  font-weight: 700;
-
-  color: var(--primary);
-}
-
-.book-line {
-  width: 70px;
-  height: 3px;
-
-  margin: 22px 0;
-
-  background: var(--accent);
-}
-
-.book-author {
-  margin-top: auto;
-
-  font-size: 12px;
-  color: #59665c;
-}
-
-=======
 .writer-scene {
   position: relative;
 
@@ -701,7 +591,6 @@ img {
   animation: pulse-dot 1.5s ease-in-out infinite;
 }
 
->>>>>>> 92de7e3 (amz)
 .leaf {
   position: absolute;
 
@@ -715,10 +604,7 @@ img {
   opacity: 0.35;
 
   transform: rotate(35deg);
-<<<<<<< HEAD
-=======
   animation: leaf-drift 6s ease-in-out infinite alternate;
->>>>>>> 92de7e3 (amz)
 }
 
 .leaf-1 {
@@ -734,10 +620,7 @@ img {
   height: 120px;
 
   transform: rotate(-35deg);
-<<<<<<< HEAD
-=======
   animation-delay: 0.7s;
->>>>>>> 92de7e3 (amz)
 }
 
 .leaf-3 {
@@ -752,10 +635,7 @@ img {
   opacity: 0.2;
 
   transform: rotate(80deg);
-<<<<<<< HEAD
-=======
   animation-delay: 1.1s;
->>>>>>> 92de7e3 (amz)
 }
 
 .gold-spark {
@@ -767,8 +647,6 @@ img {
   color: var(--accent);
 
   font-size: 42px;
-<<<<<<< HEAD
-=======
   animation: twinkle 2.4s ease-in-out infinite;
 }
 
@@ -851,7 +729,6 @@ img {
     opacity: 1;
     transform: scale(1.2);
   }
->>>>>>> 92de7e3 (amz)
 }
 
 /* =========================================================
@@ -968,12 +845,7 @@ img {
 .works-grid {
   display: grid;
 
-<<<<<<< HEAD
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
-=======
   grid-template-columns: repeat(3, minmax(0, 1fr));
->>>>>>> 92de7e3 (amz)
 
   gap: 22px;
 }
@@ -986,12 +858,7 @@ img {
   border: 1px solid var(--border);
   border-radius: 16px;
 
-<<<<<<< HEAD
-  box-shadow:
-    0 10px 30px rgba(31, 74, 39, 0.05);
-=======
   box-shadow: 0 10px 30px rgba(31, 74, 39, 0.05);
->>>>>>> 92de7e3 (amz)
 
   transition:
     transform 0.25s,
@@ -1024,68 +891,6 @@ img {
   position: absolute;
   inset: 0;
 
-<<<<<<< HEAD
-  background:
-    linear-gradient(
-      180deg,
-      transparent 25%,
-      rgba(0, 0, 0, 0.48)
-    );
-}
-
-.cover-1 {
-  background:
-    linear-gradient(
-      135deg,
-      #2e7d32,
-      #a4d4a7
-    );
-}
-
-.cover-2 {
-  background:
-    linear-gradient(
-      135deg,
-      #d4a72c,
-      #385a3c
-    );
-}
-
-.cover-3 {
-  background:
-    linear-gradient(
-      135deg,
-      #264d35,
-      #91bd85
-    );
-}
-
-.cover-4 {
-  background:
-    linear-gradient(
-      135deg,
-      #5b7f56,
-      #d4a72c
-    );
-}
-
-.cover-5 {
-  background:
-    linear-gradient(
-      135deg,
-      #8ebd8d,
-      #315e3b
-    );
-}
-
-.cover-6 {
-  background:
-    linear-gradient(
-      135deg,
-      #d4a72c,
-      #81c784
-    );
-=======
   background: linear-gradient(180deg, transparent 25%, rgba(0, 0, 0, 0.48));
 }
 
@@ -1111,7 +916,6 @@ img {
 
 .cover-6 {
   background: linear-gradient(135deg, #d4a72c, #81c784);
->>>>>>> 92de7e3 (amz)
 }
 
 .cover-art {
@@ -1205,12 +1009,7 @@ img {
 
   border-radius: 20px;
 
-<<<<<<< HEAD
-  box-shadow:
-    0 8px 30px rgba(38, 51, 42, 0.08);
-=======
   box-shadow: 0 8px 30px rgba(38, 51, 42, 0.08);
->>>>>>> 92de7e3 (amz)
 }
 
 .author {
@@ -1309,12 +1108,7 @@ img {
 .meaning-grid {
   display: grid;
 
-<<<<<<< HEAD
-  grid-template-columns:
-    repeat(5, minmax(0, 1fr));
-=======
   grid-template-columns: repeat(5, minmax(0, 1fr));
->>>>>>> 92de7e3 (amz)
 
   gap: 12px;
 
@@ -1382,12 +1176,7 @@ img {
 
   display: grid;
 
-<<<<<<< HEAD
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
-=======
   grid-template-columns: repeat(3, minmax(0, 1fr));
->>>>>>> 92de7e3 (amz)
 
   gap: 18px;
 
@@ -1561,12 +1350,7 @@ img {
 
   font-size: 24px;
 
-<<<<<<< HEAD
-  box-shadow:
-    0 12px 25px rgba(46, 125, 50, 0.28);
-=======
   box-shadow: 0 12px 25px rgba(46, 125, 50, 0.28);
->>>>>>> 92de7e3 (amz)
 
   opacity: 0;
   pointer-events: none;
@@ -1605,13 +1389,7 @@ img {
   opacity: 0;
   pointer-events: none;
 
-<<<<<<< HEAD
-  transform:
-    translateX(-50%)
-    translateY(-15px);
-=======
   transform: translateX(-50%) translateY(-15px);
->>>>>>> 92de7e3 (amz)
 
   transition:
     opacity 0.2s,
@@ -1621,13 +1399,7 @@ img {
 .toast.show {
   opacity: 1;
 
-<<<<<<< HEAD
-  transform:
-    translateX(-50%)
-    translateY(0);
-=======
   transform: translateX(-50%) translateY(0);
->>>>>>> 92de7e3 (amz)
 }
 
 /* =========================================================
@@ -1673,12 +1445,7 @@ img {
 
   border-radius: 22px;
 
-<<<<<<< HEAD
-  box-shadow:
-    0 30px 80px rgba(0, 0, 0, 0.3);
-=======
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
->>>>>>> 92de7e3 (amz)
 }
 
 .modal-close {
@@ -1708,16 +1475,7 @@ img {
   display: grid;
   place-items: center;
 
-<<<<<<< HEAD
-  background:
-    linear-gradient(
-      135deg,
-      var(--primary),
-      var(--secondary)
-    );
-=======
   background: linear-gradient(135deg, var(--primary), var(--secondary));
->>>>>>> 92de7e3 (amz)
 
   color: white;
 
@@ -1794,12 +1552,7 @@ img {
 
   border-radius: 22px;
 
-<<<<<<< HEAD
-  box-shadow:
-    0 30px 80px rgba(0, 0, 0, 0.3);
-=======
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
->>>>>>> 92de7e3 (amz)
 }
 
 .reader-head {
@@ -2097,12 +1850,7 @@ img {
 
   border-radius: 12px;
 
-<<<<<<< HEAD
-  box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.1);
-=======
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
->>>>>>> 92de7e3 (amz)
 }
 
 .comic-page figcaption {
@@ -2284,8 +2032,6 @@ img {
   line-height: 1.7;
 }
 
-<<<<<<< HEAD
-=======
 .reader-engagement {
   display: flex;
   justify-content: center;
@@ -2321,7 +2067,6 @@ img {
   );
 }
 
->>>>>>> 92de7e3 (amz)
 /* =========================================================
    MAIN COMIC READER
 ========================================================= */
@@ -2344,20 +2089,11 @@ img {
 
   border-radius: 28px;
 
-<<<<<<< HEAD
-  background:
-    radial-gradient(
-      circle at center,
-      rgba(46, 125, 50, 0.045),
-      transparent 65%
-    );
-=======
   background: radial-gradient(
     circle at center,
     rgba(46, 125, 50, 0.045),
     transparent 65%
   );
->>>>>>> 92de7e3 (amz)
 
   transition: background 0.3s;
 }
@@ -2388,12 +2124,7 @@ img {
 
   border-radius: 16px;
 
-<<<<<<< HEAD
-  box-shadow:
-    0 25px 70px rgba(0, 0, 0, 0.18);
-=======
   box-shadow: 0 25px 70px rgba(0, 0, 0, 0.18);
->>>>>>> 92de7e3 (amz)
 
   opacity: 0;
 
@@ -2417,12 +2148,7 @@ img {
 
   color: var(--reader-muted);
 
-<<<<<<< HEAD
-  box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.1);
-=======
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
->>>>>>> 92de7e3 (amz)
 
   opacity: 0;
 
@@ -2468,12 +2194,7 @@ img {
 
   color: var(--reader-text);
 
-<<<<<<< HEAD
-  box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.1);
-=======
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
->>>>>>> 92de7e3 (amz)
 
   font-size: 24px;
 
@@ -2667,12 +2388,7 @@ img {
 .thumbnail.active {
   border-color: var(--reader-primary);
 
-<<<<<<< HEAD
-  box-shadow:
-    0 5px 18px rgba(46, 125, 50, 0.22);
-=======
   box-shadow: 0 5px 18px rgba(46, 125, 50, 0.22);
->>>>>>> 92de7e3 (amz)
 }
 
 .thumbnail img {
@@ -2745,12 +2461,7 @@ img {
 
   background: var(--reader-surface);
 
-<<<<<<< HEAD
-  box-shadow:
-    0 15px 50px rgba(0, 0, 0, 0.06);
-=======
   box-shadow: 0 15px 50px rgba(0, 0, 0, 0.06);
->>>>>>> 92de7e3 (amz)
 }
 
 .reader-comments .comments-head {
@@ -2828,20 +2539,11 @@ img {
 }
 
 .reader-dark .comic-reader {
-<<<<<<< HEAD
-  background:
-    radial-gradient(
-      circle at center,
-      rgba(129, 199, 132, 0.06),
-      transparent 65%
-    );
-=======
   background: radial-gradient(
     circle at center,
     rgba(129, 199, 132, 0.06),
     transparent 65%
   );
->>>>>>> 92de7e3 (amz)
 }
 
 .reader-dark .reader-progress {
@@ -2890,13 +2592,7 @@ img {
 .zoom-hint:hover {
   opacity: 1;
 
-<<<<<<< HEAD
-  transform:
-    translateX(-50%)
-    translateY(-2px);
-=======
   transform: translateX(-50%) translateY(-2px);
->>>>>>> 92de7e3 (amz)
 }
 
 /* =========================================================
@@ -3071,8 +2767,6 @@ img {
 @media (max-width: 800px) {
   .site-header {
     padding: 13px 5%;
-<<<<<<< HEAD
-=======
     gap: 12px;
   }
 
@@ -3086,35 +2780,10 @@ img {
 
   .brand small {
     display: none;
->>>>>>> 92de7e3 (amz)
   }
 
   .main-nav {
     position: absolute;
-<<<<<<< HEAD
-
-    left: 5%;
-    right: 5%;
-    top: 73px;
-
-    display: none;
-
-    flex-direction: column;
-    align-items: stretch;
-
-    padding: 12px 18px;
-
-    background: var(--surface);
-
-    border: 1px solid var(--border);
-    border-radius: 14px;
-
-    box-shadow: var(--shadow);
-  }
-
-  .main-nav.open {
-    display: flex;
-=======
     left: 5%;
     right: 5%;
     top: 73px;
@@ -3146,7 +2815,6 @@ img {
 
   .main-nav.open {
     display: flex !important;
->>>>>>> 92de7e3 (amz)
   }
 
   .menu-btn {
@@ -3154,33 +2822,20 @@ img {
   }
 
   .login-btn {
-<<<<<<< HEAD
-    display: none;
-=======
     display: block;
     padding: 9px 12px;
     font-size: 12px;
->>>>>>> 92de7e3 (amz)
   }
 
   .hero {
     grid-template-columns: 1fr;
-<<<<<<< HEAD
-
-=======
->>>>>>> 92de7e3 (amz)
     padding-top: 65px;
   }
 
   .hero-art {
     height: 350px;
-<<<<<<< HEAD
-
-    order: -1;
-=======
     order: -1;
     transform: scale(0.92);
->>>>>>> 92de7e3 (amz)
   }
 
   .hero-copy {
@@ -3199,11 +2854,8 @@ img {
 
   .hero-meta {
     justify-content: center;
-<<<<<<< HEAD
-=======
     flex-wrap: wrap;
     gap: 18px 26px;
->>>>>>> 92de7e3 (amz)
   }
 
   .section {
@@ -3214,14 +2866,6 @@ img {
   .toolbar,
   .contact-section {
     align-items: flex-start;
-<<<<<<< HEAD
-
-    flex-direction: column;
-  }
-
-  .filter-wrap {
-    justify-content: flex-start;
-=======
     flex-direction: column;
   }
 
@@ -3246,7 +2890,6 @@ img {
   .filter-btn {
     flex: 1 1 auto;
     text-align: center;
->>>>>>> 92de7e3 (amz)
   }
 
   .search-box {
@@ -3400,14 +3043,6 @@ img {
 }
 
 @media (max-width: 520px) {
-<<<<<<< HEAD
-  .brand {
-    min-width: 0;
-  }
-
-  .brand small {
-    display: none;
-=======
   .modal-overlay {
     padding: 10px;
   }
@@ -3433,7 +3068,6 @@ img {
 
   .brand {
     min-width: 0;
->>>>>>> 92de7e3 (amz)
   }
 
   .hero h1 {
@@ -3446,12 +3080,7 @@ img {
 
   .hero-art {
     margin: -35px 0;
-<<<<<<< HEAD
-
-    transform: scale(0.8);
-=======
     transform: scale(0.78);
->>>>>>> 92de7e3 (amz)
   }
 
   .about-card {
@@ -3478,8 +3107,6 @@ img {
 
   .hero-actions {
     flex-direction: column;
-<<<<<<< HEAD
-=======
     width: 100%;
   }
 
@@ -3491,42 +3118,10 @@ img {
   .menu-btn {
     width: 38px;
     height: 38px;
->>>>>>> 92de7e3 (amz)
   }
 
   .hero-actions .btn {
     width: 100%;
-<<<<<<< HEAD
-  }
-
-  .reader-head {
-    padding: 18px 20px 15px;
-  }
-
-  .reader-head h2 {
-    font-size: 23px;
-  }
-
-  .reader-modal {
-    max-height: 96vh;
-
-    border-radius: 16px;
-  }
-
-  .reader-comments {
-    padding: 20px;
-  }
-
-  .zoom-tools button {
-    min-width: 35px;
-
-    padding: 0 7px;
-  }
-
-  #zoomReset {
-    display: none;
-  }
-=======
     justify-content: center;
   }
 
@@ -3879,7 +3474,6 @@ img {
   font-family: "Playfair Display", serif;
   font-size: 13px;
   line-height: 1.25;
->>>>>>> 92de7e3 (amz)
 }
 
 /* =========================================================
@@ -3896,8 +3490,6 @@ img {
     animation: none !important;
   }
 }
-<<<<<<< HEAD
-=======
 
 /* =========================================================
    EMULATOR / SMALL SCREEN (max-width: 430px)
@@ -3980,4 +3572,3 @@ img {
     font-size: 28px;
   }
 }
->>>>>>> 92de7e3 (amz)
