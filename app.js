@@ -22,6 +22,9 @@ let user = null;
 let isAdmin = false;
 
 let editing = null;
+let publicChangesChannel = null;
+let requestedWorkOpened = false;
+let readingFullWork = false;
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -59,19 +62,7 @@ function formatDate(value) {
 }
 
 function toast(message) {
-  const element = $("#toast");
-
-  if (!element) return;
-
-  element.textContent = message;
-
-  element.classList.add("show");
-
-  clearTimeout(window.cemaraToastTimer);
-
-  window.cemaraToastTimer = setTimeout(() => {
-    element.classList.remove("show");
-  }, 2200);
+  window.CEMARA.ui.announce(message);
 }
 
 /* =========================================================
@@ -79,17 +70,8 @@ function toast(message) {
 ========================================================= */
 
 function modal(id, open = true) {
-  const element = document.getElementById(id);
-
-  if (!element) return;
-
-  element.classList.toggle("open", open);
-
-  element.setAttribute("aria-hidden", open ? "false" : "true");
-
-  document.body.style.overflow = $$(".modal-overlay.open").length
-    ? "hidden"
-    : "";
+  if (open) window.CEMARA.ui.openModal(id);
+  else window.CEMARA.ui.closeModal(id);
 }
 
 /* =========================================================
@@ -103,6 +85,22 @@ function isReady() {
     C.SUPABASE_PUBLISHABLE_KEY &&
     !C.SUPABASE_PUBLISHABLE_KEY.includes("YOUR_"),
   );
+}
+
+/* =========================================================
+   COVER (SAMPUL) KARYA
+   Sampul = satu gambar unggahan (works.cover_url). Tanpa gambar,
+   kartu tidak menampilkan blok visual buatan apa pun.
+========================================================= */
+
+const READ_ICON =
+  '<svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>';
+
+function coverMarkup(work, title) {
+  const url = String(work.cover_url || "").trim();
+  if (!url) return "";
+
+  return `<button class="card-cover" type="button" data-preview="${esc(work.id)}" aria-label="Lihat detail ${esc(title)}"><img src="${esc(url)}" alt="Sampul ${esc(title)}" loading="lazy" decoding="async"></button>`;
 }
 
 /* =========================================================
@@ -147,41 +145,35 @@ async function boot() {
   try {
     if (!isReady()) {
       const grid = $("#worksGrid");
+      const skeleton = $("#worksSkeleton");
 
+      skeleton?.classList.add("hidden");
       if (grid) {
+        grid.classList.remove("hidden");
         grid.innerHTML = `
-
           <div class="empty-state">
-
-            <div>⚙</div>
-
             <h3>
               Supabase belum dikonfigurasi
             </h3>
-
             <p>
               Isi <b>config.js</b>
               dengan Project URL
               dan Publishable Key.
             </p>
-
           </div>
-
         `;
       }
 
-      updateStatsUI(12, 35, 18);
+      updateStatsUI(null, null, null);
       renderFeaturedWorks();
       loadCreatorsSpotlight();
-
       authUI();
-
       return;
     }
 
     if (!createClient) {
+      $("#worksSkeleton")?.classList.add("hidden");
       toast("Library Supabase belum dimuat.");
-
       return;
     }
 
@@ -207,20 +199,14 @@ async function boot() {
       return;
     }
 
-    if (user) {
-      await db.from("account_activity").insert({
-        user_id: user.id,
-        activity_type: "login",
-        summary: "Masuk ke akun CEMARA.",
-      });
-    }
-
     await loadWorks();
-
     authUI();
 
-    db.auth.onAuthStateChange(async (_, session) => {
+    db.auth.onAuthStateChange(async (event, session) => {
+      // INITIAL_SESSION sudah ditangani boot(); TOKEN_REFRESHED tidak mengubah peran.
+      if (event === "INITIAL_SESSION") return;
       user = session?.user || null;
+      if (event === "TOKEN_REFRESHED") return;
 
       await adminCheck();
 
@@ -230,11 +216,45 @@ async function boot() {
         await loadComments();
       }
     });
+
+    subscribeToPublicChanges();
   } catch (error) {
     console.error("CEMARA boot error:", error);
-
     toast("Terjadi kesalahan saat memuat CEMARA.");
   }
+}
+
+function subscribeToPublicChanges() {
+  if (!db || publicChangesChannel) return;
+
+  publicChangesChannel = db
+    .channel("cemara-public-content")
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "works" },
+      () =>
+        void loadWorks().catch((error) =>
+          console.error("Live works refresh failed:", error),
+        ),
+    )
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "comments" },
+      () => void loadDynamicStats(),
+    )
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "user_profiles" },
+      () => {
+        void loadCreatorsSpotlight();
+        void loadDynamicStats();
+      },
+    )
+    .subscribe((status, error) => {
+      if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+        console.warn("CEMARA live updates unavailable:", error || status);
+      }
+    });
 }
 
 let userRoleData = {
@@ -293,38 +313,37 @@ async function adminCheck() {
 
 async function loadDynamicStats() {
   if (!db) {
-    updateStatsUI(works.length || 12, 35, 18);
+    updateStatsUI(null, null, null);
     return;
   }
 
   try {
-    let commentsCount = 0;
-    let usersCount = 0;
+    const [commentsResult, usersResult] = await Promise.all([
+      db
+        .from("comments")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "approved"),
+      db
+        .from("user_profiles")
+        .select("user_id", { count: "exact", head: true })
+        .in("role", ["user", "admin"]),
+    ]);
 
-    const { count: cCount } = await db
-      .from("comments")
-      .select("*", { count: "exact", head: true });
-    commentsCount = cCount || 0;
+    if (commentsResult.error) {
+      console.error("Comment count error:", commentsResult.error);
+    }
+    if (usersResult.error) {
+      console.error("Creator count error:", usersResult.error);
+    }
 
-    const { count: uCount } = await db
-      .from("user_profiles")
-      .select("*", { count: "exact", head: true });
-    usersCount = uCount || 0;
-
-    const totalWorks = works.length || 0;
-    const finalWorks = totalWorks > 0 ? totalWorks : 12;
-    const finalComments = commentsCount > 0 ? commentsCount : 35;
-    const finalAuthors =
-      usersCount > 0
-        ? usersCount
-        : totalWorks > 0
-          ? new Set(works.map((w) => w.author)).size
-          : 18;
-
-    updateStatsUI(finalWorks, finalComments, finalAuthors);
-  } catch (err) {
-    console.warn("Stats fetch fallback:", err);
-    updateStatsUI(works.length || 12, 35, 18);
+    updateStatsUI(
+      works.length,
+      commentsResult.error ? null : (commentsResult.count ?? 0),
+      usersResult.error ? null : (usersResult.count ?? 0),
+    );
+  } catch (error) {
+    console.error("Stats fetch error:", error);
+    updateStatsUI(works.length, null, null);
   }
 }
 
@@ -333,9 +352,9 @@ function updateStatsUI(wCount, cCount, aCount) {
   const cEl = $("#statCommentCount");
   const aEl = $("#statAuthorCount");
 
-  if (wEl) wEl.textContent = String(wCount).padStart(2, "0");
-  if (cEl) cEl.textContent = String(cCount).padStart(2, "0") + "+";
-  if (aEl) aEl.textContent = String(aCount).padStart(2, "0") + "+";
+  if (wEl) wEl.textContent = wCount == null ? "—" : String(wCount);
+  if (cEl) cEl.textContent = cCount == null ? "—" : String(cCount);
+  if (aEl) aEl.textContent = aCount == null ? "—" : String(aCount);
 }
 
 /* =========================================================
@@ -355,67 +374,49 @@ function renderFeaturedWorks() {
     return;
   }
 
-  // Pick top 3 works as featured
-  const featured = works
-    .filter((work) => (workEngagement[work.id]?.save_count || 0) > 0)
-    .sort(
-      (a, b) =>
-        (workEngagement[b.id]?.like_count || 0) -
-        (workEngagement[a.id]?.like_count || 0),
-    )
+  const featured = [...works]
+    .sort((a, b) => {
+      const aEngagement =
+        (workEngagement[a.id]?.like_count || 0) +
+        (workEngagement[a.id]?.save_count || 0);
+      const bEngagement =
+        (workEngagement[b.id]?.like_count || 0) +
+        (workEngagement[b.id]?.save_count || 0);
+      return (
+        bEngagement - aEngagement ||
+        new Date(b.published_at || 0) - new Date(a.published_at || 0)
+      );
+    })
     .slice(0, 3);
 
   container.innerHTML = featured
-    .map((work, idx) => {
+    .map((work) => {
       const title = work.title || "Tanpa Judul";
       const author = work.author || "Penulis Siswa";
       const category = work.category || "Karya";
       const description =
         work.description ||
         "Sebuah karya inspiratif dari siswa yang layak dibaca dan diapresiasi.";
-      const symbol = work.cover_symbol || "✦";
-      const cover = work.cover || (idx % 2 === 0 ? "cover-green" : "cover-1");
+      const engagement = workEngagement[work.id] || {};
+      const badge =
+        (engagement.like_count || 0) + (engagement.save_count || 0) > 0
+          ? "Apresiasi pembaca"
+          : "Karya terbaru";
+      const coverHtml = coverMarkup(work, title);
 
       return `
-      <article class="featured-card">
-        <span class="featured-badge">✦ Pilihan Kurator</span>
-        
-        <button
-          class="work-cover ${esc(cover)}"
-          type="button"
-          data-preview="${esc(work.id)}"
-          aria-label="Lihat naskah ${esc(title)}"
-          style="min-height: 180px;"
-        >
-          <div class="cover-art" style="font-size: 48px;">
-            ${esc(symbol)}
-          </div>
-          <div class="cover-text">
-            <small style="color:var(--accent); font-weight:700;">${esc(category)}</small>
-            <strong style="font-size: 1.15rem;">${esc(title)}</strong>
-          </div>
-        </button>
-
-        <div class="work-info" style="padding: 20px; display:flex; flex-direction:column; flex:1; justify-content:space-between;">
-          <div>
-            <div class="work-category" style="margin-bottom:6px;">${esc(category)}</div>
-            <h3 style="margin: 0 0 8px; font-size: 1.2rem;">${esc(title)}</h3>
-            <p style="font-size: 13px; line-height: 1.6; color: var(--muted); margin:0 0 16px;">
-              ${esc(description)}
-            </p>
-          </div>
-
-          <div class="work-footer" style="padding-top: 14px; border-top: 1px solid var(--border);">
-            <span class="author" style="font-weight:600;">
-              ${esc(author)}
-            </span>
+      <article class="featured-card ${coverHtml ? "has-cover" : "no-cover"}">
+        <span class="featured-badge">${esc(badge)}</span>
+        ${coverHtml}
+        <div class="work-info">
+          <div class="work-category">${esc(category)}</div>
+          <h3>${esc(title)}</h3>
+          <p>${esc(description)}</p>
+          <div class="work-footer">
+            <span class="author">${esc(author)}</span>
             <div class="card-buttons">
-              <button class="card-btn" type="button" data-preview="${esc(work.id)}">
-                Sinopsis
-              </button>
-              <button class="card-btn eye" type="button" data-open="${esc(work.id)}" title="Buka Naskah Penuh">
-                ◉ Baca
-              </button>
+              <button class="card-btn" type="button" data-preview="${esc(work.id)}">Sinopsis</button>
+              <button class="card-btn card-btn-read" type="button" data-open="${esc(work.id)}" aria-label="Baca naskah lengkap ${esc(title)}">${READ_ICON}<span>Baca</span></button>
             </div>
           </div>
         </div>
@@ -444,10 +445,13 @@ async function loadCreatorsSpotlight() {
   try {
     let profiles = [];
     if (db) {
-      const { data } = await db
+      const { data, error } = await db
         .from("user_profiles")
-        .select("*")
+        .select(
+          "user_id, display_name, bio, avatar_url, role, blocked_at, custom_card_emoji, custom_card_text, created_at",
+        )
         .order("created_at", { ascending: false });
+      if (error) throw error;
       profiles = data || [];
     }
 
@@ -479,7 +483,7 @@ async function loadCreatorsSpotlight() {
       container.innerHTML = profiles
         .map((p) => {
           const name = p.display_name || "Penulis Siswa";
-          const bio = p.bio || "Aktif berkarya dan menulis cerita di CEMARA.";
+          const bio = p.bio?.trim();
           const avatar = p.avatar_url;
           const role = p.role || "user";
           const roleLabel =
@@ -497,15 +501,13 @@ async function loadCreatorsSpotlight() {
             <div class="creator-avatar">
               ${avatar ? `<img src="${esc(avatar)}" alt="${esc(name)}" style="width:100%; height:100%; object-fit:cover;">` : `<span>✦</span>`}
             </div>
-            <h3 style="margin:0; font-family:'Playfair Display', serif; font-size:1.15rem; font-weight:700;">
+            <h3 style="margin:0; font-family:'Erode', Georgia, serif; font-size:1.15rem; font-weight:700;">
               ${esc(name)}
             </h3>
             <span style="font-size:11px; font-weight:600; padding:2px 10px; border-radius:9999px; background:var(--surface-2); color:var(--primary); border:1px solid var(--border);">
               ${esc(roleLabel)}
             </span>
-            <p style="font-size:12.5px; color:var(--muted); margin:4px 0 0; line-height:1.5; font-style:italic;">
-              "${esc(bio)}"
-            </p>
+            ${bio ? `<p style="font-size:12.5px; color:var(--muted); margin:4px 0 0; line-height:1.5; font-style:italic;">${esc(bio)}</p>` : ""}
             <strong style="font-size:12px; color:var(--primary);">${workCount} karya dipublikasikan</strong>
             ${isWriterOfTheWeek && (p.custom_card_emoji || p.custom_card_text) ? `<div class="creator-custom-card">${esc(p.custom_card_emoji || "✦")} ${esc(p.custom_card_text || "Penulis pilihan CEMARA")}</div>` : ""}
           </div>
@@ -515,7 +517,7 @@ async function loadCreatorsSpotlight() {
       return;
     }
 
-    // Fallback if no profiles yet: extract unique authors from works or show sample creators
+    // Use published work authors when profile rows are not available.
     const authors = [
       ...new Set(
         works
@@ -526,12 +528,13 @@ async function loadCreatorsSpotlight() {
           ),
       ),
     ];
-    const defaultAuthors =
-      authors.length > 0
-        ? authors
-        : ["Alya Ramadhani", "Fauzan Akbar", "Nadia Putri", "Duta Literasi"];
+    if (!authors.length) {
+      container.innerHTML =
+        '<p class="creator-empty">Belum ada profil kreator yang ditampilkan.</p>';
+      return;
+    }
 
-    container.innerHTML = defaultAuthors
+    container.innerHTML = authors
       .slice(0, 4)
       .map(
         (name) => `
@@ -539,14 +542,14 @@ async function loadCreatorsSpotlight() {
         <div class="creator-avatar">
           <span>${esc(name.charAt(0))}</span>
         </div>
-        <h3 style="margin:0; font-family:'Playfair Display', serif; font-size:1.15rem; font-weight:700;">
+        <h3 style="margin:0; font-family:'Erode', Georgia, serif; font-size:1.15rem; font-weight:700;">
           ${esc(name)}
         </h3>
         <span style="font-size:11px; font-weight:600; padding:2px 10px; border-radius:9999px; background:var(--surface-2); color:var(--primary); border:1px solid var(--border);">
           Penulis Siswa
         </span>
-        <p style="font-size:12.5px; color:var(--muted); margin:4px 0 0; line-height:1.5; font-style:italic;">
-          "Menulis adalah cara terbaik menyuarakan isi pikiran dan imajinasi."
+        <p style="font-size:12.5px; color:var(--muted); margin:4px 0 0; line-height:1.5;">
+          Kreator dengan karya yang tersedia di katalog CEMARA.
         </p>
         <strong style="font-size:12px; color:var(--primary);">${works.filter((work) => work.author === name).length} karya dipublikasikan</strong>
       </div>
@@ -554,38 +557,10 @@ async function loadCreatorsSpotlight() {
       )
       .join("");
   } catch (err) {
-    console.warn("Creators spotlight error:", err);
+    console.error("Creators spotlight error:", err);
+    container.innerHTML =
+      '<p class="creator-empty">Profil kreator belum dapat dimuat.</p>';
   }
-}
-
-/* =========================================================
-   ACCORDION LOGIC
-========================================================= */
-
-function setupAccordion() {
-  $$(".accordion-header").forEach((header) => {
-    header.addEventListener("click", () => {
-      const item = header.closest(".accordion-item");
-      if (!item) return;
-
-      const wasActive = item.classList.contains("active");
-      // Close other items
-      $$(".accordion-item").forEach((el) => el.classList.remove("active"));
-
-      if (!wasActive) {
-        item.classList.add("active");
-      }
-
-      $$(".accordion-header").forEach((button) => {
-        button.setAttribute(
-          "aria-expanded",
-          button.closest(".accordion-item")?.classList.contains("active")
-            ? "true"
-            : "false",
-        );
-      });
-    });
-  });
 }
 
 /* =========================================================
@@ -601,12 +576,24 @@ async function loadWorks() {
   if (skeleton) skeleton.classList.remove("hidden");
   if (grid) grid.classList.add("hidden");
 
-  const { data, error } = await db
+  const listColumns =
+    "id, title, author, author_id, category, description, cover_url, published_at, image_urls";
+  let { data, error } = await db
     .from("works")
-    .select("*")
-    .order("published_at", {
-      ascending: false,
-    });
+    .select(listColumns)
+    .order("published_at", { ascending: false });
+
+  if (error) {
+    // Nama kolom di database mungkin berbeda: coba lagi dengan semua kolom.
+    console.warn(
+      "Select kolom daftar gagal, mencoba select(*):",
+      error.message,
+    );
+    ({ data, error } = await db
+      .from("works")
+      .select("*")
+      .order("published_at", { ascending: false }));
+  }
 
   if (skeleton) skeleton.classList.add("hidden");
   if (grid) grid.classList.remove("hidden");
@@ -624,6 +611,18 @@ async function loadWorks() {
       `;
     }
 
+    const featuredGrid = $("#featuredGrid");
+    if (featuredGrid) {
+      featuredGrid.innerHTML =
+        '<p class="work-load-error">Karya belum dapat dimuat. Coba segarkan halaman.</p>';
+    }
+    const creatorsGrid = $("#creatorsGrid");
+    if (creatorsGrid) {
+      creatorsGrid.innerHTML =
+        '<p class="creator-empty">Profil kreator belum dapat dimuat.</p>';
+    }
+    updateStatsUI(null, null, null);
+    toast("Data karya belum dapat dimuat.");
     return;
   }
 
@@ -634,6 +633,12 @@ async function loadWorks() {
   renderFeaturedWorks();
   await loadDynamicStats();
   await loadCreatorsSpotlight();
+
+  const requestedWork = new URLSearchParams(window.location.search).get("work");
+  if (requestedWork && !requestedWorkOpened) {
+    requestedWorkOpened = true;
+    openReader(requestedWork);
+  }
 }
 
 async function loadWorkEngagement() {
@@ -698,100 +703,27 @@ function render() {
   grid.innerHTML = filtered
     .map((work) => {
       const title = work.title || "Tanpa Judul";
-
       const author = work.author || "Anonim";
-
       const category = work.category || "Karya";
-
       const description = work.description || "";
-
-      const symbol = work.cover_symbol || "✦";
-
-      const cover = work.cover || "cover-green";
+      const coverHtml = coverMarkup(work, title);
 
       return `
-
-        <article class="work-card">
-
-          <button
-            class="work-cover ${esc(cover)}"
-            type="button"
-            data-preview="${esc(work.id)}"
-            aria-label="Lihat detail ${esc(title)}"
-          >
-
-            <div class="cover-art">
-              ${esc(symbol)}
-            </div>
-
-            <div class="cover-text">
-
-              <small>
-                ${esc(category)}
-              </small>
-
-              <strong>
-                ${esc(title)}
-              </strong>
-
-            </div>
-
-          </button>
-
-
+        <article class="work-card ${coverHtml ? "has-cover" : "no-cover"}">
+          ${coverHtml}
           <div class="work-info">
-
-            <div class="work-category">
-              ${esc(category)}
-            </div>
-
-            <h3>
-              ${esc(title)}
-            </h3>
-
-            <p>
-              ${esc(description)}
-            </p>
-
-
+            <div class="work-category">${esc(category)}</div>
+            <h3>${esc(title)}</h3>
+            <p>${esc(description)}</p>
             <div class="work-footer">
-
-              <span class="author">
-                ${esc(author)}
-                •
-                ${esc(formatDate(work.published_at))}
-              </span>
-
-
+              <span class="author">${esc(author)} • ${esc(formatDate(work.published_at))}</span>
               <div class="card-buttons">
-
-                <button
-                  class="card-btn"
-                  type="button"
-                  data-preview="${esc(work.id)}"
-                >
-                  Detail
-                </button>
-
-
-                <button
-                  class="card-btn eye"
-                  type="button"
-                  data-open="${esc(work.id)}"
-                  title="Buka karya"
-                  aria-label="Buka karya"
-                >
-                  ◉
-                </button>
-
+                <button class="card-btn" type="button" data-preview="${esc(work.id)}">Detail</button>
+                <button class="card-btn card-btn-read" type="button" data-open="${esc(work.id)}" aria-label="Baca naskah lengkap ${esc(title)}">${READ_ICON}<span>Baca</span></button>
               </div>
-
             </div>
-
           </div>
-
         </article>
-
       `;
     })
     .join("");
@@ -809,13 +741,27 @@ function render() {
    PREVIEW WORK
 ========================================================= */
 
-function preview(id) {
+function preview(id, readFull = false) {
   selected = works.find((work) => String(work.id) === String(id));
 
   if (!selected) {
+    toast("Karya tidak ditemukan.");
     return;
   }
 
+  if (editing || String(current?.id) !== String(selected.id)) {
+    // Jangan bawa mode edit atau draf komentar ke karya lain.
+    editing = null;
+    const commentText = $("#commentText");
+    if (commentText) commentText.value = "";
+  }
+  if (String(current?.id) !== String(selected.id)) {
+    const staleComments = $("#commentsList");
+    if (staleComments) staleComments.innerHTML = "";
+  }
+
+  current = selected;
+  readingFullWork = readFull;
   const category = $("#modalCategory");
 
   const title = $("#modalTitle");
@@ -827,6 +773,11 @@ function preview(id) {
   const date = $("#modalDate");
 
   const cover = $("#modalCover");
+  const readerPanel = $("#readerPanel");
+  const fullText = $("#modalFullText");
+  const imageContainer = $("#modalImages");
+  const readButton = $("#openWorkBtn");
+  const commentName = $("#commentName");
 
   if (category) {
     category.textContent = selected.category || "Karya";
@@ -849,20 +800,92 @@ function preview(id) {
   }
 
   if (cover) {
-    const coverClass = selected.cover || "cover-green";
+    const coverUrl = String(selected.cover_url || "").trim();
 
-    cover.className = `modal-cover ${esc(coverClass)}`;
+    cover.className = "modal-cover";
+    cover.classList.toggle("hidden", !coverUrl);
+    cover.innerHTML = coverUrl
+      ? `<img src="${esc(coverUrl)}" alt="Sampul ${esc(selected.title || "karya")}">`
+      : "";
+  }
 
-    cover.innerHTML = `
+  readerPanel?.classList.toggle("hidden", !readFull);
+  renderFullText(selected);
+  if (readFull && selected.content === undefined)
+    void loadWorkContent(selected);
 
-      <span>
-        ${esc(selected.cover_symbol || "✦")}
-      </span>
+  if (imageContainer) {
+    const images = normalizeImages(selected.image_urls);
+    imageContainer.innerHTML = images
+      .map(
+        (image, index) =>
+          `<img src="${esc(image)}" alt="Halaman ${index + 1} karya ${esc(selected.title || "siswa")}" loading="lazy">`,
+      )
+      .join("");
+    imageContainer.classList.toggle("hidden", images.length === 0);
+  }
 
-    `;
+  if (readButton) {
+    readButton.textContent = readFull
+      ? "Kembali ke ringkasan"
+      : "Baca naskah lengkap";
+  }
+
+  if (commentName && user) {
+    commentName.value =
+      userProfile?.display_name ||
+      user.user_metadata?.name ||
+      user.email?.split("@")[0] ||
+      "";
   }
 
   modal("workModal");
+  if (readFull) void loadComments();
+}
+
+function renderFullText(work) {
+  const fullText = $("#modalFullText");
+  if (!fullText) return;
+
+  if (work.content === undefined) {
+    fullText.innerHTML = "<p>Memuat naskah…</p>";
+    return;
+  }
+
+  if (work.submission_type === "drive") {
+    fullText.innerHTML = window.CEMARA.isGoogleDriveUrl(work.drive_url)
+      ? `<p>Karya ini dibagikan melalui Google Drive.</p><a href="${esc(work.drive_url)}" target="_blank" rel="noopener noreferrer">Buka karya di Google Drive ↲</a>`
+      : "<p>Link Google Drive belum tersedia atau tidak valid.</p>";
+    return;
+  }
+
+  fullText.innerHTML = work.content
+    ? esc(work.content).replace(/\r?\n/g, "<br>")
+    : "<p>Naskah lengkap belum tersedia.</p>";
+}
+
+async function loadWorkContent(work) {
+  if (!db || work.content !== undefined) return;
+
+  const { data, error } = await db
+    .from("works")
+    .select("content, submission_type, drive_url")
+    .eq("id", work.id)
+    .maybeSingle();
+
+  if (error) {
+    console.warn("Naskah tidak dapat dimuat:", error.message);
+    const fullText = $("#modalFullText");
+    if (current?.id === work.id && fullText) {
+      fullText.innerHTML = "<p>Naskah belum dapat dimuat. Coba buka lagi.</p>";
+    }
+    return;
+  }
+
+  work.content = data?.content ?? null;
+  work.submission_type = data?.submission_type ?? "text";
+  work.drive_url = data?.drive_url ?? null;
+  if (current?.id === work.id) renderFullText(work);
 }
 
 /* =========================================================
@@ -878,17 +901,7 @@ function openReader(id) {
     return;
   }
 
-  /*
-    Reader sekarang menggunakan
-    reader.html + reader.js.
-
-    Jadi homepage tidak lagi
-    membuat reader versi lama.
-  */
-
-  const url = `reader.html?id=${encodeURIComponent(work.id)}`;
-
-  window.location.href = url;
+  preview(work.id, true);
 }
 
 /* =========================================================
@@ -907,13 +920,17 @@ async function loadComments() {
   }
 
   try {
+    const requestedWorkId = current.id;
     const { data, error } = await db
       .from("comments")
       .select("*")
-      .eq("work_id", current.id)
+      .eq("work_id", requestedWorkId)
+      .eq("status", "approved")
       .order("created_at", {
         ascending: false,
       });
+
+    if (!current || current.id !== requestedWorkId) return;
 
     if (error) {
       console.error("Comments error:", error);
@@ -1182,7 +1199,9 @@ function setupCommentForm() {
 
         form.reset();
 
-        toast("Komentar berhasil diedit.");
+        toast(
+          "Komentar diperbarui. Komentar akan tampil jika lolos pemeriksaan.",
+        );
 
         await loadComments();
 
@@ -1207,7 +1226,9 @@ function setupCommentForm() {
 
       form.reset();
 
-      toast("Komentar tersimpan. ✦");
+      toast(
+        "Komentar terkirim. Komentar akan tampil jika lolos pemeriksaan. ✦",
+      );
 
       await loadComments();
     } catch (error) {
@@ -1278,11 +1299,11 @@ function authUI() {
           ${
             avatarUrl
               ? `<img src="${esc(avatarUrl)}" alt="Avatar" style="width:100%; height:100%; object-fit:cover;">`
-              : `<span style="font-size:26px; font-family:'Playfair Display', serif; color:var(--primary);">✦</span>`
+              : `<span style="font-size:26px; font-family:'Erode', Georgia, serif; color:var(--primary);">✦</span>`
           }
         </div>
 
-        <h3 style="margin-bottom:4px; font-family:'Playfair Display', serif; font-size:1.25rem;">
+        <h3 style="margin-bottom:4px; font-family:'Erode', Georgia, serif; font-size:1.25rem;">
           Halo, ${esc(name)}!
         </h3>
 
@@ -1537,7 +1558,10 @@ async function login(event) {
     submitButton.textContent = "Memeriksa akun...";
   }
 
-  const { error } = await db.auth.signInWithPassword({ email, password });
+  const { data: signInData, error } = await db.auth.signInWithPassword({
+    email,
+    password,
+  });
 
   if (error) {
     toast(error.message);
@@ -1551,6 +1575,17 @@ async function login(event) {
   }
 
   toast("Berhasil masuk. ✦");
+
+  if (signInData?.user?.id) {
+    const { error: activityError } = await db.from("account_activity").insert({
+      user_id: signInData.user.id,
+      activity_type: "login",
+      summary: "Masuk ke akun CEMARA.",
+    });
+    if (activityError) {
+      console.warn("Aktivitas login tidak tercatat:", activityError.message);
+    }
+  }
 
   window.location.href = "admin/index.html";
 }
@@ -1727,22 +1762,46 @@ function renderUploadUI() {
           placeholder="Deskripsi singkat karya"
         ></textarea>
 
+        <fieldset class="upload-type-options">
+          <legend>Jenis unggahan</legend>
+          <label>
+            <input type="radio" name="uploadType" value="text" checked>
+            Teks langsung
+          </label>
+          <label>
+            <input type="radio" name="uploadType" value="drive">
+            Link Google Drive
+          </label>
+        </fieldset>
 
-        <textarea
-          id="uploadContent"
-          placeholder="Isi karya / teks. Untuk komik boleh dikosongkan."
-        ></textarea>
+        <label id="uploadTextField">
+          Isi karya
+          <textarea
+            id="uploadContent"
+            required
+            placeholder="Tulis isi karya di sini"
+          ></textarea>
+        </label>
+
+        <label id="uploadDriveField" class="hidden">
+          Link Google Drive
+          <input
+            id="uploadDriveUrl"
+            type="url"
+            placeholder="https://drive.google.com/..."
+            disabled
+          >
+        </label>
 
 
         <label>
 
-          Gambar / halaman komik
+          Sampul karya (opsional, satu gambar, maks. 5 MB)
 
           <input
-            id="workImages"
+            id="workCover"
             type="file"
-            accept="image/*"
-            multiple
+            accept="image/jpeg,image/png,image/webp,image/gif"
           >
 
         </label>
@@ -1784,44 +1843,60 @@ function renderUploadUI() {
 function setupUploadForm() {
   const form = $("#workUploadForm");
 
-  const input = $("#workImages");
+  const input = $("#workCover");
 
   const preview = $("#uploadPreview");
 
   const status = $("#uploadStatus");
+  const contentInput = $("#uploadContent");
+  const driveInput = $("#uploadDriveUrl");
+  const textField = $("#uploadTextField");
+  const driveField = $("#uploadDriveField");
 
   if (!form || !input) {
     return;
   }
 
+  const updateSubmissionFields = () => {
+    const isDriveSubmission =
+      form.querySelector('input[name="uploadType"]:checked')?.value === "drive";
+
+    textField?.classList.toggle("hidden", isDriveSubmission);
+    driveField?.classList.toggle("hidden", !isDriveSubmission);
+
+    if (contentInput) {
+      contentInput.required = !isDriveSubmission;
+      contentInput.disabled = isDriveSubmission;
+    }
+
+    if (driveInput) {
+      driveInput.required = isDriveSubmission;
+      driveInput.disabled = !isDriveSubmission;
+    }
+  };
+
+  form
+    .querySelectorAll('input[name="uploadType"]')
+    .forEach((radio) =>
+      radio.addEventListener("change", updateSubmissionFields),
+    );
+  updateSubmissionFields();
+
   input.addEventListener("change", () => {
-    const files = [...input.files];
+    const file = input.files[0];
 
     if (!preview) {
       return;
     }
 
-    preview.innerHTML = files
-      .map(
-        (file, index) => `
-
-            <div class="upload-item">
-
-              <img
-                src="${URL.createObjectURL(file)}"
-                alt="Preview ${index + 1}"
-              >
-
-              <span>
-                ${index + 1}.
-                ${esc(file.name)}
-              </span>
-
-            </div>
-
-          `,
-      )
-      .join("");
+    preview.innerHTML = file
+      ? `
+          <div class="upload-item">
+            <img src="${URL.createObjectURL(file)}" alt="Pratinjau sampul">
+            <span>${esc(file.name)}</span>
+          </div>
+        `
+      : "";
   });
 
   form.addEventListener("submit", async (event) => {
@@ -1842,6 +1917,9 @@ function setupUploadForm() {
     const description = $("#uploadDescription")?.value?.trim() || "";
 
     const content = $("#uploadContent")?.value?.trim() || "";
+    const submissionType =
+      form.querySelector('input[name="uploadType"]:checked')?.value || "text";
+    const driveUrl = $("#uploadDriveUrl")?.value?.trim() || "";
 
     const files = [...input.files];
 
@@ -1851,22 +1929,31 @@ function setupUploadForm() {
       return;
     }
 
-    /*
-        HANYA KOMIK yang wajib
-        memiliki gambar.
-
-        Cerpen / Puisi / Esai /
-        Seni boleh hanya berupa teks.
-      */
-
-    if (category === "Komik" && !files.length) {
-      toast("Komik harus memiliki minimal satu gambar.");
+    if (submissionType === "text" && !content) {
+      toast("Isi karya belum ditambahkan.");
 
       return;
     }
 
-    if (!content && !files.length) {
-      toast("Isi karya atau gambar belum ditambahkan.");
+    if (
+      submissionType === "drive" &&
+      !window.CEMARA.isGoogleDriveUrl(driveUrl)
+    ) {
+      toast("Masukkan link Google Drive atau Google Docs yang valid.");
+
+      return;
+    }
+
+    const coverFile = files[0] || null;
+
+    if (coverFile && !coverFile.type.startsWith("image/")) {
+      toast("Sampul harus berupa gambar.");
+
+      return;
+    }
+
+    if (coverFile && coverFile.size > 5 * 1024 * 1024) {
+      toast("Ukuran sampul maksimal 5 MB.");
 
       return;
     }
@@ -1880,73 +1967,53 @@ function setupUploadForm() {
     try {
       if (status) {
         status.textContent = files.length
-          ? "Mengupload gambar..."
+          ? "Mengunggah sampul..."
           : "Menyimpan karya...";
       }
 
-      const imageUrls = [];
+      let coverUrl = null;
 
-      /*
-          UPLOAD GAMBAR
-        */
-
-      for (let index = 0; index < files.length; index++) {
-        const file = files[index];
-
-        const extension = (file.name.split(".").pop() || "jpg")
+      if (coverFile) {
+        const extension = (coverFile.name.split(".").pop() || "jpg")
           .toLowerCase()
           .replace(/[^a-z0-9]/g, "");
 
-        const filename = `${user.id}/${Date.now()}-${index + 1}.${extension}`;
+        const filename = `${user.id}/cover-${Date.now()}.${extension || "jpg"}`;
 
-        const { error } = await db.storage
+        const { error: uploadError } = await db.storage
           .from("karya")
-          .upload(filename, file, {
+          .upload(filename, coverFile, {
             cacheControl: "3600",
             upsert: false,
           });
 
-        if (error) {
+        if (uploadError) {
           if (status) {
-            status.textContent = "Gagal upload: " + error.message;
+            status.textContent = "Gagal upload sampul: " + uploadError.message;
           }
 
           return;
         }
 
-        const { data } = db.storage.from("karya").getPublicUrl(filename);
-
-        if (data?.publicUrl) {
-          imageUrls.push(data.publicUrl);
-        }
+        coverUrl =
+          db.storage.from("karya").getPublicUrl(filename).data?.publicUrl ||
+          null;
       }
 
       if (status) {
         status.textContent = "Menyimpan karya...";
       }
 
-      /*
-          SIMPAN KE DATABASE
-        */
-
       const { error } = await db.from("works").insert({
         title,
-
         author,
-
         category,
-
         description,
-
-        content,
-
-        cover: "cover-green",
-
-        cover_symbol: category === "Komik" ? "📖" : "✦",
-
+        content: submissionType === "text" ? content : "",
+        submission_type: submissionType,
+        drive_url: submissionType === "drive" ? driveUrl : null,
+        cover_url: coverUrl,
         published_at: new Date().toISOString(),
-
-        image_urls: imageUrls,
       });
 
       if (error) {
@@ -1960,6 +2027,7 @@ function setupUploadForm() {
       toast("Karya berhasil dipublikasikan! 🎉");
 
       form.reset();
+      updateSubmissionFields();
 
       if (preview) {
         preview.innerHTML = "";
@@ -1991,24 +2059,8 @@ function setupUploadForm() {
 ========================================================= */
 
 function setupNavigation() {
-  $("#adminButton")?.addEventListener("click", () => {
-    authUI();
-
-    modal("adminModal");
-  });
-
-  $$("[data-close]").forEach((button) => {
-    button.addEventListener("click", () => {
-      modal(button.dataset.close, false);
-    });
-  });
-
-  $$(".modal-overlay").forEach((overlay) => {
-    overlay.addEventListener("click", (event) => {
-      if (event.target === overlay) {
-        modal(overlay.id, false);
-      }
-    });
+  document.addEventListener("cemara:beforeopen", (event) => {
+    if (event.detail?.id === "adminModal") authUI();
   });
 
   /*
@@ -2019,7 +2071,11 @@ function setupNavigation() {
   $("#openWorkBtn")?.addEventListener("click", () => {
     if (!selected) return;
 
-    openReader(selected.id);
+    if (readingFullWork) {
+      preview(selected.id);
+    } else {
+      openReader(selected.id);
+    }
   });
 
   /*
@@ -2031,6 +2087,7 @@ function setupNavigation() {
     if (!selected) return;
 
     openReader(selected.id);
+    $("#commentText")?.focus();
   });
 
   /*
@@ -2047,9 +2104,11 @@ function setupNavigation() {
     button.addEventListener("click", () => {
       filter = button.dataset.filter || "Semua";
 
-      $$(".filter-btn").forEach((item) =>
-        item.classList.toggle("active", item === button),
-      );
+      $$(".filter-btn").forEach((item) => {
+        const active = item === button;
+        item.classList.toggle("active", active);
+        item.setAttribute("aria-pressed", String(active));
+      });
 
       render();
     });
@@ -2068,190 +2127,13 @@ function setupNavigation() {
 
     filter = "Semua";
 
-    $$(".filter-btn").forEach((button) =>
-      button.classList.toggle("active", button.dataset.filter === "Semua"),
-    );
+    $$(".filter-btn").forEach((button) => {
+      const active = button.dataset.filter === "Semua";
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
 
     render();
-  });
-
-  /*
-    Mobile menu
-  */
-
-  const nav = $("#mainNav");
-  const menuToggle = $("#menuToggle");
-
-  const setMenuState = (isOpen) => {
-    nav?.classList.toggle("open", isOpen);
-    if (menuToggle) {
-      menuToggle.setAttribute("aria-expanded", String(isOpen));
-      menuToggle.setAttribute(
-        "aria-label",
-        isOpen ? "Tutup menu" : "Buka menu",
-      );
-    }
-  };
-
-  setMenuState(false);
-  nav?.classList.remove("open");
-  menuToggle?.setAttribute("aria-expanded", "false");
-
-  menuToggle?.addEventListener("click", () => {
-    if (window.innerWidth > 800) return;
-
-    const isOpen = !nav?.classList.contains("open");
-    setMenuState(isOpen);
-  });
-
-  $$(".main-nav a").forEach((link) => {
-    link.addEventListener("click", () => {
-      if (window.innerWidth <= 800) {
-        setMenuState(false);
-      }
-    });
-  });
-
-  document.addEventListener("click", (event) => {
-    const target = event.target;
-
-    if (!(target instanceof Node)) return;
-
-    const clickedInsideNav = nav?.contains(target);
-    const clickedToggle = menuToggle?.contains(target);
-
-    if (
-      window.innerWidth <= 800 &&
-      !clickedInsideNav &&
-      !clickedToggle &&
-      nav?.classList.contains("open")
-    ) {
-      setMenuState(false);
-    }
-  });
-
-  window.addEventListener("resize", () => {
-    nav?.classList.remove("open");
-    menuToggle?.setAttribute("aria-expanded", "false");
-    menuToggle?.setAttribute("aria-label", "Buka menu");
-  });
-
-  /*
-    Copy email
-  */
-
-  $("#copyEmail")?.addEventListener("click", copyEmail);
-}
-
-/* =========================================================
-   THEME
-========================================================= */
-
-function setupTheme() {
-  const icon = $("#themeIcon");
-  const toggle = $("#themeToggle");
-
-  const applyTheme = () => {
-    const isDark = document.documentElement.dataset.theme === "dark";
-
-    if (icon) {
-      icon.textContent = isDark ? "☀" : "☾";
-    }
-  };
-
-  const saved = localStorage.getItem("cemara_theme");
-
-  if (saved === "dark") {
-    document.documentElement.dataset.theme = "dark";
-  } else {
-    delete document.documentElement.dataset.theme;
-    localStorage.setItem("cemara_theme", "light");
-  }
-
-  applyTheme();
-
-  toggle?.addEventListener("click", () => {
-    const isDark = document.documentElement.dataset.theme === "dark";
-
-    if (isDark) {
-      delete document.documentElement.dataset.theme;
-      localStorage.setItem("cemara_theme", "light");
-    } else {
-      document.documentElement.dataset.theme = "dark";
-      localStorage.setItem("cemara_theme", "dark");
-    }
-
-    applyTheme();
-  });
-}
-
-/* =========================================================
-   COPY EMAIL
-========================================================= */
-
-async function copyEmail() {
-  /*
-    Mengikuti email yang tampil
-    di index.html.
-  */
-
-  const email = "duta.literasi.icpp@gmail.com";
-
-  try {
-    await navigator.clipboard.writeText(email);
-
-    toast("Email disalin. ✦");
-  } catch (_) {
-    toast(email);
-  }
-}
-
-/* =========================================================
-   BACK TO TOP
-========================================================= */
-
-function setupBackTop() {
-  const button = $("#backTop");
-
-  if (!button) {
-    return;
-  }
-
-  button.addEventListener("click", () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  });
-
-  window.addEventListener("scroll", () => {
-    button.classList.toggle("show", window.scrollY > 500);
-  });
-}
-
-/* =========================================================
-   YEAR
-========================================================= */
-
-function setupYear() {
-  const year = $("#year");
-
-  if (year) {
-    year.textContent = new Date().getFullYear();
-  }
-}
-
-/* =========================================================
-   ESCAPE KEY
-========================================================= */
-
-function setupEscape() {
-  document.addEventListener("keydown", (event) => {
-    if (event.key !== "Escape") {
-      return;
-    }
-
-    $$(".modal-overlay.open").forEach((overlay) => modal(overlay.id, false));
   });
 }
 
@@ -2264,17 +2146,7 @@ function initialize() {
 
   setupCommentForm();
 
-  setupAccordion();
-
-  setupTheme();
-
-  setupBackTop();
-
-  setupYear();
-
   setupEventDeadline();
-
-  setupEscape();
 
   boot();
 }

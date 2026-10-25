@@ -595,7 +595,7 @@ async function loadStatsAndWorks() {
             (w) => `
           <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
             <td class="py-3 font-semibold text-stone-900 dark:text-stone-100 flex items-center gap-2">
-              <span class="text-cemara font-serif">${window.CEMARA.esc(w.cover_symbol || "✦")}</span>
+              ${w.cover_url ? `<img src="${window.CEMARA.esc(w.cover_url)}" alt="Sampul" class="w-8 h-10 rounded object-cover border border-black/10 dark:border-white/10">` : ""}
               <span>${window.CEMARA.esc(w.title)}</span>
             </td>
             <td class="py-3 text-stone-600 dark:text-stone-400">${window.CEMARA.esc(w.author)}</td>
@@ -606,7 +606,7 @@ async function loadStatsAndWorks() {
             </td>
             <td class="py-3 text-xs text-stone-500">${window.CEMARA.formatDate(w.published_at)}</td>
             <td class="py-3 text-right">
-              <a href="../reader.html?id=${encodeURIComponent(w.id)}" target="_blank" class="p-1.5 rounded-lg text-cemara hover:bg-cemara-soft dark:hover:bg-cemara/20 inline-flex items-center" title="Baca Karya">
+              <a href="../app.html?work=${encodeURIComponent(w.id)}#karya" target="_blank" class="p-1.5 rounded-lg text-cemara hover:bg-cemara-soft dark:hover:bg-cemara/20 inline-flex items-center" title="Baca Karya">
                 <i data-lucide="book-open" class="w-4 h-4"></i>
               </a>
             </td>
@@ -631,7 +631,7 @@ async function loadStatsAndWorks() {
             const imgCount = (w.image_urls || []).length;
             return `
             <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
-              <td class="py-3 text-cemara font-serif font-bold text-center">${window.CEMARA.esc(w.cover_symbol || "✦")}</td>
+              <td class="py-3 text-center">${w.cover_url ? `<img src="${window.CEMARA.esc(w.cover_url)}" alt="Sampul" class="w-8 h-10 mx-auto rounded object-cover border border-black/10 dark:border-white/10">` : "—"}</td>
               <td class="py-3 font-semibold text-stone-900 dark:text-stone-100">${window.CEMARA.esc(w.title)}</td>
               <td class="py-3 text-stone-600 dark:text-stone-400">${window.CEMARA.esc(w.author)}</td>
               <td class="py-3">
@@ -639,9 +639,9 @@ async function loadStatsAndWorks() {
                   ${window.CEMARA.esc(w.category)}
                 </span>
               </td>
-              <td class="py-3 text-xs text-stone-500">${imgCount > 0 ? `${imgCount} gambar` : "Naskah teks"}</td>
+              <td class="py-3 text-xs text-stone-500">${imgCount > 0 ? `${imgCount} gambar` : w.cover_url ? "Teks + sampul" : "Naskah teks"}</td>
               <td class="py-3 text-right space-x-1">
-                <a href="../reader.html?id=${encodeURIComponent(w.id)}" target="_blank" class="px-3 py-1 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-cemara hover:text-white text-xs font-semibold transition-colors inline-flex items-center gap-1">
+                <a href="../app.html?work=${encodeURIComponent(w.id)}#karya" target="_blank" class="px-3 py-1 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-cemara hover:text-white text-xs font-semibold transition-colors inline-flex items-center gap-1">
                   <i data-lucide="book-open" class="w-3.5 h-3.5"></i> Baca
                 </a>
                 ${
@@ -910,7 +910,7 @@ async function loadCommentsList() {
             <td class="py-3 text-stone-700 dark:text-stone-300 max-w-xs truncate line-clamp-2">${window.CEMARA.esc(c.content)}</td>
             <td class="py-3 text-xs text-red-600 dark:text-red-400 max-w-sm">
               <span class="inline-block bg-red-50 dark:bg-red-950/50 px-2 py-1 rounded-lg">
-                ${window.CEMARA.esc(c.flagged_reason || c.is_inappropriate ? "Konten Tidak Pantas" : "Pending Review")}
+                ${window.CEMARA.esc(c.flagged_reason || (c.is_inappropriate ? "Konten Tidak Pantas" : "Pending Review"))}
               </span>
             </td>
             <td class="py-3 text-xs text-stone-500">${window.CEMARA.formatDate(c.created_at)}</td>
@@ -954,12 +954,16 @@ window.approveFlaggedComment = async function approveFlaggedComment(commentId) {
   if (!confirmed) return;
 
   try {
-    const { error } = await db
-      .from("comments")
-      .update({ status: "approved", is_inappropriate: false })
-      .eq("id", commentId);
+    const { data, error } = await db.rpc("review_comment", {
+      comment_id: commentId,
+      new_status: "approved",
+    });
 
     if (error) throw error;
+    const result = Array.isArray(data) ? data[0] : data;
+    if (!result?.success) {
+      throw new Error(result?.message || "Review komentar gagal.");
+    }
 
     showToast("Komentar diterima dan ditampilkan! ✓");
     await loadCommentsList();
@@ -1102,22 +1106,46 @@ window.deleteUserProfile = async function deleteUserProfile(targetUserId) {
 ========================================================= */
 
 const uploadForm = $("#adminWorkUploadForm");
-const fileInput = $("#upFiles");
-const filePreview = $("#upFilesPreview");
+const fileInput = $("#upCover");
+const filePreview = $("#upCoverPreview");
+const upContent = $("#upContent");
+const upDriveUrl = $("#upDriveUrl");
+const upTextField = $("#upTextField");
+const upDriveField = $("#upDriveField");
+
+function updateUploadSubmissionFields() {
+  const isDriveSubmission =
+    $('input[name="upSubmissionType"]:checked')?.value === "drive";
+
+  upTextField?.classList.toggle("hidden", isDriveSubmission);
+  upDriveField?.classList.toggle("hidden", !isDriveSubmission);
+
+  if (upContent) {
+    upContent.required = !isDriveSubmission;
+    upContent.disabled = isDriveSubmission;
+  }
+
+  if (upDriveUrl) {
+    upDriveUrl.required = isDriveSubmission;
+    upDriveUrl.disabled = !isDriveSubmission;
+  }
+}
+
+$$('input[name="upSubmissionType"]').forEach((radio) =>
+  radio.addEventListener("change", updateUploadSubmissionFields),
+);
+updateUploadSubmissionFields();
 
 if (fileInput && filePreview) {
   fileInput.addEventListener("change", () => {
-    const files = [...fileInput.files];
-    filePreview.innerHTML = files
-      .map(
-        (file, i) => `
-      <div class="relative w-16 h-16 rounded-xl overflow-hidden border border-cemara/30 bg-stone-100 shadow-sm">
-        <img src="${URL.createObjectURL(file)}" class="w-full h-full object-cover">
-        <span class="absolute bottom-0 right-0 bg-black/70 text-[9px] px-1 text-white font-bold">${i + 1}</span>
+    const file = fileInput.files[0];
+    filePreview.innerHTML = file
+      ? `
+      <div class="relative w-24 h-32 rounded-xl overflow-hidden border border-cemara/30 bg-stone-100 shadow-sm">
+        <img src="${URL.createObjectURL(file)}" alt="Pratinjau sampul" class="w-full h-full object-cover">
       </div>
-    `,
-      )
-      .join("");
+    `
+      : "";
   });
 }
 
@@ -1137,9 +1165,11 @@ if (uploadForm) {
     );
     const author = authorProfile?.display_name?.trim() || "";
     const category = $("#upCategory")?.value;
-    const coverSymbol = $("#upSymbol")?.value.trim() || "✦";
     const description = $("#upDescription")?.value.trim();
     const content = $("#upContent")?.value.trim();
+    const submissionType =
+      $('input[name="upSubmissionType"]:checked')?.value || "text";
+    const driveUrl = $("#upDriveUrl")?.value.trim() || "";
     const files = fileInput ? [...fileInput.files] : [];
 
     if (!title || !author || !category || !description) {
@@ -1147,8 +1177,28 @@ if (uploadForm) {
       return;
     }
 
-    if (category === "Komik" && files.length === 0) {
-      showToast("Kategori Komik memerlukan minimal 1 gambar/halaman komik.");
+    if (submissionType === "text" && !content) {
+      showToast("Naskah teks wajib diisi.");
+      return;
+    }
+
+    if (
+      submissionType === "drive" &&
+      !window.CEMARA.isGoogleDriveUrl(driveUrl)
+    ) {
+      showToast("Masukkan link Google Drive atau Google Docs yang valid.");
+      return;
+    }
+
+    const coverFile = files[0] || null;
+
+    if (coverFile && !coverFile.type.startsWith("image/")) {
+      showToast("Sampul harus berupa gambar.");
+      return;
+    }
+
+    if (coverFile && coverFile.size > 5 * 1024 * 1024) {
+      showToast("Ukuran sampul maksimal 5MB.");
       return;
     }
 
@@ -1157,28 +1207,25 @@ if (uploadForm) {
     submitBtn.innerHTML = `<span>Menyimpan Karya...</span>`;
 
     try {
-      const imageUrls = [];
+      let coverUrl = null;
 
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const ext = file.name.split(".").pop() || "jpg";
-        const filename = `${currentUser.id}/${Date.now()}-${i + 1}.${ext}`;
+      if (coverFile) {
+        const ext = (coverFile.name.split(".").pop() || "jpg")
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, "");
+        const filename = `${currentUser.id}/cover-${Date.now()}.${ext || "jpg"}`;
 
         const { error: storageError } = await db.storage
           .from("karya")
-          .upload(filename, file, { cacheControl: "3600", upsert: false });
+          .upload(filename, coverFile, { cacheControl: "3600", upsert: false });
 
         if (storageError) {
-          throw new Error(`Unggah gambar gagal: ${storageError.message}`);
+          throw new Error(`Unggah sampul gagal: ${storageError.message}`);
         }
 
-        const { data: urlData } = db.storage
-          .from("karya")
-          .getPublicUrl(filename);
-
-        if (urlData?.publicUrl) {
-          imageUrls.push(urlData.publicUrl);
-        }
+        coverUrl =
+          db.storage.from("karya").getPublicUrl(filename).data?.publicUrl ||
+          null;
       }
 
       const { error: insertError } = await db.from("works").insert({
@@ -1187,10 +1234,10 @@ if (uploadForm) {
         author_id: authorId || null,
         category,
         description,
-        content,
-        cover: "cover-green",
-        cover_symbol: coverSymbol,
-        image_urls: imageUrls,
+        content: submissionType === "text" ? content : "",
+        submission_type: submissionType,
+        drive_url: submissionType === "drive" ? driveUrl : null,
+        cover_url: coverUrl,
         published_at: new Date().toISOString(),
       });
 
@@ -1204,6 +1251,7 @@ if (uploadForm) {
 
       showToast("Karya berhasil dipublikasikan ke CEMARA! ✦");
       uploadForm.reset();
+      updateUploadSubmissionFields();
       if (filePreview) filePreview.innerHTML = "";
 
       await loadStatsAndWorks();

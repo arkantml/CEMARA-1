@@ -23,6 +23,21 @@ window.CEMARA.esc = function esc(value) {
   );
 };
 
+window.CEMARA.isGoogleDriveUrl = function isGoogleDriveUrl(value) {
+  try {
+    const url = new URL(String(value || "").trim());
+    return (
+      url.protocol === "https:" &&
+      !url.username &&
+      !url.password &&
+      (!url.port || url.port === "443") &&
+      ["drive.google.com", "docs.google.com"].includes(url.hostname)
+    );
+  } catch {
+    return false;
+  }
+};
+
 /* =========================================================
    FORMAT DATE
 ========================================================= */
@@ -50,18 +65,23 @@ window.CEMARA.formatDate = function formatDate(value) {
 ========================================================= */
 
 window.CEMARA.toast = function toast(message) {
+  if (window.CEMARA.ui) {
+    window.CEMARA.ui.announce(message);
+    return;
+  }
+
   const element = document.querySelector("#toast");
 
   if (!element) return;
 
   element.textContent = message;
 
-  element.classList.add("show");
+  element.classList.add("is-visible");
 
   clearTimeout(window.cemaraToastTimer);
 
   window.cemaraToastTimer = setTimeout(() => {
-    element.classList.remove("show");
+    element.classList.remove("is-visible");
   }, 2200);
 };
 
@@ -300,62 +320,84 @@ window.CEMARA.ensureProfile = async function ensureProfile(db, user) {
 
 /* =========================================================
    CONTENT FILTER - CHECK FOR INAPPROPRIATE CONTENT
+   Harus selaras dengan public.check_comment_content() di
+   schema_v3_comment_filter.sql. Cek ini hanya untuk umpan balik
+   cepat; keputusan akhir ada di trigger database.
 ========================================================= */
+
+window.CEMARA.BAD_WORDS = [
+  "kontol",
+  "bitch",
+  "fuck",
+  "damn",
+  "hell",
+  "ass",
+  "bodoh",
+  "goblok",
+  "bangsat",
+  "brengsek",
+  "setan",
+  "anjing",
+  "monyet",
+  "babi",
+  "tahi",
+  "tai",
+  "bajingan",
+  "keparat",
+  "sialan",
+  "jancok",
+  "dancok",
+  "asu",
+  "pantek",
+  "memek",
+  "pepek",
+  "peler",
+  "ngentot",
+  "jembut",
+  "lonte",
+  "pelacur",
+  "tolol",
+  "bego",
+  "dungu",
+  "kampret",
+  "celeng",
+  "shit",
+  "dick",
+  "cunt",
+  "bastard",
+  "asshole",
+  "motherfucker",
+];
+
+// Kata < 5 huruf dicocokkan utuh; kata >= 5 huruf dicocokkan sebagai awalan kata.
+// Mencegah "assalamualaikum", "hello", "pantai", "asumsi" ikut terblokir.
+window.CEMARA.BAD_WORD_PATTERN = new RegExp(
+  window.CEMARA.BAD_WORDS.map(
+    (word) => "\\b" + word + (word.length >= 5 ? "" : "\\b"),
+  ).join("|"),
+  "i",
+);
 
 window.CEMARA.checkCommentContent = function checkCommentContent(text) {
   const trimmed = String(text || "").trim();
-
-  // List of Indonesian & English inappropriate words
-  const badWords = [
-    "kontol",
-    "bitch",
-    "fuck",
-    "damn",
-    "hell",
-    "ass",
-    "bodoh",
-    "goblok",
-    "bangsat",
-    "brengsek",
-    "setan",
-    "anjing",
-    "monyet",
-    "babi",
-    "kambing",
-    "tahi",
-    "tai",
-    "omdo",
-    "nyebur",
-    "ngegas",
-    "ngancam",
-    "cebong",
-    "begundal",
-    "dalang",
-    "puppet",
-    "cacat",
-    "gila",
-    "sakit",
-    "penyakit",
-  ];
-
-  const textLower = trimmed.toLowerCase();
 
   // Check 1: Too short
   if (trimmed.length < 2) {
     return { flagged: true, reason: "Komentar terlalu pendek" };
   }
 
-  // Check 2: Excessive capitalization (>70% uppercase)
-  const upperCount = (text.match(/[A-Z]/g) || []).length;
-  if (text.length > 0 && upperCount / text.length > 0.7) {
+  // Check 2: Excessive capitalization (>70% of letters, min. 8 letters)
+  const letters = (trimmed.match(/[A-Za-z]/g) || []).length;
+  const upperCount = (trimmed.match(/[A-Z]/g) || []).length;
+  if (letters >= 8 && upperCount / letters > 0.7) {
     return {
       flagged: true,
       reason: "Komentar menggunakan huruf besar berlebihan",
     };
   }
 
-  // Check 3: Excessive symbols (4+ repetitions: !!!!, ????, etc)
-  if (/(.)\1{4,}/.test(text)) {
+  // Check 3: Excessive repeated characters (5+ in a row)
+  if (/(.)\1{4,}/.test(trimmed)) {
     return {
       flagged: true,
       reason: "Komentar menggunakan karakter berulang berlebihan",
@@ -363,16 +405,13 @@ window.CEMARA.checkCommentContent = function checkCommentContent(text) {
   }
 
   // Check 4: Banned words
-  for (const word of badWords) {
-    if (textLower.includes(word)) {
-      return {
-        flagged: true,
-        reason: "Komentar mengandung bahasa yang tidak pantas",
-      };
-    }
+  if (window.CEMARA.BAD_WORD_PATTERN.test(trimmed)) {
+    return {
+      flagged: true,
+      reason: "Komentar mengandung bahasa yang tidak pantas",
+    };
   }
 
-  // Passed all checks
   return { flagged: false, reason: "" };
 };
 
@@ -385,11 +424,18 @@ window.CEMARA.modal = function modal(id, open) {
     open = true;
   }
 
+  if (window.CEMARA.ui) {
+    if (open) window.CEMARA.ui.openModal(id);
+    else window.CEMARA.ui.closeModal(id);
+    return;
+  }
+
   const element = document.getElementById(id);
 
   if (!element) return;
 
   element.classList.toggle("open", open);
+  element.classList.toggle("is-open", open);
 
   element.setAttribute("aria-hidden", open ? "false" : "true");
 

@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="Atur rak bacaan, temukan judul baru, dan jaga ritme membaca di Sahabat Pustaka."
+    />
+    <title>Ruang Baca — Sahabat Pustaka</title>
+    <script>
+      document.documentElement.classList.add("js");
+    </script>
+    <link rel="preconnect" href="https://api.fontshare.com" />
+    <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+    <link
+      href="https://api.fontshare.com/v2/css?f[]=erode@400,500,600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="app-body">
+    <div class="app-shell">
+      <aside class="app-sidebar" aria-label="Navigasi ruang baca">
+        <div class="sidebar-header">
+          <a
+            class="wordmark app-wordmark"
+            href="index.html"
+            aria-label="Sahabat Pustaka, halaman utama"
+          >
+            <span class="wordmark-mark" aria-hidden="true">s.</span>
+            <span>Sahabat<br />Pustaka</span>
+          </a>
+          <div class="mobile-actions">
+            <a
+              class="mobile-back-link"
+              href="index.html"
+              aria-label="Kembali ke beranda"
+            >
+              <span aria-hidden="true">←</span> Beranda
+            </a>
+            <span class="profile-mark mobile-profile" aria-hidden="true"
+              >N</span
+            >
+          </div>
+        </div>
+        <p class="sidebar-label">Ruang pribadimu</p>
+        <nav class="app-nav" aria-label="Menu ruang baca">
+          <button
+            class="app-nav-link is-active"
+            type="button"
+            data-view="ringkasan"
+            aria-current="page"
+          >
+            Ringkasan
+          </button>
+          <button class="app-nav-link" type="button" data-view="jelajahi">
+            Jelajahi buku
+          </button>
+          <button class="app-nav-link" type="button" data-view="tersimpan">
+            Rak tersimpan <span class="saved-count" data-saved-count>0</span>
+          </button>
+        </nav>
+        <div class="sidebar-bottom">
+          <p>Pelan-pelan saja.<br />Satu halaman tetap berarti.</p>
+          <a href="index.html"
+            >Kembali ke beranda <span aria-hidden="true">↗</span></a
+          >
+        </div>
+      </aside>
+
+      <main class="app-main">
+        <header class="app-topbar">
+          <nav class="breadcrumb" aria-label="Navigasi rekam jejak">
+            <a href="index.html">Beranda</a>
+            <span class="breadcrumb-separator" aria-hidden="true">/</span>
+            <span aria-current="page">Ruang Baca</span>
+          </nav>
+          <div class="topbar-actions">
+            <span
+              class="profile-mark desktop-profile"
+              aria-label="Profil pembaca"
+              >N</span
+            >
+          </div>
+        </header>
+
+        <section class="app-welcome" aria-labelledby="app-title">
+          <div class="welcome-copy">
+            <h1 class="app-title" id="app-title" data-reveal>
+              Satu cerita lagi.
+            </h1>
+            <p class="app-lead" data-reveal style="--reveal-delay: 80ms">
+              Pilih bacaan berikutnya, atau lanjutkan daftar yang sudah kamu
+              simpan.
+            </p>
+          </div>
+          <div
+            class="welcome-mosaic"
+            aria-label="Arsip literasi Indonesia dan sejarah buku"
+            data-reveal
+            style="--reveal-delay: 160ms"
+          >
+            <img
+              src="assets/yogyakarta-library-and-hatta-foundation-library-daerah.jpg"
+              width="1384"
+              height="1120"
+              alt="Suasana Perpustakaan Yogyakarta pada 1953"
+              loading="lazy"
+            />
+            <img
+              src="assets/swing-into-books-book-week-november-1.jpg"
+              width="1920"
+              height="2512"
+              alt="Poster pekan buku karya Bruno Munari, 1964"
+              loading="lazy"
+            />
+            <img
+              src="assets/manuscript-book-mural-in-evolution-of-the.jpg"
+              width="1920"
+              height="1553"
+              alt="Mural tentang manuskrip karya John White Alexander, 1896"
+              loading="lazy"
+            />
+            <img
+              src="assets/lontar-manuscripts.jpg"
+              width="1920"
+              height="1440"
+              alt="Koleksi naskah lontar di Bali"
+              loading="lazy"
+            />
+          </div>
+        </section>
+
+        <section class="goal-section" data-ui aria-labelledby="goal-title">
+          <div class="goal-copy" data-reveal>
+            <h2 id="goal-title">Target minggu ini.</h2>
+            <p>
+              <strong data-goal-progress>0</strong> dari
+              <strong data-goal-target>3</strong> buku ditandai selesai
+            </p>
+          </div>
+          <div class="goal-controls" data-reveal style="--reveal-delay: 100ms">
+            <div
+              class="goal-options"
+              role="group"
+              aria-label="Pilih target buku per minggu"
+            >
+              <button type="button" data-goal="3" aria-pressed="true">
+                3 buku
+              </button>
+              <button type="button" data-goal="5" aria-pressed="false">
+                5 buku
+              </button>
+              <button type="button" data-goal="7" aria-pressed="false">
+                7 buku
+              </button>
+            </div>
+            <div
+              class="goal-track"
+              role="progressbar"
+              aria-label="Kemajuan target baca mingguan"
+              aria-valuemin="0"
+              aria-valuemax="3"
+              aria-valuenow="0"
+            >
+              <span class="goal-fill"></span>
+            </div>
+          </div>
+        </section>
+
+        <section class="library-section" aria-labelledby="library-title">
+          <div class="library-heading">
+            <div>
+              <h2 id="library-title" data-reveal>Jelajahi rak.</h2>
+            </div>
+            <label
+              class="search-field"
+              data-reveal
+              style="--reveal-delay: 80ms"
+            >
+              <span class="visually-hidden">Cari judul atau penulis</span>
+              <input
+                type="search"
+                placeholder="Cari judul atau penulis"
+                autocomplete="off"
+                data-search
+              />
+              <span class="search-hint" aria-hidden="true">Cari</span>
+            </label>
+          </div>
+          <div
+            class="filter-list"
+            role="group"
+            aria-label="Filter kategori"
+            data-reveal
+            style="--reveal-delay: 150ms"
+          >
+            <button
+              type="button"
+              class="filter-button is-selected"
+              data-filter="Semua"
+              aria-pressed="true"
+            >
+              Semua
+            </button>
+            <button
+              type="button"
+              class="filter-button"
+              data-filter="Sastra"
+              aria-pressed="false"
+            >
+              Sastra
+            </button>
+            <button
+              type="button"
+              class="filter-button"
+              data-filter="Novel"
+              aria-pressed="false"
+            >
+              Novel
+            </button>
+            <button
+              type="button"
+              class="filter-button"
+              data-filter="Sejarah"
+              aria-pressed="false"
+            >
+              Sejarah
+            </button>
+            <button
+              type="button"
+              class="filter-button"
+              data-filter="Nonfiksi"
+              aria-pressed="false"
+            >
+              Nonfiksi
+            </button>
+          </div>
+          <div class="book-list" data-book-list aria-live="polite"></div>
+          <p class="empty-state" data-empty-state hidden>
+            Tidak ada buku yang cocok. Coba kata pencarian atau kategori lain.
+          </p>
+          <p class="catalog-disclaimer">
+            Contoh judul untuk pratinjau antarmuka. Ketersediaan buku digital,
+            akun, dan sinkronisasi belum terhubung.
+          </p>
+        </section>
+
+        <footer class="app-footer">
+          <span>Sahabat Pustaka · Ruang baca milikmu.</span>
+          <details class="app-credits">
+            <summary>Kredit gambar arsip</summary>
+            <ul>
+              <li>
+                <a
+                  href="https://commons.wikimedia.org/wiki/File:Yogyakarta_Library_and_Hatta_Foundation_Library,_Daerah_Istimewa_Jogjakarta_(1953),_p879.jpg"
+                  >Perpustakaan Yogyakarta dan Yayasan Hatta, 1953</a
+                >
+                · domain publik · Wikimedia Commons.
+              </li>
+              <li>
+                <a
+                  href="https://commons.wikimedia.org/wiki/File:Swing_into_books,_Book_week,_November_1-7,_1964.jpg"
+                  >“Swing into books”, 1964</a
+                >
+                · Bruno Munari · domain publik · Wikimedia Commons.
+              </li>
+              <li>
+                <a
+                  href="https://commons.wikimedia.org/wiki/File:Manuscript_Book_mural_in_Evolution_of_the_Book_series,_John_W._Alexander._Library_of_Congress_Thomas_Jefferson_Building,_Washington,_D.C._LCCN2005675759.jpg"
+                  >Mural “Manuscript Book”, 1896</a
+                >
+                · John White Alexander · domain publik · Wikimedia Commons.
+              </li>
+              <li>
+                <a
+                  href="https://commons.wikimedia.org/wiki/File:Lontar_manuscripts.jpg"
+                  >“Lontar manuscripts”</a
+                >
+                · Carma citrawati · CC BY-SA 4.0 · Wikimedia Commons.
+              </li>
+            </ul>
+          </details>
+        </footer>
+      </main>
+    </div>
+    <div class="toast" role="status" aria-live="polite" data-toast></div>
+    <script src="site.js" defer></script>
+    <script src="app.js" defer></script>
+  </body>
+</html>

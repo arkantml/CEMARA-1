@@ -1,0 +1,1219 @@
+{
+ "url": "app.html",
+ "at": "2026-10-24T06:49:55.485Z",
+ "allow": [],
+ "viewports": [
+  {
+   "width": 1440,
+   "height": 900,
+   "load": "load",
+   "screens": 10,
+   "filled": [
+    0.94,
+    0.94,
+    0.94,
+    0.94,
+    0.96,
+    0.94,
+    0.94,
+    0.76,
+    0.56,
+    0.36
+   ],
+   "motion": {
+    "elements": 26,
+    "css": 12,
+    "transitions": 14,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "page": {
+     "height": 8820,
+     "screens": 9.8,
+     "words": 213,
+     "img": 4,
+     "video": 0,
+     "canvas": 0,
+     "svg": 0,
+     "sections": 4,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 4,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [
+      "yogyakarta-library-and-hatta-foundation-library-",
+      "swing-into-books-book-week-november-1.jpg",
+      "manuscript-book-mural-in-evolution-of-the.jpg",
+      "lontar-manuscripts.jpg"
+     ],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [
+      "☾",
+      "📖",
+      "☂",
+      "✦"
+     ]
+    },
+    "hero": null,
+    "h1": {
+     "text": "Arsip karya para siswa.",
+     "words": 4,
+     "lines": 2,
+     "size": 100.8,
+     "font": "Erode"
+    },
+    "headings": [
+     {
+      "text": "Arsip karya para siswa.",
+      "words": 4,
+      "chars": 23,
+      "lines": 2,
+      "size": 100.8,
+      "vw": 7,
+      "font": "Erode",
+      "weight": 500,
+      "tracking": -0.05,
+      "leading": 0.93,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.46,
+      "top": 3366,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "Temukan karya favoritmu.",
+      "words": 3,
+      "chars": 24,
+      "lines": 2,
+      "size": 70.4,
+      "vw": 4.9,
+      "font": "Erode",
+      "weight": 500,
+      "tracking": -0.04,
+      "leading": 0.98,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.4,
+      "top": 7163,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "CEMARA",
+      "words": 1,
+      "chars": 6,
+      "lines": 1,
+      "size": 32,
+      "vw": 2.2,
+      "font": "Erode",
+      "weight": 500,
+      "tracking": 0,
+      "leading": 1.55,
+      "upper": true,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.11,
+      "top": 8657,
+      "tag": "strong",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 3,
+     "maxLines": 2,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": 3,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Erode",
+       "share": 0.57,
+       "mono": false
+      },
+      {
+       "family": "DM Sans",
+       "share": 0.43,
+       "mono": false
+      }
+     ],
+     "familyCount": 2,
+     "sizes": [
+      12,
+      14,
+      15,
+      16,
+      17,
+      18,
+      20,
+      22,
+      24,
+      25,
+      32,
+      70,
+      101
+     ],
+     "sizeCount": 13,
+     "notLoaded": [],
+     "body": {
+      "font": "Erode",
+      "size": 17,
+      "leading": 1.55,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 6.8
+     },
+     "measureChars": 56,
+     "max": {
+      "size": 100.8,
+      "vw": 7,
+      "font": "Erode",
+      "text": "Arsip karya"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0.01,
+     "centerShare": 0.12,
+     "smallText": 1
+    },
+    "eyebrows": [],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#f7f5eb",
+     "bodyBgHsl": {
+      "h": 50,
+      "s": 0.43,
+      "l": 0.95
+     },
+     "dark": false,
+     "sectionBgs": [
+      {
+       "color": "#f0e8cb",
+       "top": 88,
+       "hsl": {
+        "h": 47,
+        "s": 0.55,
+        "l": 0.87
+       }
+      },
+      {
+       "color": "#2f855a",
+       "top": 189,
+       "hsl": {
+        "h": 150,
+        "s": 0.48,
+        "l": 0.35
+       }
+      },
+      {
+       "color": "#f7f5eb",
+       "top": 7051,
+       "hsl": {
+        "h": 50,
+        "s": 0.43,
+        "l": 0.95
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#1a365d",
+       "share": 0.47
+      },
+      {
+       "color": "#f7f5eb",
+       "share": 0.3
+      },
+      {
+       "color": "#36506f",
+       "share": 0.22
+      },
+      {
+       "color": "#c53030",
+       "share": 0.01
+      },
+      {
+       "color": "#2f855a",
+       "share": 0
+      }
+     ],
+     "button": {
+      "bg": "#f0e8cb",
+      "hsl": {
+       "h": 47,
+       "s": 0.55,
+       "l": 0.87
+      },
+      "fg": "#1a365d"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 6,
+     "inHero": 0,
+     "radius": 0,
+     "height": 45,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": []
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 0,
+     "hairlineSamples": [],
+     "outlinedBoxes": 0,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 0,
+     "boxRadius": 0,
+     "squareMedia": 4,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": [
+      {
+       "count": 4,
+       "iconTopped": false,
+       "rounded": false,
+       "top": 7494
+      }
+     ]
+    },
+    "heroMedia": [
+     {
+      "type": "img",
+      "ratio": 0.18
+     }
+    ],
+    "nav": {
+     "links": 6,
+     "fixed": true,
+     "height": 88,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": [
+     "erode",
+     "dm sans"
+    ]
+   },
+   "consoleErrors": []
+  },
+  {
+   "width": 768,
+   "height": 1024,
+   "load": "load",
+   "screens": 9,
+   "filled": [
+    0.95,
+    0.95,
+    0.95,
+    0.95,
+    0.95,
+    0.95,
+    0.73,
+    0.74,
+    0.78
+   ],
+   "motion": {
+    "elements": 26,
+    "css": 12,
+    "transitions": 14,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "page": {
+     "height": 8515,
+     "screens": 8.3,
+     "words": 199,
+     "img": 4,
+     "video": 0,
+     "canvas": 0,
+     "svg": 0,
+     "sections": 4,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 4,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [
+      "yogyakarta-library-and-hatta-foundation-library-",
+      "swing-into-books-book-week-november-1.jpg",
+      "manuscript-book-mural-in-evolution-of-the.jpg",
+      "lontar-manuscripts.jpg"
+     ],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [
+      "☾",
+      "📖",
+      "☂",
+      "✦"
+     ]
+    },
+    "hero": null,
+    "h1": {
+     "text": "Arsip karya para siswa.",
+     "words": 4,
+     "lines": 2,
+     "size": 53.8,
+     "font": "Erode"
+    },
+    "headings": [
+     {
+      "text": "Arsip karya para siswa.",
+      "words": 4,
+      "chars": 23,
+      "lines": 2,
+      "size": 53.8,
+      "vw": 7,
+      "font": "Erode",
+      "weight": 500,
+      "tracking": -0.05,
+      "leading": 0.93,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.46,
+      "top": 3304,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "Temukan karya favoritmu.",
+      "words": 3,
+      "chars": 24,
+      "lines": 2,
+      "size": 43.2,
+      "vw": 5.6,
+      "font": "Erode",
+      "weight": 500,
+      "tracking": -0.04,
+      "leading": 0.98,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.46,
+      "top": 6976,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "CEMARA",
+      "words": 1,
+      "chars": 6,
+      "lines": 1,
+      "size": 32,
+      "vw": 4.2,
+      "font": "Erode",
+      "weight": 500,
+      "tracking": 0,
+      "leading": 1.55,
+      "upper": true,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.16,
+      "top": 8351,
+      "tag": "strong",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 3,
+     "maxLines": 2,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": 3,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Erode",
+       "share": 0.61,
+       "mono": false
+      },
+      {
+       "family": "DM Sans",
+       "share": 0.39,
+       "mono": false
+      }
+     ],
+     "familyCount": 2,
+     "sizes": [
+      14,
+      15,
+      16,
+      17,
+      18,
+      22,
+      24,
+      25,
+      32,
+      43,
+      54
+     ],
+     "sizeCount": 11,
+     "notLoaded": [],
+     "body": {
+      "font": "Erode",
+      "size": 16.8,
+      "leading": 1.5,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 9.9
+     },
+     "measureChars": 42,
+     "max": {
+      "size": 53.8,
+      "vw": 7,
+      "font": "Erode",
+      "text": "Arsip karya"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0.01,
+     "centerShare": 0.13,
+     "smallText": 0
+    },
+    "eyebrows": [],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#f7f5eb",
+     "bodyBgHsl": {
+      "h": 50,
+      "s": 0.43,
+      "l": 0.95
+     },
+     "dark": false,
+     "sectionBgs": [
+      {
+       "color": "#f0e8cb",
+       "top": 80,
+       "hsl": {
+        "h": 47,
+        "s": 0.55,
+        "l": 0.87
+       }
+      },
+      {
+       "color": "#2f855a",
+       "top": 136,
+       "hsl": {
+        "h": 150,
+        "s": 0.48,
+        "l": 0.35
+       }
+      },
+      {
+       "color": "#f7f5eb",
+       "top": 6912,
+       "hsl": {
+        "h": 50,
+        "s": 0.43,
+        "l": 0.95
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#1a365d",
+       "share": 0.48
+      },
+      {
+       "color": "#f7f5eb",
+       "share": 0.32
+      },
+      {
+       "color": "#36506f",
+       "share": 0.2
+      },
+      {
+       "color": "#2f855a",
+       "share": 0
+      }
+     ],
+     "button": {
+      "bg": "#f0e8cb",
+      "hsl": {
+       "h": 47,
+       "s": 0.55,
+       "l": 0.87
+      },
+      "fg": "#1a365d"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 6,
+     "inHero": 0,
+     "radius": 0,
+     "height": 45,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": []
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 0,
+     "hairlineSamples": [],
+     "outlinedBoxes": 0,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 0,
+     "boxRadius": 0,
+     "squareMedia": 4,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": [
+      {
+       "count": 4,
+       "iconTopped": false,
+       "rounded": false,
+       "top": 7349
+      }
+     ]
+    },
+    "heroMedia": [
+     {
+      "type": "img",
+      "ratio": 0.22
+     }
+    ],
+    "nav": {
+     "links": 1,
+     "fixed": true,
+     "height": 80,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": [
+     "erode",
+     "dm sans"
+    ]
+   },
+   "consoleErrors": []
+  },
+  {
+   "width": 390,
+   "height": 844,
+   "load": "load",
+   "screens": 12,
+   "filled": [
+    0.96,
+    0.96,
+    0.96,
+    0.96,
+    0.96,
+    0.96,
+    0.96,
+    0.96,
+    0.75,
+    0.88,
+    0.85,
+    0.87
+   ],
+   "motion": {
+    "elements": 26,
+    "css": 12,
+    "transitions": 14,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "page": {
+     "height": 9753,
+     "screens": 11.6,
+     "words": 199,
+     "img": 4,
+     "video": 0,
+     "canvas": 0,
+     "svg": 0,
+     "sections": 4,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 4,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [
+      "yogyakarta-library-and-hatta-foundation-library-",
+      "swing-into-books-book-week-november-1.jpg",
+      "manuscript-book-mural-in-evolution-of-the.jpg",
+      "lontar-manuscripts.jpg"
+     ],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [
+      "☾",
+      "📖",
+      "☂",
+      "✦"
+     ]
+    },
+    "hero": {
+     "text": "Arsip karya para siswa.",
+     "words": 4,
+     "chars": 23,
+     "lines": 2,
+     "size": 49.6,
+     "vw": 12.7,
+     "font": "Erode",
+     "weight": 500,
+     "tracking": -0.05,
+     "leading": 0.93,
+     "upper": false,
+     "italic": false,
+     "mono": false,
+     "align": "left",
+     "position": "center",
+     "widthRatio": 0.83,
+     "top": 127,
+     "tag": "h1",
+     "kind": "heading"
+    },
+    "h1": {
+     "text": "Arsip karya para siswa.",
+     "words": 4,
+     "lines": 2,
+     "size": 49.6,
+     "font": "Erode"
+    },
+    "headings": [
+     {
+      "text": "Arsip karya para siswa.",
+      "words": 4,
+      "chars": 23,
+      "lines": 2,
+      "size": 49.6,
+      "vw": 12.7,
+      "font": "Erode",
+      "weight": 500,
+      "tracking": -0.05,
+      "leading": 0.93,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.83,
+      "top": 127,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "Temukan karya favoritmu.",
+      "words": 3,
+      "chars": 24,
+      "lines": 2,
+      "size": 40,
+      "vw": 10.3,
+      "font": "Erode",
+      "weight": 500,
+      "tracking": -0.04,
+      "leading": 0.98,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.84,
+      "top": 7327,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "⌕",
+      "words": 1,
+      "chars": 1,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Erode",
+      "weight": 400,
+      "tracking": 0,
+      "leading": 1.55,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.92,
+      "top": 7517,
+      "tag": "label",
+      "kind": "heading"
+     },
+     {
+      "text": "Coming soon",
+      "words": 2,
+      "chars": 11,
+      "lines": 1,
+      "size": 24.8,
+      "vw": 6.4,
+      "font": "Erode",
+      "weight": 500,
+      "tracking": 0,
+      "leading": 1.05,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.82,
+      "top": 7981,
+      "tag": "h3",
+      "kind": "heading"
+     },
+     {
+      "text": "Hujan di Halaman Sekolah",
+      "words": 4,
+      "chars": 24,
+      "lines": 1,
+      "size": 24.8,
+      "vw": 6.4,
+      "font": "Erode",
+      "weight": 500,
+      "tracking": 0,
+      "leading": 1.05,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.82,
+      "top": 8394,
+      "tag": "h3",
+      "kind": "heading"
+     },
+     {
+      "text": "Membaca untuk Menemukan",
+      "words": 3,
+      "chars": 23,
+      "lines": 1,
+      "size": 24.8,
+      "vw": 6.4,
+      "font": "Erode",
+      "weight": 500,
+      "tracking": 0,
+      "leading": 1.05,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.82,
+      "top": 8857,
+      "tag": "h3",
+      "kind": "heading"
+     },
+     {
+      "text": "Di Ujung Senja",
+      "words": 3,
+      "chars": 14,
+      "lines": 1,
+      "size": 24.8,
+      "vw": 6.4,
+      "font": "Erode",
+      "weight": 500,
+      "tracking": 0,
+      "leading": 1.05,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.82,
+      "top": 9296,
+      "tag": "h3",
+      "kind": "heading"
+     },
+     {
+      "text": "CEMARA",
+      "words": 1,
+      "chars": 6,
+      "lines": 1,
+      "size": 32,
+      "vw": 8.2,
+      "font": "Erode",
+      "weight": 500,
+      "tracking": 0,
+      "leading": 1.55,
+      "upper": true,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.73,
+      "top": 9543,
+      "tag": "strong",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 8,
+     "maxLines": 2,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": 3,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Erode",
+       "share": 0.61,
+       "mono": false
+      },
+      {
+       "family": "DM Sans",
+       "share": 0.39,
+       "mono": false
+      }
+     ],
+     "familyCount": 2,
+     "sizes": [
+      13,
+      14,
+      15,
+      16,
+      17,
+      19,
+      22,
+      24,
+      25,
+      32,
+      40,
+      50
+     ],
+     "sizeCount": 12,
+     "notLoaded": [],
+     "body": {
+      "font": "Erode",
+      "size": 16,
+      "leading": 1.5,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 11.1
+     },
+     "measureChars": 43,
+     "max": {
+      "size": 49.6,
+      "vw": 12.7,
+      "font": "Erode",
+      "text": "Arsip karya"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0.01,
+     "centerShare": 0.13,
+     "smallText": 0
+    },
+    "eyebrows": [],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#f7f5eb",
+     "bodyBgHsl": {
+      "h": 50,
+      "s": 0.43,
+      "l": 0.95
+     },
+     "dark": false,
+     "sectionBgs": [
+      {
+       "color": "#f0e8cb",
+       "top": 76,
+       "hsl": {
+        "h": 47,
+        "s": 0.55,
+        "l": 0.87
+       }
+      },
+      {
+       "color": "#2f855a",
+       "top": 513,
+       "hsl": {
+        "h": 150,
+        "s": 0.48,
+        "l": 0.35
+       }
+      },
+      {
+       "color": "#f7f5eb",
+       "top": 7271,
+       "hsl": {
+        "h": 50,
+        "s": 0.43,
+        "l": 0.95
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#1a365d",
+       "share": 0.48
+      },
+      {
+       "color": "#f7f5eb",
+       "share": 0.32
+      },
+      {
+       "color": "#36506f",
+       "share": 0.2
+      },
+      {
+       "color": "#2f855a",
+       "share": 0
+      }
+     ],
+     "button": {
+      "bg": "#f0e8cb",
+      "hsl": {
+       "h": 47,
+       "s": 0.55,
+       "l": 0.87
+      },
+      "fg": "#1a365d"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 6,
+     "inHero": 1,
+     "radius": 0,
+     "height": 44,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Lihat koleksi ↘"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 0,
+     "hairlineSamples": [],
+     "outlinedBoxes": 0,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 0,
+     "boxRadius": 0,
+     "squareMedia": 4,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [
+     {
+      "type": "img",
+      "ratio": 0.29
+     }
+    ],
+    "nav": {
+     "links": 1,
+     "fixed": true,
+     "height": 76,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": [
+     "erode",
+     "dm sans"
+    ]
+   },
+   "consoleErrors": []
+  }
+ ],
+ "findings": [
+  {
+   "level": "FAIL",
+   "id": "emoji",
+   "width": 1440,
+   "message": "Emoji in the page: ☾ 📖 ☂ ✦",
+   "fix": "Remove. Use words or real imagery.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "palette-cream",
+   "width": 1440,
+   "message": "Yellow-cream background (page background #f7f5eb, section #f7f5eb, text #f7f5eb).",
+   "fix": "Use the drawn palette. If you want warmth, take a low-chroma stone or bone, not a yellow cream.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "size-count",
+   "width": 1440,
+   "message": "13 different font sizes (12, 14, 15, 16, 17, 18, 20, 22, 24, 25, 32, 70, 101).",
+   "fix": "A page needs about five: display, heading, lead, body, small.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "grey-body",
+   "width": 1440,
+   "message": "The running text is a soft grey on its ground (6.8:1).",
+   "fix": "Set body copy in the full ink (7:1 or more). Keep the muted ink for secondary notes; pages read thin and unfinished when everything is grey."
+  },
+  {
+   "level": "WARN",
+   "id": "first-action",
+   "width": 1440,
+   "message": "No visible button in the first screen.",
+   "fix": "Give the one primary action a real button in the first screen (a filled or solid-bordered control, 44px or taller), not only a link in the navigation.",
+   "alsoAt": [
+    768
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "no-footage",
+   "width": 1440,
+   "message": "No video anywhere on the page.",
+   "fix": "Look for one honest clip with scripts/assets.mjs --video (the place, the material, the process) and use it as a muted loop with a poster frame. Defend its absence only if no clip fits the subject."
+  },
+  {
+   "level": "WARN",
+   "id": "small-text",
+   "width": 1440,
+   "message": "1 text block(s) under 13px.",
+   "fix": "Nothing meant to be read goes below 13px."
+  },
+  {
+   "level": "WARN",
+   "id": "no-hero",
+   "width": 1440,
+   "message": "No headline found in the first viewport.",
+   "fix": "The first screen needs a clear focal statement or image.",
+   "alsoAt": [
+    768
+   ]
+  }
+ ],
+ "images": [
+  {
+   "viewport": "desktop",
+   "width": 1440,
+   "fold": "D:\\sahabat pustaka\\New folder\\.taste-skill\\inspect\\desktop-fold.jpg",
+   "pages": [
+    "D:\\sahabat pustaka\\New folder\\.taste-skill\\inspect\\desktop-page-01.jpg",
+    "D:\\sahabat pustaka\\New folder\\.taste-skill\\inspect\\desktop-page-02.jpg",
+    "D:\\sahabat pustaka\\New folder\\.taste-skill\\inspect\\desktop-page-03.jpg"
+   ]
+  },
+  {
+   "viewport": "tablet",
+   "width": 768,
+   "fold": "D:\\sahabat pustaka\\New folder\\.taste-skill\\inspect\\tablet-fold.jpg",
+   "pages": [
+    "D:\\sahabat pustaka\\New folder\\.taste-skill\\inspect\\tablet-page-01.jpg",
+    "D:\\sahabat pustaka\\New folder\\.taste-skill\\inspect\\tablet-page-02.jpg"
+   ]
+  },
+  {
+   "viewport": "mobile",
+   "width": 390,
+   "fold": "D:\\sahabat pustaka\\New folder\\.taste-skill\\inspect\\mobile-fold.jpg",
+   "pages": [
+    "D:\\sahabat pustaka\\New folder\\.taste-skill\\inspect\\mobile-page-01.jpg",
+    "D:\\sahabat pustaka\\New folder\\.taste-skill\\inspect\\mobile-page-02.jpg"
+   ]
+  }
+ ]
+}

@@ -6,15 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="CEMARA — Portal Pengelola & Ruang Karya Siswa"
+      content="CEMARA: Portal Pengelola dan Ruang Karya Siswa"
     />
-    <title>Portal Pengelola — CEMARA</title>
+    <title>Portal Pengelola | CEMARA</title>
 
-    <!-- Google Fonts: Playfair Display + DM Sans -->
+    <link rel="preconnect" href="https://api.fontshare.com" />
+    <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+    <link
+      href="https://api.fontshare.com/v2/css?f[]=erode@400,500,600&display=swap"
+      rel="stylesheet"
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
 
@@ -27,26 +32,28 @@
           extend: {
             colors: {
               cemara: {
-                DEFAULT: "#2e7d32",
-                dark: "#1b4d20",
-                deep: "#143818",
-                light: "#81c784",
-                soft: "#eef5ec",
-                surface: "#f7f9f3",
-                gold: "#d4a72c",
+                DEFAULT: "#1a365d",
+                dark: "#142b4b",
+                deep: "#1a365d",
+                light: "#e9d8a6",
+                soft: "#e9d8a6",
+                surface: "#f7f5eb",
+                gold: "#9a7b31",
+                red: "#c53030",
+                green: "#2f855a",
               },
               paper: {
-                50: "#fdfbf7",
-                100: "#f7f5ee",
-                200: "#eee9dc",
-                300: "#ddd4bf",
-                800: "#2c332d",
-                900: "#1b211d",
+                50: "#f7f5eb",
+                100: "#f0e8cb",
+                200: "#e9d8a6",
+                300: "#d8c58c",
+                800: "#24456d",
+                900: "#1a365d",
               },
             },
             fontFamily: {
               sans: ['"DM Sans"', "sans-serif"],
-              serif: ['"Playfair Display"', "Georgia", "serif"],
+              serif: ['"Erode"', "Georgia", "serif"],
             },
           },
         },
@@ -63,18 +70,30 @@
 
     <style>
       :root {
-        --bg: #f7f9f3;
-        --surface: #ffffff;
-        --border: rgba(38, 51, 42, 0.12);
-        --text: #26332a;
-        --muted: #617065;
+        --bg: #f7f5eb;
+        --surface: #fffdf6;
+        --border: rgba(26, 54, 93, 0.16);
+        --text: #1a365d;
+        --muted: #36506f;
+        --primary: #1a365d;
+        --accent: #c53030;
+        --gold: #9a7b31;
+        --green: #2f855a;
       }
       [data-theme="dark"] {
-        --bg: #141b16;
-        --surface: #1c251f;
-        --border: rgba(255, 255, 255, 0.1);
-        --text: #f0f4ee;
-        --muted: #95a598;
+        --bg: #142b4b;
+        --surface: #1a365d;
+        --border: rgba(233, 216, 166, 0.22);
+        --text: #f7f5eb;
+        --muted: #e9d8a6;
+        --primary: #e9d8a6;
+        --accent: #f07070;
+        --gold: #e9d8a6;
+        --green: #65b687;
+      }
+      [data-theme="dark"] .text-cemara,
+      [data-theme="dark"] .text-cemara-dark {
+        color: #e9d8a6 !important;
       }
       body {
         background-color: var(--bg);
@@ -120,7 +139,7 @@
         width: 18px;
         height: 18px;
         border: 2px solid var(--border);
-        border-top-color: var(--primary, #2e7d32);
+        border-top-color: var(--accent, #c53030);
         border-radius: 50%;
         animation: dashboard-spin 0.8s linear infinite;
       }
@@ -144,12 +163,12 @@
 
       header {
         border-bottom-color: var(--border) !important;
-        box-shadow: 0 1px 0 rgba(38, 51, 42, 0.03);
+        box-shadow: 0 1px 0 rgba(26, 54, 93, 0.03);
       }
 
       .classic-card {
         border-radius: 18px !important;
-        box-shadow: 0 8px 24px rgba(38, 51, 42, 0.045) !important;
+        box-shadow: 0 8px 24px rgba(26, 54, 93, 0.045) !important;
       }
 
       aside > .classic-card:first-child {
@@ -176,7 +195,7 @@
       }
 
       .nav-tab.bg-cemara {
-        box-shadow: 0 4px 10px rgba(46, 125, 50, 0.16);
+        box-shadow: 0 4px 10px rgba(26, 54, 93, 0.16);
       }
 
       main > div:first-child {
@@ -200,7 +219,7 @@
       input:focus,
       textarea:focus,
       select:focus {
-        box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.12);
+        box-shadow: 0 0 0 3px rgba(154, 123, 49, 0.2);
       }
 
       table thead tr {
@@ -241,14 +260,14 @@
 
       .chart-line-work,
       .chart-dot-work {
-        stroke: #2e7d32;
-        fill: #2e7d32;
+        stroke: #1a365d;
+        fill: #1a365d;
       }
 
       .chart-line-activity,
       .chart-dot-activity {
-        stroke: #d4a72c;
-        fill: #d4a72c;
+        stroke: #9a7b31;
+        fill: #9a7b31;
       }
 
       .chart-line-work,
@@ -263,14 +282,14 @@
       }
 
       #profilePanel.writer-achiever-panel {
-        border-color: var(--cemara-gold, #d4a72c) !important;
-        box-shadow: 0 10px 30px rgba(212, 167, 44, 0.18) !important;
+        border-color: var(--gold, #9a7b31) !important;
+        box-shadow: 0 10px 30px rgba(154, 123, 49, 0.18) !important;
       }
 
       #profilePanel.writer-achiever-panel::before {
         content: "★ Writer achievement";
         display: block;
-        color: #a87900;
+        color: var(--gold, #9a7b31);
         font-size: 11px;
         font-weight: 700;
         letter-spacing: 0.08em;
@@ -925,7 +944,7 @@
                   <tr
                     class="border-b border-black/10 dark:border-white/10 text-xs font-serif text-stone-500 uppercase tracking-wider"
                   >
-                    <th class="pb-3 font-semibold">Simbol</th>
+                    <th class="pb-3 font-semibold text-center">Sampul</th>
                     <th class="pb-3 font-semibold">Judul Naskah</th>
                     <th class="pb-3 font-semibold">Penulis</th>
                     <th class="pb-3 font-semibold">Kategori</th>
@@ -1004,7 +1023,7 @@
                 </div>
               </div>
 
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="grid grid-cols-1 gap-4">
                 <div>
                   <label
                     class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5"
@@ -1024,19 +1043,6 @@
                     <option value="Lainnya">Lainnya</option>
                   </select>
                 </div>
-                <div>
-                  <label
-                    class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5"
-                    >Ikon / Simbol Sampul</label
-                  >
-                  <input
-                    id="upSymbol"
-                    type="text"
-                    maxlength="4"
-                    value="✦"
-                    class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara"
-                  />
-                </div>
               </div>
 
               <div>
@@ -1053,38 +1059,88 @@
                 ></textarea>
               </div>
 
-              <div>
+              <fieldset class="space-y-2">
+                <legend
+                  class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300"
+                >
+                  Jenis Unggahan *
+                </legend>
+                <div class="flex flex-wrap gap-4 text-sm">
+                  <label class="inline-flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="upSubmissionType"
+                      value="text"
+                      checked
+                      class="accent-cemara"
+                    />
+                    Teks langsung
+                  </label>
+                  <label class="inline-flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="upSubmissionType"
+                      value="drive"
+                      class="accent-cemara"
+                    />
+                    Link Google Drive
+                  </label>
+                </div>
+              </fieldset>
+
+              <div id="upTextField">
                 <label
+                  for="upContent"
                   class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5"
-                  >Naskah Teks (Opsional bila komik murni)</label
+                  >Naskah Teks *</label
                 >
                 <textarea
                   id="upContent"
                   rows="6"
+                  required
                   placeholder="Ketik atau tempelkan naskah teks karya di sini..."
                   class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara font-serif"
                 ></textarea>
+              </div>
+
+              <div id="upDriveField" class="hidden">
+                <label
+                  for="upDriveUrl"
+                  class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5"
+                  >Link Google Drive / Docs *</label
+                >
+                <input
+                  id="upDriveUrl"
+                  type="url"
+                  disabled
+                  placeholder="https://drive.google.com/file/d/..."
+                  class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara"
+                />
+                <p class="mt-1.5 text-xs text-stone-500 dark:text-stone-400">
+                  Pastikan akses tautan Drive diatur agar dapat dibuka oleh pembaca.
+                </p>
               </div>
 
               <div
                 class="p-4 rounded-2xl bg-cemara-soft/60 dark:bg-cemara/10 border border-cemara/20 space-y-2"
               >
                 <label
+                  for="upCover"
                   class="block text-xs font-serif font-bold text-cemara-dark dark:text-cemara-light"
                 >
-                  Berkas Gambar / Halaman Komik (Wajib jika kategori Komik)
+                  Sampul Karya (opsional, satu gambar, maks. 5MB)
                 </label>
                 <input
-                  id="upFiles"
+                  id="upCover"
                   type="file"
-                  accept="image/*"
-                  multiple
+                  accept="image/jpeg,image/png,image/webp,image/gif"
                   class="block w-full text-xs text-stone-600 dark:text-stone-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-cemara file:text-white hover:file:bg-cemara-dark cursor-pointer"
                 />
-                <div
-                  id="upFilesPreview"
-                  class="flex flex-wrap gap-2 pt-2"
-                ></div>
+                <p class="text-[11px] text-stone-500 dark:text-stone-400">
+                  Gambar ini hanya dipakai sebagai sampul di kartu karya, bukan
+                  bagian dari isi naskah.
+                </p>
+                <div id="upCoverPreview" class="pt-2"></div>
               </div>
 
               <button
