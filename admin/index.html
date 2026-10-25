@@ -1388,34 +1388,6 @@
               </button>
             </form>
 
-            <form id="changePasswordForm" class="space-y-4 pt-4 border-t border-black/5 dark:border-white/5">
-              <div>
-                <h3 class="font-serif font-bold text-base text-stone-900 dark:text-stone-100">Ubah Sandi</h3>
-                <p class="text-[11px] text-stone-500 dark:text-stone-400 mt-1">Gunakan sandi baru yang aman agar akun tetap terlindungi.</p>
-              </div>
-
-              <div>
-                <label class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5">Sandi Saat Ini *</label>
-                <input id="currentPassword" type="password" required minlength="6" placeholder="Masukkan sandi saat ini" class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara" autocomplete="current-password" />
-              </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5">Sandi Baru *</label>
-                  <input id="newPassword" type="password" required minlength="6" placeholder="Minimal 6 karakter" class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara" autocomplete="new-password" />
-                </div>
-                <div>
-                  <label class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5">Konfirmasi Sandi Baru *</label>
-                  <input id="confirmNewPassword" type="password" required minlength="6" placeholder="Ulangi sandi baru" class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara" autocomplete="new-password" />
-                </div>
-              </div>
-
-              <button id="passwordSaveBtn" type="submit" class="w-full py-3 px-6 rounded-2xl bg-stone-900 hover:bg-stone-700 dark:bg-stone-100 dark:hover:bg-stone-200 text-white dark:text-stone-900 font-bold text-sm flex items-center justify-center gap-2 shadow transition-all">
-                <i data-lucide="shield-check" class="w-4 h-4"></i>
-                <span>Ubah Sandi</span>
-              </button>
-            </form>
-
             <div
               class="grid grid-cols-2 gap-3 pt-4 border-t border-black/5 dark:border-white/5"
             >
@@ -1469,67 +1441,6 @@
           </div>
         </section>
       </main>
-    </div>
-
-    <div id="editWorkModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center bg-black/45 p-4">
-      <div class="w-full max-w-2xl rounded-[28px] bg-white dark:bg-paper-900 border border-black/10 dark:border-white/10 shadow-2xl overflow-hidden">
-        <div class="flex items-center justify-between border-b border-black/5 dark:border-white/10 px-5 py-4">
-          <div>
-            <div class="text-[10px] font-bold uppercase tracking-widest text-cemara">Edit Karya Tulis</div>
-            <h3 class="font-serif font-bold text-lg text-stone-900 dark:text-stone-100">Perbarui Detail Naskah</h3>
-          </div>
-          <button type="button" onclick="closeEditWorkModal()" class="w-9 h-9 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors">✕</button>
-        </div>
-
-        <form id="editWorkForm" class="space-y-4 p-5">
-          <input id="editWorkId" type="hidden" />
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5">Judul Karya *</label>
-              <input id="editWorkTitle" type="text" required class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara" />
-            </div>
-            <div>
-              <label class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5">Kategori *</label>
-              <select id="editWorkCategory" required class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara">
-                <option value="Cerpen">Cerpen</option>
-                <option value="Puisi">Puisi</option>
-                <option value="Esai">Esai</option>
-                <option value="Seni">Seni</option>
-                <option value="Komik">Komik</option>
-                <option value="Artikel">Artikel</option>
-                <option value="Lainnya">Lainnya</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5">Ikon Sampul</label>
-              <input id="editWorkSymbol" type="text" maxlength="4" value="✦" class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara" />
-            </div>
-            <div>
-              <label class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5">Tulisan Penulis</label>
-              <input id="editWorkAuthor" type="text" readonly class="w-full bg-stone-100 dark:bg-stone-800/40 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm text-stone-500 cursor-not-allowed" />
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5">Sinopsis / Deskripsi *</label>
-            <textarea id="editWorkDescription" rows="2" required class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara"></textarea>
-          </div>
-
-          <div>
-            <label class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5">Naskah Teks</label>
-            <textarea id="editWorkContent" rows="7" class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara"></textarea>
-          </div>
-
-          <div class="flex justify-end gap-3 pt-2">
-            <button type="button" onclick="closeEditWorkModal()" class="px-4 py-2.5 rounded-2xl bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 font-semibold text-sm hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors">Batal</button>
-            <button id="editWorkSubmitBtn" type="submit" class="px-5 py-2.5 rounded-2xl bg-cemara hover:bg-cemara-dark text-white font-bold text-sm shadow transition-all">Simpan Perubahan</button>
-          </div>
-        </form>
-      </div>
     </div>
 
     <!-- Mobile Bottom Navigation (Visible only on small screens) -->

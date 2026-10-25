@@ -754,8 +754,8 @@ function showError(message) {
       ${esc(message)}
     </h3>
 
-    <a href="index.html">
-      Kembali ke CEMARA
+    <a href="app.html">
+      Kembali ke Galeri Karya
     </a>
 
   `;

@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="data:," />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="CEMARA — Ruang Eksplorasi Karya Siswa. Jelajahi cerpen, puisi, esai, seni, komik, dan artikel literasi karya siswa."
+    />
+    <meta name="theme-color" content="#2E7D32" />
+
+    <title>Koleksi Karya — CEMARA</title>
+
+    <!-- FONT -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- TAILWIND CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: ["class", '[data-theme="dark"]'],
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                50: "#f0fdf4",
+                100: "#dcfce7",
+                200: "#bbf7d0",
+                300: "#86efac",
+                400: "#4ade80",
+                500: "#22c55e",
+                600: "#16a34a",
+                700: "#15803d",
+                800: "#2e7d32",
+                900: "#14532d",
+              },
+            },
+            fontFamily: {
+              sans: ['"DM Sans"', "sans-serif"],
+              serif: ['"Playfair Display"', "serif"],
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles.css" />
+
+    <!-- SUPABASE & SHARED -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="shared.js"></script>
+  </head>
+
+  <body
+    class="m-0 bg-[var(--bg)] text-[var(--text)] font-sans leading-relaxed transition-colors duration-300"
+  >
+    <!-- =====================================================
+       TOAST
+    ====================================================== -->
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <!-- =====================================================
+       HEADER
+    ====================================================== -->
+    <header
+      class="site-header sticky top-0 z-50 flex items-center justify-between gap-7 px-[5.8%] py-4 border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--surface)_91%,transparent)] backdrop-blur-2xl"
+    >
+      <a
+        class="brand flex min-w-0 items-center gap-3"
+        href="index.html"
+        aria-label="CEMARA Beranda"
+      >
+        <span
+          class="brand-mark grid h-11 w-11 shrink-0 place-items-center rounded-full border-2 border-[var(--primary)] font-serif text-[23px] font-bold text-[var(--primary)]"
+        >
+          C
+        </span>
+        <span>
+          <strong>CEMARA</strong>
+          <small>Cendekia Media Apresiasi dan Ruang Karya</small>
+        </span>
+      </a>
+
+      <nav
+        id="mainNav"
+        class="main-nav items-center gap-7 text-sm font-semibold"
+        aria-label="Navigasi utama"
+      >
+        <a href="index.html">← Beranda</a>
+        <a href="#karya" class="active font-bold text-[var(--primary)]">Koleksi Karya</a>
+        <a href="index.html#sorotan">Sorotan</a>
+        <a href="index.html#tentang">Tentang</a>
+        <a href="index.html#kontak">Kirim Karya</a>
+      </nav>
+
+      <div class="header-actions flex items-center gap-2">
+        <button
+          class="icon-btn"
+          id="themeToggle"
+          type="button"
+          aria-label="Ganti mode warna"
+        >
+          <span id="themeIcon"> ☾ </span>
+        </button>
+
+        <button class="login-btn" id="adminButton" type="button">Akun</button>
+
+        <button
+          class="menu-btn icon-btn"
+          id="menuToggle"
+          type="button"
+          aria-label="Buka menu"
+          aria-expanded="false"
+          aria-controls="mainNav"
+        >
+          ☰
+        </button>
+      </div>
+    </header>
+
+    <!-- =====================================================
+       MAIN
+    ====================================================== -->
+    <main class="overflow-hidden">
+      <!-- ===================================================
+         APP HERO BANNER
+      ==================================================== -->
+      <section
+        class="app-hero border-b border-[var(--border)] bg-[var(--surface)] px-[7.5%] py-12 md:py-16"
+      >
+        <div class="max-w-4xl">
+          <div class="eyebrow mb-3">
+            <span></span>
+            RUANG KARYA SISWA
+          </div>
+
+          <h1
+            class="font-serif text-3xl md:text-5xl font-bold leading-tight m-0 mb-4"
+          >
+            Arsip & Koleksi <em>Karya Siswa.</em>
+          </h1>
+
+          <p
+            class="text-[var(--muted)] text-base md:text-lg max-w-2xl leading-relaxed m-0 mb-6"
+          >
+            Jelajahi karya terbaik karya siswa — mulai dari cerpen, puisi, esai kritis,
+            karya visual seni, komik, hingga artikel. Temukan inspirasi dan berikan apresiasimu.
+          </p>
+
+          <div class="flex flex-wrap items-center gap-3 text-xs font-medium text-[var(--muted)]">
+            <span
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--surface-2)] border border-[var(--border)]"
+            >
+              ✦ Terkurasi Duta Literasi
+            </span>
+            <span
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--surface-2)] border border-[var(--border)]"
+            >
+              📖 Baca Naskah Lengkap
+            </span>
+            <span
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--surface-2)] border border-[var(--border)]"
+            >
+              ♡ Kirim Apresiasi & Komentar
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================
+         KOLEKSI KARYA (VIEW KARYA UTAMA)
+      ==================================================== -->
+      <section
+        id="karya"
+        class="section works-section bg-[var(--surface-2)] px-[7.5%] py-[60px] md:py-[80px]"
+        aria-labelledby="worksTitle"
+      >
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">
+              <span></span>
+              KATALOG KARYA
+            </div>
+            <h2 id="worksTitle">Temukan karya favoritmu.</h2>
+          </div>
+
+          <p>
+            Cari berdasarkan judul, nama penulis, atau jenis karya. Buka kartu
+            untuk membaca ringkasan dan naskah lengkapnya.
+          </p>
+        </div>
+
+        <!-- TOOLBAR -->
+        <div class="toolbar">
+          <!-- SEARCH -->
+          <label class="search-box">
+            <span> ⌕ </span>
+            <input
+              id="searchInput"
+              type="search"
+              placeholder="Cari judul, penulis, kategori..."
+              autocomplete="off"
+            />
+          </label>
+
+          <!-- FILTER -->
+          <div class="filter-wrap">
+            <button class="filter-btn active" data-filter="Semua" type="button">
+              Semua
+            </button>
+            <button class="filter-btn" data-filter="Cerpen" type="button">
+              Cerpen
+            </button>
+            <button class="filter-btn" data-filter="Puisi" type="button">
+              Puisi
+            </button>
+            <button class="filter-btn" data-filter="Esai" type="button">
+              Esai
+            </button>
+            <button class="filter-btn" data-filter="Seni" type="button">
+              Seni
+            </button>
+            <button class="filter-btn" data-filter="Komik" type="button">
+              Komik
+            </button>
+            <button class="filter-btn" data-filter="Artikel" type="button">
+              Artikel
+            </button>
+            <button class="filter-btn" data-filter="Lainnya" type="button">
+              Lainnya
+            </button>
+          </div>
+        </div>
+
+        <!-- WORKS SKELETON -->
+        <div id="worksSkeleton" class="works-grid" aria-label="Memuat karya">
+          <div class="skeleton-card">
+            <div class="skeleton-box" style="height: 260px"></div>
+            <div class="skeleton-box" style="height: 12px; width: 35%"></div>
+            <div class="skeleton-box" style="height: 22px; width: 75%"></div>
+            <div class="skeleton-box" style="height: 42px"></div>
+          </div>
+          <div class="skeleton-card">
+            <div class="skeleton-box" style="height: 260px"></div>
+            <div class="skeleton-box" style="height: 12px; width: 35%"></div>
+            <div class="skeleton-box" style="height: 22px; width: 75%"></div>
+            <div class="skeleton-box" style="height: 42px"></div>
+          </div>
+          <div class="skeleton-card">
+            <div class="skeleton-box" style="height: 260px"></div>
+            <div class="skeleton-box" style="height: 12px; width: 35%"></div>
+            <div class="skeleton-box" style="height: 22px; width: 75%"></div>
+            <div class="skeleton-box" style="height: 42px"></div>
+          </div>
+        </div>
+
+        <!-- WORKS GRID -->
+        <div id="worksGrid" class="works-grid hidden" aria-live="polite"></div>
+
+        <!-- EMPTY STATE -->
+        <div id="emptyState" class="empty-state hidden">
+          <div>⌕</div>
+          <h3>Karya belum ditemukan</h3>
+          <p>Coba kata kunci atau kategori lain.</p>
+          <button class="btn btn-primary" id="resetSearch" type="button">
+            Tampilkan Semua
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- =====================================================
+       FOOTER
+    ====================================================== -->
+    <footer
+      class="footer flex justify-between gap-5 border-t border-[var(--border)] px-[7.5%] py-6 text-xs text-[var(--muted)]"
+    >
+      <div>
+        <strong> CEMARA </strong>
+        <span> Cendekia Media Apresiasi dan Ruang Karya </span>
+      </div>
+
+      <div>
+        © <span id="year"></span> CEMARA • Duta Literasi MAN IC PADANG PARIAMAN • DESIGN & DEV BY:
+        <a
+          href="https://www.instagram.com/aufaatamm/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          DL.Fatamm
+        </a>
+      </div>
+    </footer>
+
+    <!-- =====================================================
+       BACK TO TOP
+    ====================================================== -->
+    <button
+      id="backTop"
+      class="back-top"
+      type="button"
+      aria-label="Kembali ke atas"
+    >
+      ↑
+    </button>
+
+    <!-- =====================================================
+       WORK DETAIL MODAL
+    ====================================================== -->
+    <div class="modal-overlay" id="workModal" aria-hidden="true">
+      <div
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modalTitle"
+      >
+        <button
+          class="modal-close"
+          data-close="workModal"
+          type="button"
+          aria-label="Tutup"
+        >
+          ×
+        </button>
+
+        <div id="modalCover" class="modal-cover"></div>
+
+        <div class="modal-content">
+          <div class="eyebrow">
+            <span></span>
+            <span id="modalCategory"></span>
+          </div>
+
+          <h2 id="modalTitle"></h2>
+
+          <div class="work-byline" id="modalByline"></div>
+
+          <p id="modalDescription"></p>
+
+          <div class="modal-date" id="modalDate"></div>
+
+          <div class="modal-actions">
+            <button class="btn btn-primary" id="openWorkBtn" type="button">
+              See More →
+            </button>
+
+            <button class="btn btn-ghost" id="modalCommentBtn" type="button">
+              ♡ Komentar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+       ACCOUNT / ADMIN MODAL
+    ====================================================== -->
+    <div class="modal-overlay" id="adminModal" aria-hidden="true">
+      <div
+        class="admin-modal modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="adminModalTitle"
+      >
+        <button
+          class="modal-close"
+          data-close="adminModal"
+          type="button"
+          aria-label="Tutup"
+        >
+          ×
+        </button>
+
+        <div class="eyebrow">
+          <span></span>
+          PENGELOLA
+        </div>
+
+        <h2 id="adminModalTitle">Kelola CEMARA</h2>
+
+        <div id="authView"></div>
+        <div id="uploadView"></div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
+

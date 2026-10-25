@@ -629,12 +629,6 @@ async function loadStatsAndWorks() {
         allWorksTbody.innerHTML = allWorks
           .map((w) => {
             const imgCount = (w.image_urls || []).length;
-            const isOwnWork =
-              w.author_id === currentUser?.id ||
-              (!w.author_id &&
-                w.author?.trim().toLowerCase() ===
-                  (currentProfile?.display_name || "").trim().toLowerCase());
-            const canEdit = canManage || isOwnWork;
             return `
             <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
               <td class="py-3 text-cemara font-serif font-bold text-center">${window.CEMARA.esc(w.cover_symbol || "✦")}</td>
@@ -650,15 +644,6 @@ async function loadStatsAndWorks() {
                 <a href="../reader.html?id=${encodeURIComponent(w.id)}" target="_blank" class="px-3 py-1 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-cemara hover:text-white text-xs font-semibold transition-colors inline-flex items-center gap-1">
                   <i data-lucide="book-open" class="w-3.5 h-3.5"></i> Baca
                 </a>
-                ${
-                  canEdit
-                    ? `
-                  <button onclick="openEditWork('${w.id}')" class="px-3 py-1 rounded-xl bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 hover:bg-amber-100 text-xs font-semibold transition-colors inline-flex items-center gap-1">
-                    <i data-lucide="pencil" class="w-3.5 h-3.5"></i> Edit
-                  </button>
-                `
-                    : ""
-                }
                 ${
                   canManage
                     ? `
@@ -1061,34 +1046,6 @@ window.toggleUserBlock = async function toggleUserBlock(
   }
 };
 
-window.openEditWork = function openEditWork(workId) {
-  const work = allWorks.find((item) => item.id === workId);
-  if (!work) return;
-
-  const modal = $("#editWorkModal");
-  if (!modal) return;
-
-  $("#editWorkId").value = work.id;
-  $("#editWorkTitle").value = work.title || "";
-  $("#editWorkCategory").value = work.category || "Cerpen";
-  $("#editWorkSymbol").value = work.cover_symbol || "✦";
-  $("#editWorkAuthor").value = work.author || "";
-  $("#editWorkDescription").value = work.description || "";
-  $("#editWorkContent").value = work.content || "";
-
-  modal.classList.remove("hidden");
-  document.body.style.overflow = "hidden";
-};
-
-window.closeEditWorkModal = function closeEditWorkModal() {
-  const modal = $("#editWorkModal");
-  if (!modal) return;
-
-  modal.classList.add("hidden");
-  document.body.style.overflow = "";
-  $("#editWorkForm")?.reset();
-};
-
 window.deleteWork = async function deleteWork(workId) {
   if (!confirm("Hapus karya ini dari CEMARA?")) return;
 
@@ -1396,113 +1353,6 @@ if (profileForm) {
       saveBtn.disabled = false;
       saveBtn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> <span>Simpan Perubahan Profil</span>`;
       if (window.lucide) lucide.createIcons();
-    }
-  });
-}
-
-const passwordForm = $("#changePasswordForm");
-if (passwordForm) {
-  passwordForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    const currentPassword = $("#currentPassword")?.value || "";
-    const newPassword = $("#newPassword")?.value || "";
-    const confirmPassword = $("#confirmNewPassword")?.value || "";
-
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      showToast("Lengkapi semua kolom sandi.");
-      return;
-    }
-
-    if (newPassword.length < 6) {
-      showToast("Sandi baru minimal 6 karakter.");
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      showToast("Konfirmasi sandi baru tidak sama.");
-      return;
-    }
-
-    const submitBtn = $("#passwordSaveBtn");
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = `<span>Menyimpan...</span>`;
-
-    try {
-      if (currentUser?.email) {
-        const { error: signInError } = await db.auth.signInWithPassword({
-          email: currentUser.email,
-          password: currentPassword,
-        });
-
-        if (signInError) {
-          throw new Error("Sandi saat ini salah.");
-        }
-      }
-
-      const { error: passwordError } = await db.auth.updateUser({
-        password: newPassword,
-      });
-
-      if (passwordError) throw passwordError;
-
-      passwordForm.reset();
-      showToast("Sandi berhasil diubah! 🔐");
-    } catch (err) {
-      console.error("Password change error:", err);
-      showToast(err.message || "Gagal mengubah sandi.");
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = `<i data-lucide="shield-check" class="w-4 h-4"></i> <span>Ubah Sandi</span>`;
-      if (window.lucide) lucide.createIcons();
-    }
-  });
-}
-
-const editWorkForm = $("#editWorkForm");
-if (editWorkForm) {
-  editWorkForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    const workId = $("#editWorkId")?.value;
-    const title = $("#editWorkTitle")?.value.trim();
-    const category = $("#editWorkCategory")?.value;
-    const coverSymbol = $("#editWorkSymbol")?.value.trim() || "✦";
-    const description = $("#editWorkDescription")?.value.trim();
-    const content = $("#editWorkContent")?.value.trim();
-
-    if (!workId || !title || !category || !description) {
-      showToast("Judul, kategori, dan deskripsi harus diisi.");
-      return;
-    }
-
-    const submitBtn = $("#editWorkSubmitBtn");
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Menyimpan...";
-
-    try {
-      const { error } = await db
-        .from("works")
-        .update({
-          title,
-          category,
-          cover_symbol: coverSymbol,
-          description,
-          content,
-        })
-        .eq("id", workId);
-
-      if (error) throw error;
-
-      showToast("Karya berhasil diperbarui.");
-      closeEditWorkModal();
-      await loadStatsAndWorks();
-    } catch (err) {
-      console.error("Work update error:", err);
-      showToast(err.message || "Gagal memperbarui karya.");
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = "Simpan Perubahan";
     }
   });
 }
