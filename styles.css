@@ -3099,18 +3099,25 @@ html.cemara-motion-ready .cemara-page [data-cemara-reveal].is-revealed {
   font-family: "DM Sans", sans-serif;
 }
 .cemara-page .brand-mark {
-  width: var(--cemara-element-size-2-8-rem);
-  height: var(--cemara-element-size-2-8-rem);
+  width: 3.5rem;
+  height: 2.8rem;
   display: grid;
   flex: var(--cemara-flex-factor-0) var(--cemara-flex-factor-0) auto;
   place-items: center;
   border: var(--cemara-numeric-value-0);
-  border-radius: var(--cemara-proportion-50-percent);
-  background: var(--ink);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: #fff;
   color: var(--bg);
   font-family: "Erode", Georgia, serif;
   font-size: var(--cemara-type-size-1-35-rem);
   line-height: var(--cemara-line-height-1);
+}
+.cemara-page .brand-mark img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 .cemara-page .brand strong {
   display: block;
@@ -4604,8 +4611,8 @@ html[data-theme="dark"] body.cemara-page .modal-close {
     gap: var(--cemara-spacing-0-55-rem);
   }
   .cemara-page .brand-mark {
-    width: var(--cemara-element-size-2-4-rem);
-    height: var(--cemara-element-size-2-4-rem);
+    width: 3rem;
+    height: 2.4rem;
     font-size: var(--cemara-type-size-1-2-rem);
   }
   .cemara-page .brand strong {
@@ -4798,8 +4805,8 @@ html[data-theme="dark"] body.cemara-page .modal-close {
     gap: var(--cemara-spacing-0-35-rem);
   }
   .cemara-page .brand-mark {
-    width: var(--cemara-element-size-2-15-rem);
-    height: var(--cemara-element-size-2-15-rem);
+    width: 2.7rem;
+    height: 2.15rem;
   }
   .cemara-page .brand strong {
     font-size: var(--cemara-type-size-0-84-rem);
