@@ -100,7 +100,7 @@ function coverMarkup(work, title) {
   const url = String(work.cover_url || "").trim();
   if (!url) return "";
 
-  return `<button class="card-cover" type="button" data-preview="${esc(work.id)}" aria-label="Lihat detail ${esc(title)}"><img src="${esc(url)}" alt="Sampul ${esc(title)}" loading="lazy" decoding="async"></button>`;
+  return `<button class="card-cover" type="button" data-preview="${esc(work.id)}" aria-label="Lihat detail ${esc(title)}"><img src="${esc(url)}" alt="Sampul ${esc(title)}" width="900" height="1200" loading="lazy" decoding="async"></button>`;
 }
 
 /* =========================================================
@@ -499,7 +499,7 @@ async function loadCreatorsSpotlight() {
           <div class="creator-card ${isWriterOfTheWeek ? "writer-achiever" : ""}">
             ${isWriterOfTheWeek ? '<span class="creator-star" aria-label="Penulis dengan 10 karya atau lebih">★</span>' : ""}
             <div class="creator-avatar">
-              ${avatar ? `<img src="${esc(avatar)}" alt="${esc(name)}" style="width:100%; height:100%; object-fit:cover;">` : `<span>✦</span>`}
+              ${avatar ? `<img src="${esc(avatar)}" alt="${esc(name)}" width="512" height="512" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover;">` : `<span>✦</span>`}
             </div>
             <h3 style="margin:0; font-family:'Erode', Georgia, serif; font-size:1.15rem; font-weight:700;">
               ${esc(name)}
@@ -805,13 +805,20 @@ function preview(id, readFull = false) {
     cover.className = "modal-cover";
     cover.classList.toggle("hidden", !coverUrl);
     cover.innerHTML = coverUrl
-      ? `<img src="${esc(coverUrl)}" alt="Sampul ${esc(selected.title || "karya")}">`
+      ? `<img src="${esc(coverUrl)}" alt="Sampul ${esc(selected.title || "karya")}" width="900" height="1200" decoding="async">`
       : "";
   }
 
   readerPanel?.classList.toggle("hidden", !readFull);
   renderFullText(selected);
-  if (readFull && selected.content === undefined)
+  if (readFull && selected.document_path) {
+    selected.document_url = undefined;
+  }
+  if (
+    readFull &&
+    (selected.content === undefined ||
+      (selected.document_path && selected.document_url === undefined))
+  )
     void loadWorkContent(selected);
 
   if (imageContainer) {
@@ -819,7 +826,7 @@ function preview(id, readFull = false) {
     imageContainer.innerHTML = images
       .map(
         (image, index) =>
-          `<img src="${esc(image)}" alt="Halaman ${index + 1} karya ${esc(selected.title || "siswa")}" loading="lazy">`,
+          `<img src="${esc(image)}" alt="Halaman ${index + 1} karya ${esc(selected.title || "siswa")}" loading="lazy" decoding="async">`,
       )
       .join("");
     imageContainer.classList.toggle("hidden", images.length === 0);
@@ -859,17 +866,30 @@ function renderFullText(work) {
     return;
   }
 
-  fullText.innerHTML = work.content
+  const content = work.content
     ? esc(work.content).replace(/\r?\n/g, "<br>")
     : "<p>Naskah lengkap belum tersedia.</p>";
+  const documentLink = work.document_path
+    ? work.document_url === undefined
+      ? "<p>Memuat berkas karya...</p>"
+      : work.document_url
+        ? `<p><a href="${esc(work.document_url)}" target="_blank" rel="noopener noreferrer">Buka berkas karya${work.document_name ? ` (${esc(work.document_name)})` : ""} ↗</a></p>`
+        : "<p>Berkas karya belum dapat dibuka.</p>"
+    : "";
+  fullText.innerHTML = `${content}${documentLink}`;
 }
 
 async function loadWorkContent(work) {
-  if (!db || work.content !== undefined) return;
+  if (
+    !db ||
+    (work.content !== undefined &&
+      (!work.document_path || work.document_url !== undefined))
+  )
+    return;
 
   const { data, error } = await db
     .from("works")
-    .select("content, submission_type, drive_url")
+    .select("content, submission_type, drive_url, document_path, document_name")
     .eq("id", work.id)
     .maybeSingle();
 
@@ -885,6 +905,19 @@ async function loadWorkContent(work) {
   work.content = data?.content ?? null;
   work.submission_type = data?.submission_type ?? "text";
   work.drive_url = data?.drive_url ?? null;
+  work.document_path = data?.document_path ?? null;
+  work.document_name = data?.document_name ?? null;
+  work.document_url = null;
+  if (work.document_path) {
+    const { data: signedUrl, error: signedUrlError } = await db.storage
+      .from("pengajuan-karya")
+      .createSignedUrl(work.document_path, 3600);
+    if (signedUrlError) {
+      console.warn("Berkas karya tidak dapat dibuka:", signedUrlError.message);
+    } else {
+      work.document_url = signedUrl?.signedUrl || null;
+    }
+  }
   if (current?.id === work.id) renderFullText(work);
 }
 
@@ -997,6 +1030,7 @@ async function loadComments() {
 
                       <button
                         type="button"
+                        class="btn-mini"
                         data-edit="${esc(comment.id)}"
                       >
                         Edit
@@ -1004,6 +1038,7 @@ async function loadComments() {
 
                       <button
                         type="button"
+                        class="btn-mini btn-mini-danger"
                         data-del="${esc(comment.id)}"
                       >
                         Hapus
@@ -1263,11 +1298,6 @@ function authUI() {
   }
 
   if (user) {
-    const uploadView = $("#uploadView");
-    if (uploadView) {
-      uploadView.innerHTML = "";
-    }
-
     const name =
       userProfile?.display_name ||
       user.user_metadata?.name ||
@@ -1298,7 +1328,7 @@ function authUI() {
         <div class="account-avatar" style="width:76px; height:76px; border-radius:18px; overflow:hidden; display:flex; align-items:center; justify-content:center; margin-bottom:12px; border:2px solid var(--primary); background:var(--surface-2); box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
           ${
             avatarUrl
-              ? `<img src="${esc(avatarUrl)}" alt="Avatar" style="width:100%; height:100%; object-fit:cover;">`
+              ? `<img src="${esc(avatarUrl)}" alt="Avatar" width="512" height="512" decoding="async" style="width:100%; height:100%; object-fit:cover;">`
               : `<span style="font-size:26px; font-family:'Erode', Georgia, serif; color:var(--primary);">✦</span>`
           }
         </div>
@@ -1329,18 +1359,18 @@ function authUI() {
           class="btn btn-primary"
           style="width:100%; margin-bottom:10px; display:inline-flex; align-items:center; justify-content:center; gap:8px; border-radius:12px;"
         >
-          <span>Buka Portal Pengelola & Profil</span> →
+          <span>Buka Dashboard & Profil</span> →
         </a>
 
         <div class="admin-note" style="margin-top:6px; font-size:12px; line-height:1.5;">
           ${
             role === "super_admin"
-              ? `Hak akses <b>Super Admin</b> aktif. Anda dapat mengelola seluruh pengguna, karya, dan komentar.`
+              ? `Hak akses <b>Super Admin</b> aktif. Anda dapat mengelola pengguna dan meninjau karya sebelum terbit.`
               : role === "admin"
-                ? `Hak akses <b>Admin</b> aktif. Anda dapat menerbitkan dan mengelola karya siswa.`
+                ? `Hak akses <b>Admin</b> aktif. Anda dapat meninjau karya sebelum terbit.`
                 : role === "dev"
                   ? `Hak akses <b>Developer</b> aktif.`
-                  : `Anda dapat memperbarui foto profil avatar dan biodata di Portal Profil.`
+                  : `Tulis atau unggah karya melalui menu dashboard. Semua kiriman ditinjau sebelum diterbitkan.`
           }
         </div>
 
@@ -1360,11 +1390,6 @@ function authUI() {
     $("#logout")?.addEventListener("click", logout);
 
     return;
-  }
-
-  const uploadView = $("#uploadView");
-  if (uploadView) {
-    uploadView.innerHTML = "";
   }
 
   container.innerHTML = `
@@ -1441,8 +1466,8 @@ function authUI() {
 
       <p>
         Buat akun CEMARA untuk
-        ikut berinteraksi dan
-        mengapresiasi karya siswa.
+        mengajukan karya, berinteraksi,
+        dan mengapresiasi karya siswa.
       </p>
 
 
@@ -1574,7 +1599,8 @@ async function login(event) {
     return;
   }
 
-  toast("Berhasil masuk. ✦");
+  user = signInData?.user || user;
+  await adminCheck();
 
   if (signInData?.user?.id) {
     const { error: activityError } = await db.from("account_activity").insert({
@@ -1636,9 +1662,10 @@ async function register(event) {
   }
 
   if (data?.session) {
+    user = data.user || user;
+    await adminCheck();
     toast("Akun berhasil dibuat! 🎉");
-
-    modal("adminModal", false);
+    window.location.href = "admin/index.html";
   } else {
     toast("Akun dibuat! Cek email untuk verifikasi. ✉");
   }
@@ -1658,400 +1685,6 @@ async function logout() {
   }
 
   toast("Berhasil keluar. 👋");
-}
-
-/* =========================================================
-   ADMIN UPLOAD UI
-========================================================= */
-
-function renderUploadUI() {
-  const container = $("#uploadView");
-
-  if (!container) {
-    return;
-  }
-
-  if (!user || !isAdmin) {
-    container.innerHTML = "";
-
-    return;
-  }
-
-  container.innerHTML = `
-
-    <div class="upload-panel">
-
-      <div class="eyebrow">
-
-        <span></span>
-        UPLOAD KARYA
-
-      </div>
-
-
-      <h3>
-        Tambahkan Karya
-      </h3>
-
-
-      <p>
-        Upload karya teks, gambar,
-        atau komik beberapa halaman.
-      </p>
-
-
-      <form
-        id="workUploadForm"
-        class="comment-form"
-      >
-
-        <input
-          id="uploadTitle"
-          type="text"
-          maxlength="120"
-          required
-          placeholder="Judul karya"
-        >
-
-
-        <input
-          id="uploadAuthor"
-          type="text"
-          maxlength="80"
-          required
-          placeholder="Nama penulis"
-        >
-
-
-        <select
-          id="uploadCategory"
-          required
-        >
-
-          <option value="">
-            Pilih kategori
-          </option>
-
-          <option value="Cerpen">
-            Cerpen
-          </option>
-
-          <option value="Puisi">
-            Puisi
-          </option>
-
-          <option value="Esai">
-            Esai
-          </option>
-
-          <option value="Seni">
-            Seni
-          </option>
-
-          <option value="Komik">
-            Komik
-          </option>
-
-        </select>
-
-
-        <textarea
-          id="uploadDescription"
-          maxlength="500"
-          required
-          placeholder="Deskripsi singkat karya"
-        ></textarea>
-
-        <fieldset class="upload-type-options">
-          <legend>Jenis unggahan</legend>
-          <label>
-            <input type="radio" name="uploadType" value="text" checked>
-            Teks langsung
-          </label>
-          <label>
-            <input type="radio" name="uploadType" value="drive">
-            Link Google Drive
-          </label>
-        </fieldset>
-
-        <label id="uploadTextField">
-          Isi karya
-          <textarea
-            id="uploadContent"
-            required
-            placeholder="Tulis isi karya di sini"
-          ></textarea>
-        </label>
-
-        <label id="uploadDriveField" class="hidden">
-          Link Google Drive
-          <input
-            id="uploadDriveUrl"
-            type="url"
-            placeholder="https://drive.google.com/..."
-            disabled
-          >
-        </label>
-
-
-        <label>
-
-          Sampul karya (opsional, satu gambar, maks. 5 MB)
-
-          <input
-            id="workCover"
-            type="file"
-            accept="image/jpeg,image/png,image/webp,image/gif"
-          >
-
-        </label>
-
-
-        <div
-          id="uploadPreview"
-          class="upload-preview"
-        ></div>
-
-
-        <button
-          class="btn btn-primary"
-          id="uploadImagesBtn"
-          type="submit"
-        >
-          Publikasikan Karya
-        </button>
-
-
-        <div
-          id="uploadStatus"
-          class="upload-status"
-        ></div>
-
-      </form>
-
-    </div>
-
-  `;
-
-  setupUploadForm();
-}
-
-/* =========================================================
-   UPLOAD FORM
-========================================================= */
-
-function setupUploadForm() {
-  const form = $("#workUploadForm");
-
-  const input = $("#workCover");
-
-  const preview = $("#uploadPreview");
-
-  const status = $("#uploadStatus");
-  const contentInput = $("#uploadContent");
-  const driveInput = $("#uploadDriveUrl");
-  const textField = $("#uploadTextField");
-  const driveField = $("#uploadDriveField");
-
-  if (!form || !input) {
-    return;
-  }
-
-  const updateSubmissionFields = () => {
-    const isDriveSubmission =
-      form.querySelector('input[name="uploadType"]:checked')?.value === "drive";
-
-    textField?.classList.toggle("hidden", isDriveSubmission);
-    driveField?.classList.toggle("hidden", !isDriveSubmission);
-
-    if (contentInput) {
-      contentInput.required = !isDriveSubmission;
-      contentInput.disabled = isDriveSubmission;
-    }
-
-    if (driveInput) {
-      driveInput.required = isDriveSubmission;
-      driveInput.disabled = !isDriveSubmission;
-    }
-  };
-
-  form
-    .querySelectorAll('input[name="uploadType"]')
-    .forEach((radio) =>
-      radio.addEventListener("change", updateSubmissionFields),
-    );
-  updateSubmissionFields();
-
-  input.addEventListener("change", () => {
-    const file = input.files[0];
-
-    if (!preview) {
-      return;
-    }
-
-    preview.innerHTML = file
-      ? `
-          <div class="upload-item">
-            <img src="${URL.createObjectURL(file)}" alt="Pratinjau sampul">
-            <span>${esc(file.name)}</span>
-          </div>
-        `
-      : "";
-  });
-
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    if (!user || !isAdmin) {
-      toast("Hanya admin yang dapat mengunggah karya.");
-
-      return;
-    }
-
-    const title = $("#uploadTitle")?.value?.trim() || "";
-
-    const author = $("#uploadAuthor")?.value?.trim() || "";
-
-    const category = $("#uploadCategory")?.value || "";
-
-    const description = $("#uploadDescription")?.value?.trim() || "";
-
-    const content = $("#uploadContent")?.value?.trim() || "";
-    const submissionType =
-      form.querySelector('input[name="uploadType"]:checked')?.value || "text";
-    const driveUrl = $("#uploadDriveUrl")?.value?.trim() || "";
-
-    const files = [...input.files];
-
-    if (!title || !author || !category || !description) {
-      toast("Lengkapi data karya terlebih dahulu.");
-
-      return;
-    }
-
-    if (submissionType === "text" && !content) {
-      toast("Isi karya belum ditambahkan.");
-
-      return;
-    }
-
-    if (
-      submissionType === "drive" &&
-      !window.CEMARA.isGoogleDriveUrl(driveUrl)
-    ) {
-      toast("Masukkan link Google Drive atau Google Docs yang valid.");
-
-      return;
-    }
-
-    const coverFile = files[0] || null;
-
-    if (coverFile && !coverFile.type.startsWith("image/")) {
-      toast("Sampul harus berupa gambar.");
-
-      return;
-    }
-
-    if (coverFile && coverFile.size > 5 * 1024 * 1024) {
-      toast("Ukuran sampul maksimal 5 MB.");
-
-      return;
-    }
-
-    const submitButton = $("#uploadImagesBtn");
-
-    if (submitButton) {
-      submitButton.disabled = true;
-    }
-
-    try {
-      if (status) {
-        status.textContent = files.length
-          ? "Mengunggah sampul..."
-          : "Menyimpan karya...";
-      }
-
-      let coverUrl = null;
-
-      if (coverFile) {
-        const extension = (coverFile.name.split(".").pop() || "jpg")
-          .toLowerCase()
-          .replace(/[^a-z0-9]/g, "");
-
-        const filename = `${user.id}/cover-${Date.now()}.${extension || "jpg"}`;
-
-        const { error: uploadError } = await db.storage
-          .from("karya")
-          .upload(filename, coverFile, {
-            cacheControl: "3600",
-            upsert: false,
-          });
-
-        if (uploadError) {
-          if (status) {
-            status.textContent = "Gagal upload sampul: " + uploadError.message;
-          }
-
-          return;
-        }
-
-        coverUrl =
-          db.storage.from("karya").getPublicUrl(filename).data?.publicUrl ||
-          null;
-      }
-
-      if (status) {
-        status.textContent = "Menyimpan karya...";
-      }
-
-      const { error } = await db.from("works").insert({
-        title,
-        author,
-        category,
-        description,
-        content: submissionType === "text" ? content : "",
-        submission_type: submissionType,
-        drive_url: submissionType === "drive" ? driveUrl : null,
-        cover_url: coverUrl,
-        published_at: new Date().toISOString(),
-      });
-
-      if (error) {
-        if (status) {
-          status.textContent = "Gagal menyimpan karya: " + error.message;
-        }
-
-        return;
-      }
-
-      toast("Karya berhasil dipublikasikan! 🎉");
-
-      form.reset();
-      updateSubmissionFields();
-
-      if (preview) {
-        preview.innerHTML = "";
-      }
-
-      if (status) {
-        status.textContent = "Karya berhasil ditambahkan.";
-      }
-
-      await loadWorks();
-    } catch (error) {
-      console.error("Upload error:", error);
-
-      if (status) {
-        status.textContent = "Terjadi kesalahan: " + error.message;
-      }
-
-      toast("Upload gagal.");
-    } finally {
-      if (submitButton) {
-        submitButton.disabled = false;
-      }
-    }
-  });
 }
 
 /* =========================================================
@@ -2148,7 +1781,10 @@ function initialize() {
 
   setupEventDeadline();
 
-  boot();
+  const bootPromise = boot();
+  if (window.location.hash === "#akun") {
+    void bootPromise.then(() => modal("adminModal"));
+  }
 }
 
 /* =========================================================

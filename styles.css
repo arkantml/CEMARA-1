@@ -4439,8 +4439,7 @@ html.cemara-motion-ready .cemara-page [data-cemara-reveal].is-revealed {
     var(--cemara-spacing-3-rem)
   );
 }
-.cemara-page #authView,
-.cemara-page #uploadView {
+.cemara-page #authView {
   max-width: var(--cemara-proportion-100-percent);
 }
 html[data-theme="dark"],
@@ -5967,5 +5966,641 @@ html[data-theme="dark"] body.cemara-page .modal-close {
 
   .cemara-page .card-cover:hover img {
     transform: none;
+  }
+}
+
+/* =========================================================
+   SISTEM TOMBOL — semua tombol punya warna & status
+   Varian: primary (merah), secondary (krem), success (hijau),
+   danger (garis merah), warning (emas), ghost, mini.
+   Warna teks diatur agar kontras ≥ 4,5:1 di mode terang & gelap.
+   ========================================================= */
+.cemara-page {
+  --success-ink: #ffffff;
+  --warning-ink: #1a1400;
+}
+html[data-theme="dark"] body.cemara-page,
+body.cemara-page[data-theme="dark"] {
+  --success-ink: #00160a;
+}
+
+.cemara-page .btn-secondary {
+  background: var(--surface);
+  color: var(--ink);
+}
+.cemara-page .btn-secondary:hover {
+  background: var(--surface-2);
+}
+.cemara-page .btn-success {
+  background: var(--green-deep);
+  color: var(--success-ink);
+}
+.cemara-page .btn-success:hover {
+  background: var(--green);
+}
+.cemara-page .btn-warning {
+  background: var(--gold);
+  color: var(--warning-ink);
+}
+.cemara-page .btn-warning:hover {
+  filter: brightness(1.08);
+}
+.cemara-page .btn-danger {
+  background: transparent;
+  color: var(--accent-fg);
+  box-shadow: inset 0 0 0 1px var(--accent-fg);
+}
+.cemara-page .btn-danger:hover {
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+.cemara-page .btn-ghost {
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+/* Tombol kecil di baris (Edit / Hapus komentar) */
+.cemara-page .comment-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+.cemara-page .btn-mini {
+  min-height: 2rem;
+  padding: 0.25rem 0.85rem;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease;
+}
+.cemara-page .btn-mini:hover {
+  background: var(--ink);
+  color: var(--bg);
+}
+.cemara-page .btn-mini-danger {
+  border-color: var(--accent-fg);
+  color: var(--accent-fg);
+}
+.cemara-page .btn-mini-danger:hover {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+/* Tab Masuk / Daftar */
+.cemara-page .auth-tabs {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  padding: 0.25rem;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+}
+.cemara-page .auth-tab {
+  flex: 1;
+  min-height: 2.4rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease;
+}
+.cemara-page .auth-tab:hover {
+  background: var(--surface-2);
+}
+.cemara-page .auth-tab.active {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+/* Cadangan: tombol tanpa kelas tetap berwarna, bukan tombol bawaan browser */
+.cemara-page button:not([class]) {
+  min-height: 2.25rem;
+  padding: 0.35rem 0.95rem;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font-family: "DM Sans", sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+}
+.cemara-page button:not([class]):hover {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+/* Status nonaktif & fokus untuk semua tombol */
+.cemara-page button:disabled,
+.cemara-page .btn[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+.cemara-page button:focus-visible,
+.cemara-page .btn:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   KEBIJAKAN GAMBAR — ukuran tampil (output)
+   Sampul 3:4 (sumber 900×1200 px), foto profil 1:1 (512×512 px).
+   ========================================================= */
+.cemara-page .field-hint {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 400;
+}
+
+.cemara-page .upload-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  margin-top: 0.5rem;
+}
+.cemara-page .upload-item img {
+  flex: 0 0 auto;
+  width: 6rem;
+  height: auto;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border: 1px solid var(--border);
+}
+.cemara-page .upload-meta {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+.cemara-page .upload-item-error {
+  color: var(--accent-fg);
+  font-weight: 600;
+}
+
+.cemara-page .card-cover img {
+  aspect-ratio: 3 / 4;
+}
+.cemara-page .modal-cover:not(.hidden) {
+  width: min(100%, 15rem);
+  aspect-ratio: 3 / 4;
+  margin-inline: auto;
+  overflow: hidden;
+}
+.cemara-page .modal-cover img {
+  height: 100%;
+  max-height: none;
+}
+.cemara-page img[width="512"][height="512"] {
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+.cemara-page .reader-images img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* =========================================================
+   ARSIP (arsip.html)
+   ========================================================= */
+.arsip-page {
+  --kind-proposal: var(--gold);
+  --kind-penelitian: var(--green);
+  --kind-presentasi: var(--accent);
+  --kind-tech_stack: var(--blue-deep);
+}
+.arsip-page .arsip-main {
+  width: min(100% - 2rem, 72rem);
+  margin-inline: auto;
+  padding: clamp(1.5rem, 4vw, 3rem) 0 4rem;
+  color: var(--ink);
+}
+.arsip-page .arsip-eyebrow {
+  margin: 0 0 0.5rem;
+  color: var(--accent-fg);
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.arsip-page .arsip-hero h1 {
+  max-width: 18ch;
+  margin: 0;
+  font-size: clamp(2.2rem, 6vw, 4rem);
+  font-weight: 500;
+  line-height: 1.04;
+}
+.arsip-page .arsip-hero-lead {
+  max-width: 40rem;
+  margin: 1rem 0 0;
+  color: var(--muted);
+  font-size: 1.1rem;
+}
+.arsip-page .arsip-staff-note {
+  margin: 1rem 0 0;
+  padding: 0.6rem 0.9rem;
+  border-left: 3px solid var(--green);
+  background: var(--surface-2);
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.9rem;
+}
+.arsip-page .arsip-staff-note a {
+  font-weight: 700;
+  color: var(--accent-fg);
+}
+
+.arsip-page .arsip-toolbar {
+  display: grid;
+  gap: 1rem;
+  margin: 2.25rem 0 1.25rem;
+}
+.arsip-page .arsip-search input {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+}
+.arsip-page .arsip-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.arsip-page .arsip-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.5rem;
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease;
+}
+.arsip-page .arsip-filter:hover {
+  background: var(--surface-2);
+}
+.arsip-page .arsip-filter.active {
+  background: var(--ink);
+  color: var(--bg);
+}
+.arsip-page .arsip-filter .count {
+  min-width: 1.4rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.arsip-page .arsip-state,
+.arsip-page .arsip-empty {
+  padding: 2rem 1rem;
+  color: var(--muted);
+  font-family: "DM Sans", sans-serif;
+  text-align: center;
+}
+.arsip-page .is-error {
+  color: var(--accent-fg);
+}
+
+.arsip-page .arsip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+  gap: 1.1rem;
+}
+.arsip-page .arsip-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 1.15rem;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  transition: border-color 0.18s ease;
+}
+.arsip-page .arsip-card:hover {
+  border-color: var(--ink);
+}
+.arsip-page .arsip-card h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 500;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+.arsip-page .arsip-card h3 a:hover {
+  color: var(--accent-fg);
+}
+.arsip-page .arsip-card-top,
+.arsip-page .arsip-chips,
+.arsip-page .arsip-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.arsip-page .arsip-summary {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.95rem;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+.arsip-page .arsip-meta {
+  margin: 0;
+  color: var(--muted);
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.8rem;
+}
+.arsip-page .arsip-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+.arsip-page .arsip-version {
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.arsip-page .arsip-kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.65rem;
+  border: 1px solid var(--kind, var(--ink));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--kind, var(--ink)) 16%, transparent);
+  color: var(--ink);
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.arsip-page .arsip-kind-proposal {
+  --kind: var(--kind-proposal);
+}
+.arsip-page .arsip-kind-penelitian {
+  --kind: var(--kind-penelitian);
+}
+.arsip-page .arsip-kind-presentasi {
+  --kind: var(--kind-presentasi);
+}
+.arsip-page .arsip-kind-tech_stack {
+  --kind: var(--kind-tech_stack);
+}
+
+.arsip-page .arsip-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.arsip-page .arsip-chip-stack {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
+}
+.arsip-page .arsip-chip-tag::before {
+  content: "#";
+  margin-right: 0.1rem;
+  color: var(--muted);
+}
+.arsip-page .arsip-status-final {
+  border-color: var(--green);
+}
+.arsip-page .arsip-status-review {
+  border-color: var(--gold);
+}
+.arsip-page .arsip-status-draft,
+.arsip-page .arsip-status-archived {
+  border-style: dashed;
+}
+.arsip-page .arsip-chip-latest {
+  border-color: var(--green);
+  background: var(--green-deep);
+  color: var(--success-ink);
+}
+
+.arsip-page .arsip-detail {
+  max-width: 52rem;
+}
+.arsip-page .arsip-back {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  color: var(--accent-fg);
+  font-family: "DM Sans", sans-serif;
+  font-weight: 700;
+}
+.arsip-page .arsip-back:hover {
+  text-decoration: underline;
+}
+.arsip-page .arsip-detail-head h1 {
+  margin: 0.75rem 0 0.4rem;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 500;
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+}
+.arsip-page .arsip-lead {
+  margin: 0.9rem 0 0;
+  font-size: 1.15rem;
+  line-height: 1.6;
+}
+.arsip-page .arsip-links {
+  margin-top: 1rem;
+}
+.arsip-page .arsip-block {
+  margin-top: 2.25rem;
+}
+.arsip-page .arsip-block h2,
+.arsip-page .arsip-staff h3 {
+  margin: 0 0 0.8rem;
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.arsip-page .arsip-readme p {
+  max-width: 40rem;
+  margin: 0 0 1em;
+  line-height: 1.75;
+}
+
+.arsip-page .arsip-release {
+  margin: 0 0 1rem;
+  padding: 0.9rem 1rem 0.9rem 1.1rem;
+  border-left: 3px solid var(--ink);
+  background: var(--surface-2);
+}
+.arsip-page .arsip-release header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.arsip-page .arsip-release h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 1.15rem;
+}
+.arsip-page .arsip-release time {
+  color: var(--muted);
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.8rem;
+}
+.arsip-page .arsip-changelog {
+  margin: 0.4rem 0 0.7rem;
+  color: var(--muted);
+}
+.arsip-page .arsip-files {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.arsip-page .arsip-file {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--border);
+  background: var(--bg);
+}
+.arsip-page .arsip-file-name {
+  min-width: 0;
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.arsip-page .arsip-file-name small {
+  display: block;
+  color: var(--muted);
+  font-weight: 400;
+}
+.arsip-page .arsip-file-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.arsip-page .arsip-staff {
+  margin-top: 3rem;
+  padding: 1.25rem;
+  border: 1px dashed var(--ink);
+}
+.arsip-page .arsip-form {
+  display: grid;
+  gap: 0.9rem;
+}
+.arsip-page .arsip-form label {
+  display: grid;
+  gap: 0.3rem;
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.arsip-page .arsip-form input[type="text"],
+.arsip-page .arsip-form input[type="number"],
+.arsip-page .arsip-form input[type="url"],
+.arsip-page .arsip-form input[type="file"],
+.arsip-page .arsip-form textarea {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--ink);
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 400;
+}
+.arsip-page .arsip-form-row {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  gap: 0.9rem;
+}
+.arsip-page .arsip-source {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.arsip-page .arsip-source legend {
+  padding: 0;
+  margin-bottom: 0.3rem;
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.arsip-page .arsip-source label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.arsip-page .arsip-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.arsip-page .arsip-status-msg {
+  min-height: 1.2em;
+  margin: 0;
+  color: var(--muted);
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 640px) {
+  .arsip-page .arsip-form-row {
+    grid-template-columns: 1fr;
+  }
+  .arsip-page .arsip-release header {
+    flex-direction: column;
+    gap: 0.2rem;
   }
 }

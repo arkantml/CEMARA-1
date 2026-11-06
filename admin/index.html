@@ -4,11 +4,8 @@
     <meta charset="UTF-8" />
     <link rel="icon" href="data:," />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="CEMARA: Portal Pengelola dan Ruang Karya Siswa"
-    />
-    <title>Portal Pengelola | CEMARA</title>
+    <meta name="description" content="CEMARA: Dashboard Ruang Karya Siswa" />
+    <title>Dashboard Ruang Karya | CEMARA</title>
 
     <link rel="preconnect" href="https://api.fontshare.com" />
     <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
@@ -358,7 +355,7 @@
                 <span
                   class="text-[11px] font-sans px-2 py-0.5 rounded-full bg-cemara-soft dark:bg-cemara/20 text-cemara-dark dark:text-cemara-light font-semibold border border-cemara/20"
                 >
-                  Pengelola
+                  Dashboard
                 </span>
               </div>
               <p
@@ -453,6 +450,14 @@
             <i data-lucide="layout-grid" class="w-4 h-4 text-cemara"></i>
             <span>Ikhtisar Ruang Karya</span>
           </button>
+          <button
+            data-tab="upload"
+            id="navUploadWork"
+            class="nav-tab w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl text-sm font-semibold transition-all text-stone-700 dark:text-stone-300 hover:bg-cemara-soft dark:hover:bg-cemara/10"
+          >
+            <i data-lucide="pen-tool" class="w-4 h-4 text-cemara"></i>
+            <span>Tulis / Unggah Karya</span>
+          </button>
 
           <!-- Super Admin Section -->
           <div
@@ -484,6 +489,14 @@
               Kurasi & Naskah
             </div>
             <button
+              data-tab="submissions"
+              id="navWorkSubmissions"
+              class="nav-tab w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl text-sm font-semibold transition-all text-stone-700 dark:text-stone-300 hover:bg-cemara-soft dark:hover:bg-cemara/10"
+            >
+              <i data-lucide="inbox" class="w-4 h-4 text-cemara"></i>
+              <span>Antrean Pengajuan</span>
+            </button>
+            <button
               data-tab="works"
               class="nav-tab w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl text-sm font-semibold transition-all text-stone-700 dark:text-stone-300 hover:bg-cemara-soft dark:hover:bg-cemara/10"
             >
@@ -491,18 +504,18 @@
               <span>Kelola Koleksi Karya</span>
             </button>
             <button
-              data-tab="upload"
-              class="nav-tab w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl text-sm font-semibold transition-all text-stone-700 dark:text-stone-300 hover:bg-cemara-soft dark:hover:bg-cemara/10"
-            >
-              <i data-lucide="pen-tool" class="w-4 h-4 text-cemara"></i>
-              <span>Tulis / Unggah Karya</span>
-            </button>
-            <button
               data-tab="comments"
               class="nav-tab w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl text-sm font-semibold transition-all text-stone-700 dark:text-stone-300 hover:bg-cemara-soft dark:hover:bg-cemara/10"
             >
               <i data-lucide="message-circle" class="w-4 h-4 text-cemara"></i>
               <span>Komentar Pembaca</span>
+            </button>
+            <button
+              data-tab="arsip"
+              class="nav-tab w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl text-sm font-semibold transition-all text-stone-700 dark:text-stone-300 hover:bg-cemara-soft dark:hover:bg-cemara/10"
+            >
+              <i data-lucide="archive" class="w-4 h-4 text-cemara"></i>
+              <span>Arsip &amp; Dokumen</span>
             </button>
           </div>
 
@@ -553,8 +566,8 @@
                 >User / Penulis</strong
               >
               <p>
-                Melihat ikhtisar, mengatur profil dan foto, serta melihat inbox
-                dan aktivitas akun.
+                Mengajukan karya untuk ditinjau, mengatur profil, serta melihat
+                inbox, status, dan aktivitas akun.
               </p>
             </div>
             <div>
@@ -562,8 +575,8 @@
                 >Admin</strong
               >
               <p>
-                Semua kemampuan User, ditambah mengelola karya, publikasi, dan
-                moderasi komentar.
+                Semua kemampuan User, ditambah meninjau pengajuan, mengelola
+                publikasi karya, dan memoderasi komentar.
               </p>
             </div>
             <div>
@@ -911,6 +924,41 @@
           </div>
         </section>
 
+        <section id="view-submissions" class="tab-view hidden space-y-6">
+          <div class="classic-card p-6 rounded-3xl shadow-sm space-y-5">
+            <div
+              class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-black/5 dark:border-white/5 pb-4"
+            >
+              <div>
+                <h2
+                  class="font-serif font-bold text-lg text-stone-900 dark:text-stone-100"
+                >
+                  Antrean Pengajuan Karya
+                </h2>
+                <p class="text-xs text-stone-500 dark:text-stone-400 mt-1">
+                  Periksa formulir dan berkas, lalu setujui atau tolak dengan
+                  catatan.
+                </p>
+              </div>
+              <span
+                id="submissionQueueCount"
+                class="text-sm font-semibold text-cemara dark:text-cemara-light"
+                aria-live="polite"
+                >Memuat antrean...</span
+              >
+            </div>
+            <p
+              class="rounded-xl bg-amber-50 dark:bg-amber-950/30 p-4 text-sm text-stone-700 dark:text-stone-200"
+            >
+              Validasi OTP, OCR, dan AI belum terhubung. Pengajuan ditinjau
+              manual oleh admin.
+            </p>
+            <div id="workSubmissionsList" class="space-y-4" aria-live="polite">
+              Memuat pengajuan...
+            </div>
+          </div>
+        </section>
+
         <!-- ========================================================
            TAB 3: KELOLA KARYA (ADMIN)
       ======================================================== -->
@@ -968,7 +1016,7 @@
         </section>
 
         <!-- ========================================================
-           TAB 4: UNGGAH KARYA (ADMIN)
+           TAB: TULIS / UNGGAH KARYA (ALL AUTHENTICATED USERS)
       ======================================================== -->
         <section id="view-upload" class="tab-view hidden space-y-6">
           <div
@@ -978,11 +1026,11 @@
               <h2
                 class="font-serif font-bold text-xl text-stone-900 dark:text-stone-100"
               >
-                Formulir Publikasi Naskah Baru
+                Tulis / Unggah Karya
               </h2>
               <p class="text-xs text-stone-500 dark:text-stone-400 mt-1">
-                Publikasikan cerpen, puisi, esai, seni, atau komik bergambar
-                siswa.
+                Semua akun terdaftar dapat mengirim karya. Karya hanya terbit
+                setelah ditinjau admin, super admin, atau developer.
               </p>
             </div>
 
@@ -996,6 +1044,7 @@
                   <input
                     id="upTitle"
                     type="text"
+                    maxlength="120"
                     required
                     placeholder="Contoh: Senja di Halaman Sekolah"
                     class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara"
@@ -1007,19 +1056,13 @@
                     >Nama Siswa / Penulis *</label
                   >
                   <input
-                    id="upAuthorSearch"
-                    type="search"
-                    placeholder="Cari akun penulis..."
-                    autocomplete="off"
-                    class="w-full mb-2 bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara"
-                  />
-                  <select
                     id="upAuthor"
+                    type="text"
+                    maxlength="80"
                     required
-                    class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara"
-                  >
-                    <option value="">Pilih akun penulis terdaftar</option>
-                  </select>
+                    readonly
+                    class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm"
+                  />
                 </div>
               </div>
 
@@ -1053,6 +1096,7 @@
                 <textarea
                   id="upDescription"
                   rows="2"
+                  maxlength="500"
                   required
                   placeholder="Tuliskan gambaran singkat cerita atau puisi ini..."
                   class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara"
@@ -1097,7 +1141,7 @@
                 <textarea
                   id="upContent"
                   rows="6"
-                  required
+                  maxlength="50000"
                   placeholder="Ketik atau tempelkan naskah teks karya di sini..."
                   class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara font-serif"
                 ></textarea>
@@ -1117,30 +1161,30 @@
                   class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara"
                 />
                 <p class="mt-1.5 text-xs text-stone-500 dark:text-stone-400">
-                  Pastikan akses tautan Drive diatur agar dapat dibuka oleh pembaca.
+                  Pastikan akses tautan Drive diatur agar dapat dibuka oleh
+                  pembaca.
                 </p>
               </div>
 
-              <div
-                class="p-4 rounded-2xl bg-cemara-soft/60 dark:bg-cemara/10 border border-cemara/20 space-y-2"
-              >
+              <div class="space-y-2">
                 <label
-                  for="upCover"
-                  class="block text-xs font-serif font-bold text-cemara-dark dark:text-cemara-light"
+                  for="upAttachment"
+                  class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300"
                 >
-                  Sampul Karya (opsional, satu gambar, maks. 5MB)
+                  Berkas Karya (opsional jika naskah diketik atau memakai Google
+                  Drive; PDF, DOC, DOCX, JPG, PNG, WEBP; maks. 10 MB; gambar
+                  otomatis diperkecil hingga 2400 px pada sisi terpanjang)
                 </label>
                 <input
-                  id="upCover"
+                  id="upAttachment"
                   type="file"
-                  accept="image/jpeg,image/png,image/webp,image/gif"
-                  class="block w-full text-xs text-stone-600 dark:text-stone-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-cemara file:text-white hover:file:bg-cemara-dark cursor-pointer"
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp"
+                  class="block w-full text-xs text-stone-600 dark:text-stone-400"
                 />
-                <p class="text-[11px] text-stone-500 dark:text-stone-400">
-                  Gambar ini hanya dipakai sebagai sampul di kartu karya, bukan
-                  bagian dari isi naskah.
-                </p>
-                <div id="upCoverPreview" class="pt-2"></div>
+                <p
+                  id="upAttachmentName"
+                  class="text-xs text-stone-500 dark:text-stone-400"
+                ></p>
               </div>
 
               <button
@@ -1149,9 +1193,362 @@
                 class="w-full py-3.5 px-6 rounded-2xl bg-cemara hover:bg-cemara-dark text-white font-bold text-sm flex items-center justify-center gap-2 shadow transition-all"
               >
                 <i data-lucide="check" class="w-4 h-4"></i>
-                <span>Publikasikan Karya</span>
+                <span>Kirim untuk Ditinjau</span>
               </button>
             </form>
+          </div>
+          <div
+            class="classic-card p-6 sm:p-8 rounded-3xl shadow-sm max-w-3xl space-y-4"
+          >
+            <div class="border-b border-black/5 dark:border-white/5 pb-4">
+              <h2
+                class="font-serif font-bold text-lg text-stone-900 dark:text-stone-100"
+              >
+                Status pengajuan saya
+              </h2>
+            </div>
+            <div id="myWorkSubmissions" class="space-y-3" aria-live="polite">
+              Memuat pengajuan...
+            </div>
+          </div>
+        </section>
+
+        <section id="view-arsip" class="tab-view hidden space-y-6">
+          <div
+            class="classic-card p-6 sm:p-8 rounded-3xl shadow-sm max-w-3xl space-y-6"
+          >
+            <div class="border-b border-black/5 dark:border-white/5 pb-4">
+              <h2
+                class="font-serif font-bold text-xl text-stone-900 dark:text-stone-100"
+              >
+                Tambah Arsip Baru
+              </h2>
+              <p class="text-xs text-stone-500 dark:text-stone-400 mt-1">
+                Simpan proposal, hasil penelitian, presentasi, atau tech stack
+                beserta versinya. Arsip dan setiap versi baru berstatus
+                menunggu verifikasi; hanya arsip terverifikasi yang dapat
+                dibaca publik.
+              </p>
+            </div>
+
+            <form id="arsipForm" class="space-y-4" novalidate>
+              <div class="grid grid-cols-1 gap-4">
+                <div>
+                  <label
+                    class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5"
+                    for="arsKind"
+                    >Jenis arsip *</label
+                  >
+                  <select
+                    id="arsKind"
+                    class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara"
+                  >
+                    <option value="proposal">Proposal</option>
+                    <option value="penelitian">Hasil Penelitian</option>
+                    <option value="presentasi">Presentasi</option>
+                    <option value="tech_stack">Tech Stack</option>
+                  </select>
+                </div>
+                <div>
+                  <label
+                    class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5"
+                    for="arsTitle"
+                    >Judul *</label
+                  >
+                  <input
+                    id="arsTitle"
+                    type="text"
+                    maxlength="160"
+                    required
+                    placeholder="Contoh: Proposal Festival Literasi 2026"
+                    class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label
+                  class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5"
+                  for="arsSummary"
+                  >Ringkasan (maks. 500 karakter)</label
+                >
+                <textarea
+                  id="arsSummary"
+                  rows="2"
+                  maxlength="500"
+                  placeholder="Satu atau dua kalimat tentang isi arsip ini."
+                  class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara"
+                ></textarea>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="sm:col-span-2">
+                  <label
+                    class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5"
+                    for="arsAuthors"
+                    >Penyusun / tim</label
+                  >
+                  <input
+                    id="arsAuthors"
+                    type="text"
+                    maxlength="300"
+                    placeholder="Nama, nama, nama"
+                    class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara"
+                  />
+                </div>
+                <div>
+                  <label
+                    class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5"
+                    for="arsYear"
+                    >Tahun</label
+                  >
+                  <input
+                    id="arsYear"
+                    type="number"
+                    min="2000"
+                    max="2100"
+                    placeholder="2026"
+                    class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara"
+                  />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label
+                    class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5"
+                    for="arsStatus"
+                    >Status</label
+                  >
+                  <select
+                    id="arsStatus"
+                    class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara"
+                  >
+                    <option value="draft">Draf</option>
+                    <option value="review">Ditinjau</option>
+                    <option value="final" selected>Final</option>
+                    <option value="archived">Diarsipkan</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label
+                  class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5"
+                  for="arsTags"
+                  >Tag (pisahkan dengan koma, maks. 10)</label
+                >
+                <input
+                  id="arsTags"
+                  type="text"
+                  placeholder="literasi, kegiatan, 2026"
+                  class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara"
+                />
+              </div>
+
+              <div id="arsStackField" class="hidden">
+                <label
+                  class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5"
+                  for="arsStack"
+                  >Tech stack * (pisahkan dengan koma, maks. 20)</label
+                >
+                <input
+                  id="arsStack"
+                  type="text"
+                  placeholder="Supabase, PostgreSQL, JavaScript, Tailwind CSS"
+                  class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara"
+                />
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div id="arsRepoField" class="hidden">
+                  <label
+                    class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5"
+                    for="arsRepoUrl"
+                    >Tautan repositori (https)</label
+                  >
+                  <input
+                    id="arsRepoUrl"
+                    type="url"
+                    placeholder="https://github.com/…"
+                    class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara"
+                  />
+                </div>
+                <div id="arsDemoField" class="hidden">
+                  <label
+                    class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5"
+                    for="arsDemoUrl"
+                    >Tautan demo (https)</label
+                  >
+                  <input
+                    id="arsDemoUrl"
+                    type="url"
+                    placeholder="https://…"
+                    class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label
+                  class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5"
+                  for="arsReadme"
+                  >README (opsional, maks. 20.000 karakter)</label
+                >
+                <textarea
+                  id="arsReadme"
+                  rows="5"
+                  maxlength="20000"
+                  placeholder="Latar belakang, tujuan, hasil, cara memakai… Pisahkan paragraf dengan baris kosong."
+                  class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara"
+                ></textarea>
+              </div>
+
+              <fieldset class="space-y-2">
+                <legend
+                  class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5"
+                >
+                  Sumber berkas
+                </legend>
+                <div class="flex flex-wrap gap-4 text-sm">
+                  <label class="inline-flex items-center gap-2"
+                    ><input
+                      type="radio"
+                      name="arsSource"
+                      value="upload"
+                      checked
+                    />
+                    Unggah berkas</label
+                  >
+                  <label class="inline-flex items-center gap-2"
+                    ><input type="radio" name="arsSource" value="link" /> Tautan
+                    (Drive, Canva, dll.)</label
+                  >
+                  <label
+                    id="arsNoneOption"
+                    class="hidden inline-flex items-center gap-2"
+                    ><input type="radio" name="arsSource" value="none" /> Tanpa
+                    berkas</label
+                  >
+                </div>
+              </fieldset>
+
+              <div id="arsFileField">
+                <label
+                  class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5"
+                  for="arsFile"
+                  >Berkas</label
+                >
+                <input
+                  id="arsFile"
+                  type="file"
+                  class="block w-full text-xs text-stone-600 dark:text-stone-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-cemara file:text-white hover:file:bg-cemara-dark"
+                />
+                <p
+                  id="arsFileHint"
+                  class="text-[11px] text-stone-500 dark:text-stone-400 mt-1"
+                ></p>
+                <p class="text-[11px] text-stone-500 dark:text-stone-400 mt-1">
+                  Maks. 50 MB (batas paket Free Supabase). Untuk berkas lebih
+                  besar, pakai tautan Google Drive.
+                </p>
+              </div>
+              <div id="arsLinkField" class="hidden">
+                <label
+                  class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5"
+                  for="arsExternalUrl"
+                  >Tautan berkas (https)</label
+                >
+                <input
+                  id="arsExternalUrl"
+                  type="url"
+                  placeholder="https://drive.google.com/…"
+                  class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara"
+                />
+              </div>
+
+              <div
+                id="arsVersionFields"
+                class="grid grid-cols-1 sm:grid-cols-3 gap-4"
+              >
+                <div>
+                  <label
+                    class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5"
+                    for="arsVersionLabel"
+                    >Label versi</label
+                  >
+                  <input
+                    id="arsVersionLabel"
+                    type="text"
+                    maxlength="60"
+                    placeholder="v1"
+                    class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara"
+                  />
+                </div>
+                <div class="sm:col-span-2">
+                  <label
+                    class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5"
+                    for="arsChangelog"
+                    >Catatan versi</label
+                  >
+                  <input
+                    id="arsChangelog"
+                    type="text"
+                    maxlength="500"
+                    placeholder="Versi awal."
+                    class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara"
+                  />
+                </div>
+              </div>
+
+              <button
+                id="arsSubmit"
+                type="submit"
+                class="w-full py-3.5 px-6 rounded-2xl bg-cemara hover:bg-cemara-dark text-white font-bold text-sm flex items-center justify-center gap-2 transition disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                <i data-lucide="archive" class="w-4 h-4"></i>
+                <span>Kirim untuk Verifikasi</span>
+              </button>
+              <p
+                id="arsStatusMsg"
+                class="text-xs text-stone-500 dark:text-stone-400 min-h-[1.2em]"
+                role="status"
+              ></p>
+            </form>
+          </div>
+
+          <div
+            class="classic-card p-6 sm:p-8 rounded-3xl shadow-sm max-w-3xl space-y-4"
+          >
+            <h2
+              class="font-serif font-bold text-lg text-stone-900 dark:text-stone-100"
+            >
+              Arsip dan verifikasi
+            </h2>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left">
+                <thead>
+                  <tr
+                    class="text-[11px] uppercase tracking-wider text-stone-500"
+                  >
+                    <th class="py-2 pr-3">Judul</th>
+                    <th class="py-2 pr-3">Jenis</th>
+                    <th class="py-2 pr-3">Versi</th>
+                    <th class="py-2 pr-3">Verifikasi</th>
+                    <th class="py-2 text-right">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="arsList">
+                  <tr>
+                    <td
+                      colspan="5"
+                      class="py-4 text-center text-xs text-stone-500"
+                    >
+                      Memuat…
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </section>
 
@@ -1335,7 +1732,7 @@
                 <input
                   id="avatarInput"
                   type="file"
-                  accept="image/*"
+                  accept="image/jpeg,image/png,image/webp"
                   class="hidden"
                 />
               </div>
@@ -1510,6 +1907,14 @@
         <i data-lucide="layout-grid" class="w-5 h-5"></i>
         <span class="text-[10px] font-semibold">Ikhtisar</span>
       </button>
+      <button
+        data-tab="upload"
+        id="mobileNavUploadWork"
+        class="nav-tab mobile-nav-tab flex flex-col items-center gap-1 py-3 px-1 text-stone-500 dark:text-stone-400 hover:text-cemara dark:hover:text-cemara flex-1 transition-colors rounded-none"
+      >
+        <i data-lucide="pen-tool" class="w-5 h-5"></i>
+        <span class="text-[10px] font-semibold">Tulis karya</span>
+      </button>
 
       <!-- We will control visibility of these buttons via admin.js if needed, or let them be shown based on role logic -->
       <button
@@ -1519,6 +1924,14 @@
       >
         <i data-lucide="book-open" class="w-5 h-5"></i>
         <span class="text-[10px] font-semibold">Karya</span>
+      </button>
+      <button
+        data-tab="submissions"
+        id="mobileNavSubmissions"
+        class="nav-tab mobile-nav-tab flex-col items-center gap-1 py-3 px-1 text-stone-500 dark:text-stone-400 hover:text-cemara dark:hover:text-cemara flex-1 transition-colors rounded-none hidden"
+      >
+        <i data-lucide="inbox" class="w-5 h-5"></i>
+        <span class="text-[10px] font-semibold">Pengajuan</span>
       </button>
 
       <button
@@ -1549,6 +1962,7 @@
     </nav>
 
     <script src="admin.js"></script>
+    <script src="../arsip.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         if (window.lucide) {

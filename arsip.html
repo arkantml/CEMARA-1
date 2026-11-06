@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="data:," />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Arsip CEMARA: proposal, hasil penelitian, presentasi, dan tech stack Duta Literasi, lengkap dengan versi dan catatan perubahan."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="id_ID" />
+    <meta property="og:title" content="Arsip | CEMARA" />
+    <meta
+      property="og:description"
+      content="Proposal, hasil penelitian, presentasi, dan tech stack Duta Literasi."
+    />
+
+    <meta name="theme-color" content="#f7f5eb" />
+    <script>
+      // Terapkan tema tersimpan sebelum CSS dirender (hindari kilatan tema terang)
+      try {
+        if (localStorage.getItem("cemara_theme") === "dark")
+          document.documentElement.dataset.theme = "dark";
+      } catch (e) {}
+    </script>
+
+    <title>Arsip | CEMARA</title>
+
+    <link rel="preconnect" href="https://api.fontshare.com" />
+    <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+    <link
+      href="https://api.fontshare.com/v2/css?f[]=erode@400,500,600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+
+    <!-- SUPABASE & SHARED -->
+    <!-- Pinned version. Add integrity="sha384-..." (see jsdelivr.com SRI hash) -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="config.js"></script>
+    <script src="shared.js"></script>
+  </head>
+
+  <body class="cemara-page collection-page arsip-page">
+    <!-- =====================================================
+       TOAST
+    ====================================================== -->
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <!-- =====================================================
+       HEADER
+    ====================================================== -->
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="CEMARA Beranda">
+        <span class="brand-mark"> C </span>
+        <span>
+          <strong>CEMARA</strong>
+          <small>Cendekia Media Apresiasi dan Ruang Karya</small>
+        </span>
+      </a>
+
+      <nav id="mainNav" class="main-nav" aria-label="Navigasi utama">
+        <a href="index.html">← Beranda</a>
+        <a href="app.html" class="nav-highlight">Koleksi Karya</a>
+        <a href="arsip.html" class="active" aria-current="page">Arsip</a>
+        <a href="index.html#sorotan">Sorotan</a>
+        <a href="index.html#tentang">Tentang</a>
+        <a href="admin/index.html">Tulis / Unggah Karya</a>
+      </nav>
+
+      <div class="header-actions">
+        <button
+          class="icon-btn"
+          id="themeToggle"
+          type="button"
+          aria-label="Ganti mode warna"
+        >
+          <span id="themeIcon" aria-hidden="true">◐</span>
+        </button>
+
+        <a class="login-btn" href="admin/index.html">Portal</a>
+
+        <button
+          class="menu-btn icon-btn"
+          id="menuToggle"
+          type="button"
+          aria-label="Buka menu"
+          aria-expanded="false"
+          aria-controls="mainNav"
+        >
+          <span class="menu-lines" aria-hidden="true"></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- =====================================================
+       MAIN
+    ====================================================== -->
+    <main class="arsip-main">
+      <header class="arsip-hero">
+        <p class="arsip-eyebrow">Arsip CEMARA</p>
+        <h1>Proposal, penelitian, presentasi &amp; tech stack.</h1>
+        <p class="arsip-hero-lead">
+          Arsip yang telah diverifikasi terbuka untuk semua orang. Setiap
+          dokumen dan versi baru diperiksa pengelola sebelum ditampilkan.
+        </p>
+        <p id="archiveStaffNote" class="arsip-staff-note hidden">
+          Anda masuk sebagai pengelola.
+          <a href="admin/index.html">Tambah dan verifikasi arsip di dashboard →</a>
+        </p>
+      </header>
+
+      <div id="archiveList">
+        <div class="arsip-toolbar">
+          <label class="arsip-search">
+            <span class="visually-hidden">Cari arsip</span>
+            <input
+              id="archiveSearch"
+              type="search"
+              placeholder="Cari judul, penyusun, tag, atau teknologi"
+              autocomplete="off"
+            />
+          </label>
+
+          <div
+            class="arsip-filters"
+            role="group"
+            aria-label="Filter jenis arsip"
+          >
+            <button
+              class="arsip-filter active"
+              type="button"
+              data-kind="semua"
+              aria-pressed="true"
+            >
+              Semua <span class="count">0</span>
+            </button>
+            <button
+              class="arsip-filter"
+              type="button"
+              data-kind="proposal"
+              aria-pressed="false"
+            >
+              Proposal <span class="count">0</span>
+            </button>
+            <button
+              class="arsip-filter"
+              type="button"
+              data-kind="penelitian"
+              aria-pressed="false"
+            >
+              Hasil Penelitian <span class="count">0</span>
+            </button>
+            <button
+              class="arsip-filter"
+              type="button"
+              data-kind="presentasi"
+              aria-pressed="false"
+            >
+              Presentasi <span class="count">0</span>
+            </button>
+            <button
+              class="arsip-filter"
+              type="button"
+              data-kind="tech_stack"
+              aria-pressed="false"
+            >
+              Tech Stack <span class="count">0</span>
+            </button>
+          </div>
+        </div>
+
+        <p id="archiveState" class="arsip-state" role="status">Memuat arsip…</p>
+        <div id="archiveGrid" class="arsip-grid" aria-live="polite"></div>
+        <noscript
+          ><p class="arsip-state">
+            Aktifkan JavaScript untuk melihat arsip.
+          </p></noscript
+        >
+      </div>
+
+      <article
+        id="archiveDetail"
+        class="arsip-detail hidden"
+        aria-live="polite"
+      ></article>
+    </main>
+
+    <!-- =====================================================
+       FOOTER
+    ====================================================== -->
+    <footer class="footer">
+      <div>
+        <strong> CEMARA </strong>
+        <span> Cendekia Media Apresiasi dan Ruang Karya </span>
+      </div>
+
+      <div>
+        © <span id="year"></span> CEMARA • Duta Literasi MAN IC PADANG PARIAMAN
+        • DESIGN & DEV BY:
+        <a
+          href="https://www.instagram.com/aufaatamm/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          DL.Fatamm
+        </a>
+      </div>
+      <details class="cemara-credits">
+        <summary>Kredit arsip gambar</summary>
+        <ul>
+          <li>
+            <a
+              href="https://commons.wikimedia.org/wiki/File:Yogyakarta_Library_and_Hatta_Foundation_Library,_Daerah_Istimewa_Jogjakarta_(1953),_p879.jpg"
+              >Perpustakaan Yogyakarta, 1953</a
+            >
+            · domain publik · Wikimedia Commons.
+          </li>
+          <li>
+            <a
+              href="https://commons.wikimedia.org/wiki/File:Swing_into_books,_Book_week,_November_1-7,_1964.jpg"
+              >“Swing into books”, 1964</a
+            >
+            · Bruno Munari · domain publik · Wikimedia Commons.
+          </li>
+          <li>
+            <a
+              href="https://commons.wikimedia.org/wiki/File:Manuscript_Book_mural_in_Evolution_of_the_Book_series,_John_W._Alexander._Library_of_Congress_Thomas_Jefferson_Building,_Washington,_D.C._LCCN2005675759.jpg"
+              >Mural “Manuscript Book”</a
+            >
+            · John White Alexander · domain publik · Wikimedia Commons.
+          </li>
+          <li>
+            <a
+              href="https://commons.wikimedia.org/wiki/File:Lontar_manuscripts.jpg"
+              >“Lontar manuscripts”</a
+            >
+            · Carma citrawati · CC BY-SA 4.0 · Wikimedia Commons.
+          </li>
+        </ul>
+      </details>
+    </footer>
+
+    <!-- =====================================================
+       BACK TO TOP
+    ====================================================== -->
+    <button
+      id="backTop"
+      class="back-top"
+      type="button"
+      aria-label="Kembali ke atas"
+    >
+      ↑
+    </button>
+
+    <script src="cemara-ui.js" defer></script>
+    <script src="arsip.js" defer></script>
+  </body>
+</html>

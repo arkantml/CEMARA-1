@@ -11,6 +11,8 @@
 --   3. Membuat seluruh skema CEMARA (tabel, filter komentar, RLS, RPC, storage).
 --   4. Membawa akun yang sudah terdaftar: auth.users TIDAK diubah; nama, bio, dan
 --      role super_admin/admin dari `profiles` lama disalin ke `user_profiles`.
+--   5. Setelah skrip ini selesai, jalankan schema_arsip.sql untuk arsip publik
+--      yang hanya dapat diakses setelah verifikasi pengelola.
 --
 -- Semua dalam satu transaksi: jika ada error, tidak ada yang berubah.
 -- Aman dijalankan ulang. Jalankan di SQL Editor proyek yang sama dengan config.js.
@@ -196,6 +198,8 @@ CREATE TABLE IF NOT EXISTS public.works (
   content      text NOT NULL DEFAULT '',
   submission_type text NOT NULL DEFAULT 'text',
   drive_url    text,
+  document_path text,
+  document_name text,
   cover        text NOT NULL DEFAULT 'cover-green',
   cover_symbol text NOT NULL DEFAULT '✦',
   cover_url    text,                                   -- sampul: satu gambar unggahan (bucket karya)
@@ -220,6 +224,8 @@ ALTER TABLE public.works ADD COLUMN IF NOT EXISTS description text NOT NULL DEFA
 ALTER TABLE public.works ADD COLUMN IF NOT EXISTS content text NOT NULL DEFAULT '';
 ALTER TABLE public.works ADD COLUMN IF NOT EXISTS submission_type text NOT NULL DEFAULT 'text';
 ALTER TABLE public.works ADD COLUMN IF NOT EXISTS drive_url text;
+ALTER TABLE public.works ADD COLUMN IF NOT EXISTS document_path text;
+ALTER TABLE public.works ADD COLUMN IF NOT EXISTS document_name text;
 ALTER TABLE public.works ADD COLUMN IF NOT EXISTS cover text NOT NULL DEFAULT 'cover-green';
 ALTER TABLE public.works ADD COLUMN IF NOT EXISTS cover_symbol text NOT NULL DEFAULT '✦';
 ALTER TABLE public.works ADD COLUMN IF NOT EXISTS cover_url text;
@@ -332,6 +338,87 @@ CREATE TABLE IF NOT EXISTS public.account_inbox (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS idx_account_inbox_user ON public.account_inbox(user_id, created_at DESC);
+
+-- 1.8 Pengajuan karya menunggu peninjauan admin
+CREATE TABLE IF NOT EXISTS public.work_submissions (
+  id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id         uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  title           text NOT NULL CHECK (char_length(title) BETWEEN 1 AND 120),
+  author          text NOT NULL CHECK (char_length(author) BETWEEN 1 AND 80),
+  category        text NOT NULL CHECK (category IN ('Cerpen', 'Puisi', 'Esai', 'Seni', 'Komik', 'Artikel', 'Lainnya')),
+  description     text NOT NULL CHECK (char_length(description) BETWEEN 1 AND 500),
+  content         text NOT NULL DEFAULT '',
+  submission_type text NOT NULL DEFAULT 'text',
+  drive_url       text,
+  attachment_path text,
+  attachment_name text,
+  attachment_mime text,
+  status          text NOT NULL DEFAULT 'pending'
+                  CHECK (status IN ('pending', 'approved', 'rejected')),
+  automated_validation_status text NOT NULL DEFAULT 'not_configured'
+                  CHECK (automated_validation_status IN ('not_configured', 'passed', 'flagged')),
+  review_notes    text NOT NULL DEFAULT '',
+  reviewed_at     timestamptz,
+  reviewed_by     uuid REFERENCES auth.users(id) ON DELETE SET NULL,
+  created_at      timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE public.work_submissions
+  ADD COLUMN IF NOT EXISTS submission_type text NOT NULL DEFAULT 'text',
+  ADD COLUMN IF NOT EXISTS drive_url text;
+ALTER TABLE public.work_submissions
+  ALTER COLUMN attachment_path DROP NOT NULL,
+  ALTER COLUMN attachment_name DROP NOT NULL,
+  ALTER COLUMN attachment_mime DROP NOT NULL;
+ALTER TABLE public.work_submissions
+  DROP CONSTRAINT IF EXISTS work_submissions_attachment_owner,
+  DROP CONSTRAINT IF EXISTS work_submissions_content_length,
+  DROP CONSTRAINT IF EXISTS work_submissions_category_check,
+  DROP CONSTRAINT IF EXISTS work_submissions_submission_type_check,
+  DROP CONSTRAINT IF EXISTS work_submissions_source_check;
+ALTER TABLE public.work_submissions
+  ADD CONSTRAINT work_submissions_category_check
+    CHECK (category IN ('Cerpen', 'Puisi', 'Esai', 'Seni', 'Komik', 'Artikel', 'Lainnya')),
+  ADD CONSTRAINT work_submissions_submission_type_check
+    CHECK (submission_type IN ('text', 'drive')),
+  ADD CONSTRAINT work_submissions_source_check
+    CHECK (
+      (submission_type = 'text' AND drive_url IS NULL
+       AND (char_length(trim(content)) > 0 OR attachment_path IS NOT NULL))
+      OR (
+        submission_type = 'drive'
+        AND drive_url IS NOT NULL
+        AND drive_url ~* '^https://(drive|docs)\.google\.com(:443)?/'
+      )
+    ),
+  ADD CONSTRAINT work_submissions_attachment_owner
+    CHECK (
+      (
+        attachment_path IS NULL
+        AND attachment_name IS NULL
+        AND attachment_mime IS NULL
+      )
+      OR (
+        attachment_path IS NOT NULL
+        AND attachment_name IS NOT NULL
+        AND char_length(attachment_name) BETWEEN 1 AND 255
+        AND attachment_mime IN (
+          'application/pdf',
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'image/jpeg',
+          'image/png',
+          'image/webp'
+        )
+        AND split_part(attachment_path, '/', 1) = user_id::text
+        AND split_part(attachment_path, '/', 2) = id::text
+      )
+    ),
+  ADD CONSTRAINT work_submissions_content_length
+    CHECK (char_length(content) <= 50000);
+CREATE INDEX IF NOT EXISTS idx_work_submissions_queue
+  ON public.work_submissions(status, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_work_submissions_user
+  ON public.work_submissions(user_id, created_at DESC);
 
 -- ----------------------------------------------------------------------------
 -- 2. FUNGSI BANTU ROLE
@@ -788,6 +875,7 @@ ALTER TABLE public.work_likes       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.work_saves       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.account_activity ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.account_inbox    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.work_submissions ENABLE ROW LEVEL SECURITY;
 
 -- Bersihkan policy lama pada tabel CEMARA agar tidak ada policy longgar yang tersisa
 DO $$
@@ -797,7 +885,8 @@ BEGIN
     SELECT schemaname, tablename, policyname FROM pg_policies
     WHERE schemaname = 'public'
       AND tablename IN ('user_profiles','admin_profiles','user_blocks','works','comments',
-                        'work_likes','work_saves','account_activity','account_inbox')
+                        'work_likes','work_saves','account_activity','account_inbox',
+                        'work_submissions')
   LOOP
     EXECUTE format('DROP POLICY IF EXISTS %I ON %I.%I', r.policyname, r.schemaname, r.tablename);
   END LOOP;
@@ -827,8 +916,6 @@ CREATE POLICY cemara_blocks_select_staff ON public.user_blocks
 -- works
 CREATE POLICY cemara_works_select ON public.works
   FOR SELECT USING (true);
-CREATE POLICY cemara_works_insert_staff ON public.works
-  FOR INSERT TO authenticated WITH CHECK (public.cemara_is_staff());
 CREATE POLICY cemara_works_update_staff ON public.works
   FOR UPDATE TO authenticated
   USING (public.cemara_is_staff()) WITH CHECK (public.cemara_is_staff());
@@ -886,6 +973,149 @@ CREATE POLICY cemara_inbox_update_own ON public.account_inbox
   FOR UPDATE TO authenticated
   USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
 
+-- Pengajuan: pemilik dan staf dapat membaca; hanya pemilik dapat mengirim.
+CREATE POLICY cemara_submissions_select ON public.work_submissions
+  FOR SELECT TO authenticated
+  USING (user_id = auth.uid() OR public.cemara_is_staff());
+CREATE POLICY cemara_submissions_insert_own ON public.work_submissions
+  FOR INSERT TO authenticated
+  WITH CHECK (user_id = auth.uid() AND NOT public.cemara_is_blocked());
+
+CREATE OR REPLACE FUNCTION public.cemara_prepare_work_submission()
+RETURNS trigger
+LANGUAGE plpgsql
+SET search_path = public
+AS $$
+BEGIN
+  IF auth.uid() IS NULL
+     OR NEW.user_id IS DISTINCT FROM auth.uid()
+     OR public.cemara_is_blocked() THEN
+    RAISE EXCEPTION 'Akun ini tidak dapat mengajukan karya.';
+  END IF;
+
+  NEW.status := 'pending';
+  NEW.automated_validation_status := 'not_configured';
+  NEW.review_notes := '';
+  NEW.reviewed_at := NULL;
+  NEW.reviewed_by := NULL;
+  NEW.created_at := now();
+
+  SELECT NULLIF(trim(display_name), '')
+  INTO NEW.author
+  FROM public.user_profiles
+  WHERE user_id = auth.uid();
+  IF NEW.author IS NULL THEN
+    RAISE EXCEPTION 'Profil penulis belum tersedia.';
+  END IF;
+
+  IF NEW.attachment_path IS NOT NULL
+     AND (
+       split_part(NEW.attachment_path, '/', 1) <> auth.uid()::text
+       OR split_part(NEW.attachment_path, '/', 2) <> NEW.id::text
+     ) THEN
+    RAISE EXCEPTION 'Lokasi berkas pengajuan tidak valid.';
+  END IF;
+  IF NEW.submission_type = 'text'
+     AND NEW.attachment_path IS NULL
+     AND char_length(trim(NEW.content)) = 0 THEN
+    RAISE EXCEPTION 'Naskah atau berkas karya wajib diisi.';
+  END IF;
+  IF NEW.submission_type = 'drive'
+     AND (
+       NEW.drive_url IS NULL
+       OR NEW.drive_url !~* '^https://(drive|docs)\.google\.com(:443)?/'
+     ) THEN
+    RAISE EXCEPTION 'Tautan Google Drive atau Docs tidak valid.';
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_work_submissions_prepare ON public.work_submissions;
+CREATE TRIGGER trg_work_submissions_prepare
+  BEFORE INSERT ON public.work_submissions
+  FOR EACH ROW EXECUTE FUNCTION public.cemara_prepare_work_submission();
+
+CREATE OR REPLACE FUNCTION public.review_work_submission(
+  p_submission_id uuid,
+  p_decision text,
+  p_review_notes text DEFAULT ''
+)
+RETURNS uuid
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
+DECLARE
+  submission public.work_submissions%ROWTYPE;
+  published_work_id uuid;
+  decision_notes text := COALESCE(NULLIF(TRIM(p_review_notes), ''), '');
+BEGIN
+  IF NOT public.cemara_is_staff() THEN
+    RAISE EXCEPTION 'Hanya admin yang dapat meninjau pengajuan.';
+  END IF;
+  IF p_decision IS NULL OR p_decision NOT IN ('approved', 'rejected') THEN
+    RAISE EXCEPTION 'Keputusan pengajuan tidak valid.';
+  END IF;
+  IF char_length(decision_notes) > 1000 THEN
+    RAISE EXCEPTION 'Catatan peninjauan maksimal 1000 karakter.';
+  END IF;
+  IF p_decision = 'rejected' AND decision_notes = '' THEN
+    RAISE EXCEPTION 'Alasan penolakan wajib diisi.';
+  END IF;
+
+  SELECT * INTO submission
+  FROM public.work_submissions
+  WHERE id = p_submission_id
+  FOR UPDATE;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Pengajuan tidak ditemukan.';
+  END IF;
+  IF submission.status <> 'pending' THEN
+    RAISE EXCEPTION 'Pengajuan ini sudah ditinjau.';
+  END IF;
+
+  IF p_decision = 'approved' THEN
+    INSERT INTO public.works (
+      title, author, author_id, category, description, content,
+      submission_type, drive_url, document_path, document_name, published_at
+    )
+    VALUES (
+      submission.title, submission.author, submission.user_id,
+      submission.category, submission.description, submission.content,
+      submission.submission_type, submission.drive_url,
+      submission.attachment_path, submission.attachment_name, now()
+    )
+    RETURNING id INTO published_work_id;
+  END IF;
+
+  UPDATE public.work_submissions
+  SET status = p_decision,
+      review_notes = decision_notes,
+      reviewed_at = now(),
+      reviewed_by = auth.uid()
+  WHERE id = p_submission_id;
+
+  INSERT INTO public.account_inbox (user_id, subject, message)
+  VALUES (
+    submission.user_id,
+    CASE p_decision
+      WHEN 'approved' THEN 'Pengajuan karya disetujui'
+      ELSE 'Pengajuan karya ditolak'
+    END,
+    CASE p_decision
+      WHEN 'approved' THEN format('Karya "%s" telah disetujui dan diterbitkan.', submission.title)
+      ELSE format('Karya "%s" belum dapat diterbitkan. Catatan admin: %s', submission.title, decision_notes)
+    END
+  );
+
+  RETURN published_work_id;
+END;
+$$;
+REVOKE ALL ON FUNCTION public.review_work_submission(uuid, text, text) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.review_work_submission(uuid, text, text) TO authenticated;
+
 -- ----------------------------------------------------------------------------
 -- 8. GRANT (eksplisit, agar tetap jalan walau default privilege proyek ketat)
 -- ----------------------------------------------------------------------------
@@ -897,20 +1127,30 @@ GRANT SELECT ON public.work_engagement_stats TO anon, authenticated;
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.user_profiles TO authenticated;
 GRANT SELECT ON public.admin_profiles, public.user_blocks     TO authenticated;
-GRANT SELECT, INSERT, UPDATE, DELETE ON public.works          TO authenticated;
+GRANT SELECT, UPDATE, DELETE ON public.works                  TO authenticated;
+REVOKE INSERT ON public.works FROM authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.comments       TO authenticated;
 GRANT SELECT, INSERT, DELETE ON public.work_likes, public.work_saves TO authenticated;
 GRANT SELECT, INSERT ON public.account_activity               TO authenticated;
 GRANT SELECT, INSERT ON public.account_inbox                  TO authenticated;
 GRANT UPDATE (is_read) ON public.account_inbox                TO authenticated;
+GRANT SELECT, INSERT ON public.work_submissions               TO authenticated;
 
 -- ----------------------------------------------------------------------------
--- 9. STORAGE: bucket `karya` (gambar karya) dan `avatars` (foto profil)
+-- 9. STORAGE: bucket `karya`, `avatars`, dan berkas pengajuan privat
 -- ----------------------------------------------------------------------------
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 VALUES
   ('karya',   'karya',   true, 10485760, ARRAY['image/jpeg','image/png','image/webp','image/gif']),
-  ('avatars', 'avatars', true,  2097152, ARRAY['image/jpeg','image/png','image/webp'])
+  ('avatars', 'avatars', true,  2097152, ARRAY['image/jpeg','image/png','image/webp']),
+  ('pengajuan-karya', 'pengajuan-karya', false, 10485760, ARRAY[
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'image/jpeg',
+    'image/png',
+    'image/webp'
+  ])
 ON CONFLICT (id) DO UPDATE
   SET public = EXCLUDED.public,
       file_size_limit = EXCLUDED.file_size_limit,
@@ -923,6 +1163,9 @@ DROP POLICY IF EXISTS cemara_avatars_select       ON storage.objects;
 DROP POLICY IF EXISTS cemara_avatars_insert_own   ON storage.objects;
 DROP POLICY IF EXISTS cemara_avatars_update_own   ON storage.objects;
 DROP POLICY IF EXISTS cemara_avatars_delete_own   ON storage.objects;
+DROP POLICY IF EXISTS cemara_submissions_file_select ON storage.objects;
+DROP POLICY IF EXISTS cemara_submissions_file_insert ON storage.objects;
+DROP POLICY IF EXISTS cemara_submissions_file_delete_orphan ON storage.objects;
 
 -- karya: hanya staf, ke folder bernama uid sendiri (sesuai admin.js)
 CREATE POLICY cemara_karya_insert_staff ON storage.objects
@@ -948,6 +1191,41 @@ CREATE POLICY cemara_avatars_update_own ON storage.objects
 CREATE POLICY cemara_avatars_delete_own ON storage.objects
   FOR DELETE TO authenticated
   USING (bucket_id = 'avatars' AND (storage.foldername(name))[1] = auth.uid()::text);
+
+-- Berkas hanya dapat dibaca pemilik dan staf sebelum keputusan; karya terbit dapat dibaca publik.
+CREATE POLICY cemara_submissions_file_select ON storage.objects
+  FOR SELECT
+  USING (
+    bucket_id = 'pengajuan-karya'
+    AND (
+      public.cemara_is_staff()
+      OR EXISTS (
+        SELECT 1 FROM public.work_submissions s
+        WHERE s.attachment_path = name AND s.user_id = auth.uid()
+      )
+      OR EXISTS (
+        SELECT 1 FROM public.works w
+        WHERE w.document_path = name OR w.cover_url = name
+      )
+    )
+  );
+CREATE POLICY cemara_submissions_file_insert ON storage.objects
+  FOR INSERT TO authenticated
+  WITH CHECK (
+    bucket_id = 'pengajuan-karya'
+    AND (storage.foldername(name))[1] = auth.uid()::text
+    AND NOT public.cemara_is_blocked()
+  );
+CREATE POLICY cemara_submissions_file_delete_orphan ON storage.objects
+  FOR DELETE TO authenticated
+  USING (
+    bucket_id = 'pengajuan-karya'
+    AND (storage.foldername(name))[1] = auth.uid()::text
+    AND NOT EXISTS (
+      SELECT 1 FROM public.work_submissions s
+      WHERE s.attachment_path = name
+    )
+  );
 
 -- ----------------------------------------------------------------------------
 -- 10. ISI PROFIL UNTUK AKUN YANG SUDAH TERDAFTAR

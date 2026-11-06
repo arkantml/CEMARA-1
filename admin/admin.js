@@ -12,7 +12,9 @@ let currentRoleData = null;
 let allWorks = [];
 let allUsers = [];
 let allComments = [];
-let pendingAvatarFile = null;
+let allWorkSubmissions = [];
+let pendingAvatar = null; // hasil CEMARA.images.prepare(file, "avatar")
+let avatarPreviewUrl = null;
 let currentPublishedWorkCount = 0;
 
 /* =========================================================
@@ -86,7 +88,10 @@ window.switchTab = function switchTab(tabId) {
     );
     tabId = "dashboard";
   } else if (
-    (tabId === "works" || tabId === "upload" || tabId === "comments") &&
+    (tabId === "works" ||
+      tabId === "comments" ||
+      tabId === "submissions" ||
+      tabId === "arsip") &&
     !(role === "admin" || role === "super_admin" || role === "dev")
   ) {
     showToast("Hanya pengelola berwenang yang dapat mengakses menu ini.");
@@ -137,9 +142,17 @@ window.switchTab = function switchTab(tabId) {
       title: "Koleksi Seluruh Karya",
       sub: "Daftar semua naskah yang telah dipublikasikan di CEMARA.",
     },
+    submissions: {
+      title: "Antrean Pengajuan Karya",
+      sub: "Periksa berkas karya siswa dan kirim keputusan review.",
+    },
+    arsip: {
+      title: "Arsip & Dokumen",
+      sub: "Proposal, hasil penelitian, presentasi, dan tech stack beserta versinya.",
+    },
     upload: {
-      title: "Publikasi Karya Baru",
-      sub: "Formulir kurasi dan penerbitan karya siswa ke ruang publikasi.",
+      title: "Tulis / Unggah Karya",
+      sub: "Kirim karya untuk ditinjau sebelum diterbitkan.",
     },
     comments: {
       title: "Komentar & Apresiasi Pembaca",
@@ -199,7 +212,7 @@ async function bootAdmin() {
       $("#dashboardLoading")?.classList.add("is-hidden");
       showToast("Silakan masuk terlebih dahulu.");
       setTimeout(() => {
-        window.location.href = "../index.html";
+        window.location.href = "../app.html#akun";
       }, 1200);
       return;
     }
@@ -242,9 +255,14 @@ async function bootAdmin() {
     $("#accountChartUser")?.addEventListener("change", loadAccountStatsChart);
     $("#accountChartRange")?.addEventListener("change", loadAccountStatsChart);
     $("#userSearch")?.addEventListener("input", loadUsersList);
-    $("#upAuthorSearch")?.addEventListener("input", (event) =>
-      populateAuthorOptions(event.target.value),
-    );
+    $("#workSubmissionsList")?.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-submission-decision]");
+      if (!button) return;
+      void window.reviewWorkSubmission(
+        button.dataset.submissionId,
+        button.dataset.submissionDecision,
+      );
+    });
   } catch (err) {
     console.error("Admin boot error:", err);
     $("#dashboardLoading")?.classList.add("is-hidden");
@@ -271,9 +289,14 @@ function applyRolePermissions(role) {
     $("#adminMenu")?.classList.remove("hidden");
     $("#mobileNavWorks")?.classList.remove("hidden");
     $("#mobileNavWorks")?.classList.add("flex");
+    $("#mobileNavSubmissions")?.classList.remove("hidden");
+    $("#mobileNavSubmissions")?.classList.add("flex");
     $("#mobileNavComments")?.classList.remove("hidden");
     $("#mobileNavComments")?.classList.add("flex");
   }
+  $("#navUploadWork")?.classList.remove("hidden");
+  $("#mobileNavUploadWork")?.classList.remove("hidden");
+  $("#mobileNavUploadWork")?.classList.add("flex");
   if (isDev) {
     $("#devMenu")?.classList.remove("hidden");
   }
@@ -309,9 +332,10 @@ function renderProfileInfo() {
   // Sidebar
   $("#sideUserName").textContent = name;
   $("#sideUserEmail").textContent = email;
+  if ($("#upAuthor")) $("#upAuthor").value = name;
   if (avatarUrl) {
     $("#sideUserAvatar").innerHTML =
-      `<img src="${window.CEMARA.esc(avatarUrl)}" alt="Avatar" class="w-full h-full object-cover">`;
+      `<img src="${window.CEMARA.esc(avatarUrl)}" alt="Avatar" width="512" height="512" decoding="async" class="w-full h-full object-cover">`;
   }
 
   // Profile Settings form
@@ -331,7 +355,7 @@ function renderProfileInfo() {
   $("#profRoleDisplay").value = roleLabel;
   if (avatarUrl) {
     $("#profAvatarPreview").innerHTML =
-      `<img src="${window.CEMARA.esc(avatarUrl)}" alt="Avatar" class="w-full h-full object-cover">`;
+      `<img src="${window.CEMARA.esc(avatarUrl)}" alt="Avatar" width="512" height="512" decoding="async" class="w-full h-full object-cover">`;
   }
 }
 
@@ -340,7 +364,16 @@ function renderProfileInfo() {
 ========================================================= */
 
 async function refreshAllData() {
-  await Promise.all([loadStatsAndWorks(), loadUsersList(), loadCommentsList()]);
+  const requests = [
+    loadStatsAndWorks(),
+    loadUsersList(),
+    loadCommentsList(),
+    loadMyWorkSubmissions(),
+  ];
+  if (["admin", "super_admin", "dev"].includes(currentRoleData?.role)) {
+    requests.push(loadWorkSubmissions());
+  }
+  await Promise.all(requests);
   await loadAccountStatsChart();
   renderWriterOfWeek();
   if (window.lucide) {
@@ -595,7 +628,7 @@ async function loadStatsAndWorks() {
             (w) => `
           <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
             <td class="py-3 font-semibold text-stone-900 dark:text-stone-100 flex items-center gap-2">
-              ${w.cover_url ? `<img src="${window.CEMARA.esc(w.cover_url)}" alt="Sampul" class="w-8 h-10 rounded object-cover border border-black/10 dark:border-white/10">` : ""}
+              ${w.cover_url ? `<img src="${window.CEMARA.esc(w.cover_url)}" alt="Sampul" width="900" height="1200" loading="lazy" decoding="async" class="w-8 h-10 rounded object-cover border border-black/10 dark:border-white/10">` : ""}
               <span>${window.CEMARA.esc(w.title)}</span>
             </td>
             <td class="py-3 text-stone-600 dark:text-stone-400">${window.CEMARA.esc(w.author)}</td>
@@ -631,7 +664,7 @@ async function loadStatsAndWorks() {
             const imgCount = (w.image_urls || []).length;
             return `
             <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
-              <td class="py-3 text-center">${w.cover_url ? `<img src="${window.CEMARA.esc(w.cover_url)}" alt="Sampul" class="w-8 h-10 mx-auto rounded object-cover border border-black/10 dark:border-white/10">` : "—"}</td>
+              <td class="py-3 text-center">${w.cover_url ? `<img src="${window.CEMARA.esc(w.cover_url)}" alt="Sampul" width="900" height="1200" loading="lazy" decoding="async" class="w-8 h-10 mx-auto rounded object-cover border border-black/10 dark:border-white/10">` : "—"}</td>
               <td class="py-3 font-semibold text-stone-900 dark:text-stone-100">${window.CEMARA.esc(w.title)}</td>
               <td class="py-3 text-stone-600 dark:text-stone-400">${window.CEMARA.esc(w.author)}</td>
               <td class="py-3">
@@ -639,7 +672,7 @@ async function loadStatsAndWorks() {
                   ${window.CEMARA.esc(w.category)}
                 </span>
               </td>
-              <td class="py-3 text-xs text-stone-500">${imgCount > 0 ? `${imgCount} gambar` : w.cover_url ? "Teks + sampul" : "Naskah teks"}</td>
+              <td class="py-3 text-xs text-stone-500">${imgCount > 0 ? `${imgCount} gambar` : w.document_path ? "Berkas karya" : w.cover_url ? "Teks + sampul" : "Naskah teks"}</td>
               <td class="py-3 text-right space-x-1">
                 <a href="../app.html?work=${encodeURIComponent(w.id)}#karya" target="_blank" class="px-3 py-1 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-cemara hover:text-white text-xs font-semibold transition-colors inline-flex items-center gap-1">
                   <i data-lucide="book-open" class="w-3.5 h-3.5"></i> Baca
@@ -686,11 +719,6 @@ async function loadUsersList() {
     allUsers = usersData || [];
     $("#statUsers").textContent = allUsers.length;
 
-    const authorSelect = $("#upAuthor");
-    if (authorSelect) {
-      populateAuthorOptions($("#upAuthorSearch")?.value || "");
-    }
-
     const usersTbody = $("#usersTableBody");
     if (!usersTbody) return;
 
@@ -718,7 +746,7 @@ async function loadUsersList() {
     usersTbody.innerHTML = visibleUsers
       .map((u) => {
         const avatar = u.avatar_url
-          ? `<img src="${window.CEMARA.esc(u.avatar_url)}" class="w-8 h-8 rounded-xl object-cover border border-black/10 dark:border-white/10">`
+          ? `<img src="${window.CEMARA.esc(u.avatar_url)}" alt="" width="512" height="512" loading="lazy" decoding="async" class="w-8 h-8 rounded-xl object-cover border border-black/10 dark:border-white/10">`
           : `<div class="w-8 h-8 rounded-xl bg-cemara-soft dark:bg-cemara/20 text-cemara font-bold flex items-center justify-center text-xs">✦</div>`;
 
         const roleBadge =
@@ -809,29 +837,171 @@ async function loadUsersList() {
   }
 }
 
-function populateAuthorOptions(query = "") {
-  const authorSelect = $("#upAuthor");
-  if (!authorSelect) return;
-  const normalizedQuery = query.trim().toLowerCase();
-  const selectedValue = authorSelect.value;
-  const profiles = allUsers.filter(
-    (profile) =>
-      !profile.blocked_at &&
-      !["dev", "super_admin"].includes(profile.role) &&
-      (!normalizedQuery ||
-        (profile.display_name || "").toLowerCase().includes(normalizedQuery)),
-  );
-  authorSelect.innerHTML =
-    `<option value="">Pilih akun penulis terdaftar</option>` +
-    profiles
-      .map(
-        (profile) =>
-          `<option value="${window.CEMARA.esc(profile.user_id)}">${window.CEMARA.esc(profile.display_name || "Tanpa nama")}</option>`,
-      )
-      .join("");
-  if (profiles.some((profile) => profile.user_id === selectedValue))
-    authorSelect.value = selectedValue;
+async function loadWorkSubmissions() {
+  const list = $("#workSubmissionsList");
+  if (!db || !list) return;
+
+  list.textContent = "Memuat pengajuan...";
+  try {
+    const { data, error } = await db
+      .from("work_submissions")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+
+    allWorkSubmissions = data || [];
+    const pendingCount = allWorkSubmissions.filter(
+      (submission) => submission.status === "pending",
+    ).length;
+    const queueCount = $("#submissionQueueCount");
+    if (queueCount) {
+      queueCount.textContent = `${pendingCount} menunggu · ${allWorkSubmissions.length} total`;
+    }
+
+    if (!allWorkSubmissions.length) {
+      list.textContent = "Belum ada pengajuan karya.";
+      return;
+    }
+
+    const userIds = [
+      ...new Set(allWorkSubmissions.map((item) => item.user_id)),
+    ];
+    const { data: profiles, error: profilesError } = await db
+      .from("user_profiles")
+      .select("user_id, display_name")
+      .in("user_id", userIds);
+    if (profilesError) {
+      console.warn("Submission author profiles unavailable:", profilesError);
+    }
+    const names = new Map(
+      (profiles || []).map((profile) => [
+        profile.user_id,
+        profile.display_name,
+      ]),
+    );
+    const statusLabels = {
+      pending: "Menunggu review",
+      approved: "Disetujui",
+      rejected: "Ditolak",
+    };
+
+    const cards = await Promise.all(
+      allWorkSubmissions.map(async (submission) => {
+        let fileMarkup =
+          submission.submission_type === "drive"
+            ? `<a class="text-cemara underline font-semibold" href="${window.CEMARA.esc(submission.drive_url)}" target="_blank" rel="noopener noreferrer">Buka karya di Google Drive</a>`
+            : submission.content
+              ? "Naskah teks"
+              : "Berkas karya";
+        if (submission.attachment_path) {
+          const { data: signedFile, error: signedFileError } = await db.storage
+            .from("pengajuan-karya")
+            .createSignedUrl(submission.attachment_path, 3600);
+          if (signedFileError) {
+            console.warn(
+              `Submission file ${submission.id} unavailable:`,
+              signedFileError.message,
+            );
+          }
+          const attachmentMarkup = signedFile?.signedUrl
+            ? `<a class="text-cemara underline font-semibold" href="${window.CEMARA.esc(signedFile.signedUrl)}" target="_blank" rel="noopener noreferrer">Buka ${window.CEMARA.esc(submission.attachment_name)}</a>`
+            : `<span class="text-red-700 dark:text-red-300">Berkas tidak dapat dibuka.</span>`;
+          fileMarkup = `${fileMarkup}<br>${attachmentMarkup}`;
+        }
+        const isPending = submission.status === "pending";
+        const notesId = `submissionReviewNote-${submission.id}`;
+
+        return `
+          <article class="classic-card p-5 rounded-2xl space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+              <div>
+                <h3 class="font-serif font-bold text-lg text-stone-900 dark:text-stone-100">${window.CEMARA.esc(submission.title)}</h3>
+                <p class="text-sm text-stone-600 dark:text-stone-300">${window.CEMARA.esc(submission.author)} · ${window.CEMARA.esc(submission.category)}</p>
+                <p class="text-xs text-stone-500 mt-1">Diajukan oleh ${window.CEMARA.esc(names.get(submission.user_id) || "Pengguna")} · ${window.CEMARA.formatDate(submission.created_at)}</p>
+              </div>
+              <span class="text-xs font-semibold px-3 py-1 rounded-full ${submission.status === "approved" ? "bg-green-100 text-green-800" : submission.status === "rejected" ? "bg-red-100 text-red-800" : "bg-amber-100 text-amber-900"}">${statusLabels[submission.status] || window.CEMARA.esc(submission.status)}</span>
+            </div>
+            <p class="text-sm text-stone-700 dark:text-stone-300">${window.CEMARA.esc(submission.description)}</p>
+            ${
+              submission.content
+                ? `<details class="text-sm text-stone-700 dark:text-stone-300"><summary class="cursor-pointer font-semibold">Lihat naskah teks</summary><p class="mt-2 whitespace-pre-wrap">${window.CEMARA.esc(submission.content)}</p></details>`
+                : ""
+            }
+            <p class="text-xs text-stone-600 dark:text-stone-300">Validasi otomatis: ${submission.automated_validation_status === "not_configured" ? "belum terintegrasi (OTP/OCR/AI)" : window.CEMARA.esc(submission.automated_validation_status)}</p>
+            <div class="text-sm">${fileMarkup}</div>
+            ${
+              isPending
+                ? `
+              <label class="block text-xs font-semibold text-stone-700 dark:text-stone-300" for="${notesId}">Catatan admin (wajib saat menolak)</label>
+              <textarea id="${notesId}" maxlength="1000" rows="2" class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-xl px-3 py-2 text-sm" placeholder="Tulis alasan atau saran revisi"></textarea>
+              <div class="flex flex-wrap gap-2">
+                <button type="button" data-submission-id="${submission.id}" data-submission-decision="approved" class="px-4 py-2 rounded-xl bg-green-700 hover:bg-green-800 text-white text-sm font-semibold">Setujui & terbitkan</button>
+                <button type="button" data-submission-id="${submission.id}" data-submission-decision="rejected" class="px-4 py-2 rounded-xl bg-red-700 hover:bg-red-800 text-white text-sm font-semibold">Tolak</button>
+              </div>
+            `
+                : `<p class="text-sm text-stone-600 dark:text-stone-300">Catatan admin: ${window.CEMARA.esc(submission.review_notes || "—")}</p>`
+            }
+          </article>
+        `;
+      }),
+    );
+    list.innerHTML = cards.join("");
+  } catch (err) {
+    console.error("loadWorkSubmissions error:", err);
+    $("#submissionQueueCount").textContent = "Antrean tidak dapat dimuat";
+    list.textContent = `Gagal memuat antrean: ${err.message}`;
+  }
 }
+
+window.reviewWorkSubmission = async function reviewWorkSubmission(
+  submissionId,
+  decision,
+) {
+  if (!["admin", "super_admin", "dev"].includes(currentRoleData?.role)) {
+    showToast("Hanya pengelola yang dapat meninjau pengajuan.");
+    return;
+  }
+  if (!["approved", "rejected"].includes(decision)) return;
+
+  const notesField = document.getElementById(
+    `submissionReviewNote-${submissionId}`,
+  );
+  const reviewNotes = notesField?.value.trim() || "";
+  if (decision === "rejected" && !reviewNotes) {
+    showToast("Alasan penolakan wajib diisi.");
+    notesField?.focus();
+    return;
+  }
+
+  const actionButtons = document.querySelectorAll(
+    `[data-submission-id="${submissionId}"]`,
+  );
+  actionButtons.forEach((button) => {
+    button.disabled = true;
+  });
+
+  try {
+    const { error } = await db.rpc("review_work_submission", {
+      p_submission_id: submissionId,
+      p_decision: decision,
+      p_review_notes: reviewNotes,
+    });
+    if (error) throw error;
+
+    showToast(
+      decision === "approved"
+        ? "Karya disetujui, diterbitkan, dan notifikasi dikirim."
+        : "Pengajuan ditolak dan notifikasi dikirim.",
+    );
+    await refreshAllData();
+  } catch (err) {
+    console.error("reviewWorkSubmission error:", err);
+    showToast(`Keputusan gagal disimpan: ${err.message}`);
+    actionButtons.forEach((button) => {
+      button.disabled = false;
+    });
+  }
+};
 
 async function loadCommentsList() {
   if (!db) return;
@@ -1106,12 +1276,20 @@ window.deleteUserProfile = async function deleteUserProfile(targetUserId) {
 ========================================================= */
 
 const uploadForm = $("#adminWorkUploadForm");
-const fileInput = $("#upCover");
-const filePreview = $("#upCoverPreview");
+const fileInput = $("#upAttachment");
+const fileNameLabel = $("#upAttachmentName");
 const upContent = $("#upContent");
 const upDriveUrl = $("#upDriveUrl");
 const upTextField = $("#upTextField");
 const upDriveField = $("#upDriveField");
+const submissionMimeTypes = new Set([
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+]);
 
 function updateUploadSubmissionFields() {
   const isDriveSubmission =
@@ -1121,7 +1299,7 @@ function updateUploadSubmissionFields() {
   upDriveField?.classList.toggle("hidden", !isDriveSubmission);
 
   if (upContent) {
-    upContent.required = !isDriveSubmission;
+    upContent.required = !isDriveSubmission && !fileInput?.files?.length;
     upContent.disabled = isDriveSubmission;
   }
 
@@ -1136,16 +1314,34 @@ $$('input[name="upSubmissionType"]').forEach((radio) =>
 );
 updateUploadSubmissionFields();
 
-if (fileInput && filePreview) {
+// Gambar karya (JPG/PNG/WebP) diperkecil di browser: sisi terpanjang maks.
+// 2400 px, WebP/JPEG, metadata EXIF/GPS dibuang. PDF/DOC/DOCX tidak diubah.
+let preparedAttachment = null; // { file, result }
+
+if (fileInput && fileNameLabel) {
   fileInput.addEventListener("change", () => {
     const file = fileInput.files[0];
-    filePreview.innerHTML = file
-      ? `
-      <div class="relative w-24 h-32 rounded-xl overflow-hidden border border-cemara/30 bg-stone-100 shadow-sm">
-        <img src="${URL.createObjectURL(file)}" alt="Pratinjau sampul" class="w-full h-full object-cover">
-      </div>
-    `
-      : "";
+    preparedAttachment = null;
+    fileNameLabel.textContent = file ? file.name : "";
+    updateUploadSubmissionFields();
+
+    if (file && file.type.startsWith("image/")) {
+      fileNameLabel.textContent = `${file.name} — memproses gambar…`;
+      window.CEMARA.images
+        .prepare(file, "artwork")
+        .then((result) => {
+          if (fileInput.files[0] !== file) return;
+          preparedAttachment = { file, result };
+          fileNameLabel.textContent = `${file.name} → ${window.CEMARA.images.describe(result)}`;
+        })
+        .catch((error) => {
+          if (fileInput.files[0] !== file) return;
+          fileInput.value = "";
+          fileNameLabel.textContent = error.message;
+          showToast(error.message);
+          updateUploadSubmissionFields();
+        });
+    }
   });
 }
 
@@ -1153,32 +1349,32 @@ if (uploadForm) {
   uploadForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    if (!["admin", "super_admin", "dev"].includes(currentRoleData?.role)) {
-      showToast("Hanya pengelola berwenang yang dapat mempublikasikan karya.");
+    if (!currentUser || currentProfile?.blocked_at) {
+      showToast("Masuk dengan akun terdaftar untuk mengirim karya.");
       return;
     }
 
     const title = $("#upTitle")?.value.trim();
-    const authorId = $("#upAuthor")?.value;
-    const authorProfile = allUsers.find(
-      (profile) => profile.user_id === authorId,
-    );
-    const author = authorProfile?.display_name?.trim() || "";
+    const author =
+      currentProfile?.display_name?.trim() ||
+      currentUser.user_metadata?.name?.trim() ||
+      currentUser.email?.split("@")[0] ||
+      "";
     const category = $("#upCategory")?.value;
     const description = $("#upDescription")?.value.trim();
     const content = $("#upContent")?.value.trim();
     const submissionType =
       $('input[name="upSubmissionType"]:checked')?.value || "text";
     const driveUrl = $("#upDriveUrl")?.value.trim() || "";
-    const files = fileInput ? [...fileInput.files] : [];
+    const file = fileInput?.files?.[0] || null;
 
     if (!title || !author || !category || !description) {
       showToast("Mohon lengkapi seluruh isian bertanda bintang (*).");
       return;
     }
 
-    if (submissionType === "text" && !content) {
-      showToast("Naskah teks wajib diisi.");
+    if (submissionType === "text" && !content && !file) {
+      showToast("Tulis naskah atau lampirkan berkas karya.");
       return;
     }
 
@@ -1190,81 +1386,177 @@ if (uploadForm) {
       return;
     }
 
-    const coverFile = files[0] || null;
-
-    if (coverFile && !coverFile.type.startsWith("image/")) {
-      showToast("Sampul harus berupa gambar.");
+    if (file && !submissionMimeTypes.has(file.type)) {
+      showToast(
+        "Format berkas tidak didukung. Pilih PDF, DOC, DOCX, JPG, PNG, atau WEBP.",
+      );
       return;
     }
 
-    if (coverFile && coverFile.size > 5 * 1024 * 1024) {
-      showToast("Ukuran sampul maksimal 5MB.");
+    if (file && (file.size === 0 || file.size > 10 * 1024 * 1024)) {
+      showToast("Ukuran berkas harus lebih dari 0 dan maksimal 10 MB.");
       return;
     }
 
+    if (!window.crypto?.randomUUID) {
+      showToast("Browser ini belum mendukung pengiriman berkas yang aman.");
+      return;
+    }
+
+    // Lampiran yang akan diunggah: dokumen apa adanya, gambar sudah diperkecil.
+    let attachment = file
+      ? { blob: file, type: file.type, name: file.name }
+      : null;
+
+    if (file && file.type.startsWith("image/")) {
+      try {
+        const result =
+          preparedAttachment?.file === file
+            ? preparedAttachment.result
+            : await window.CEMARA.images.prepare(file, "artwork");
+        attachment = {
+          blob: result.blob,
+          type: result.type,
+          name: `${file.name.replace(/\.[^./\\]+$/, "")}.${result.ext}`,
+        };
+      } catch (error) {
+        showToast(error.message);
+        return;
+      }
+    }
+
+    const submissionId = window.crypto.randomUUID();
+    const safeFileName = attachment?.name
+      .replace(/[^a-zA-Z0-9._-]/g, "_")
+      .slice(-180);
+    const attachmentPath = attachment
+      ? `${currentUser.id}/${submissionId}/${safeFileName || "karya"}`
+      : null;
+    let uploadedPath = null;
     const submitBtn = $("#upSubmitBtn");
     submitBtn.disabled = true;
-    submitBtn.innerHTML = `<span>Menyimpan Karya...</span>`;
+    submitBtn.innerHTML = `<span>Mengirim untuk ditinjau...</span>`;
 
     try {
-      let coverUrl = null;
-
-      if (coverFile) {
-        const ext = (coverFile.name.split(".").pop() || "jpg")
-          .toLowerCase()
-          .replace(/[^a-z0-9]/g, "");
-        const filename = `${currentUser.id}/cover-${Date.now()}.${ext || "jpg"}`;
-
-        const { error: storageError } = await db.storage
-          .from("karya")
-          .upload(filename, coverFile, { cacheControl: "3600", upsert: false });
-
-        if (storageError) {
-          throw new Error(`Unggah sampul gagal: ${storageError.message}`);
-        }
-
-        coverUrl =
-          db.storage.from("karya").getPublicUrl(filename).data?.publicUrl ||
-          null;
+      if (attachment) {
+        const { error: uploadError } = await db.storage
+          .from("pengajuan-karya")
+          .upload(attachmentPath, attachment.blob, {
+            cacheControl: "3600",
+            upsert: false,
+            contentType: attachment.type,
+          });
+        if (uploadError) throw uploadError;
+        uploadedPath = attachmentPath;
       }
 
-      const { error: insertError } = await db.from("works").insert({
+      const { error: insertError } = await db.from("work_submissions").insert({
+        id: submissionId,
+        user_id: currentUser.id,
         title,
         author,
-        author_id: authorId || null,
         category,
         description,
         content: submissionType === "text" ? content : "",
         submission_type: submissionType,
         drive_url: submissionType === "drive" ? driveUrl : null,
-        cover_url: coverUrl,
-        published_at: new Date().toISOString(),
+        attachment_path: attachmentPath,
+        attachment_name: attachment?.name || null,
+        attachment_mime: attachment?.type || null,
       });
 
       if (insertError) throw insertError;
 
-      await recordActivity(
-        "work_published",
-        `Karya "${title}" dipublikasikan.`,
-        { title, category },
-      );
-
-      showToast("Karya berhasil dipublikasikan ke CEMARA! ✦");
+      uploadedPath = null;
+      showToast("Pengajuan terkirim dan menunggu review.");
       uploadForm.reset();
+      if ($("#upAuthor")) $("#upAuthor").value = author;
       updateUploadSubmissionFields();
-      if (filePreview) filePreview.innerHTML = "";
-
-      await loadStatsAndWorks();
-      switchTab("works");
+      preparedAttachment = null;
+      if (fileNameLabel) fileNameLabel.textContent = "";
+      await loadMyWorkSubmissions();
+      if (["admin", "super_admin", "dev"].includes(currentRoleData?.role)) {
+        await loadWorkSubmissions();
+      }
     } catch (err) {
-      console.error("Work upload error:", err);
-      showToast(`Gagal publikasi: ${err.message}`);
+      console.error("Work submission error:", err);
+      if (uploadedPath) {
+        const { error: cleanupError } = await db.storage
+          .from("pengajuan-karya")
+          .remove([uploadedPath]);
+        if (cleanupError) {
+          console.error(
+            "Failed to remove orphaned submission file:",
+            cleanupError,
+          );
+        }
+      }
+      showToast(`Pengajuan gagal dikirim: ${err.message}`);
     } finally {
       submitBtn.disabled = false;
-      submitBtn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> <span>Publikasikan Karya</span>`;
+      submitBtn.innerHTML = `<i data-lucide="send" class="w-4 h-4"></i> <span>Kirim untuk Ditinjau</span>`;
       if (window.lucide) lucide.createIcons();
     }
   });
+}
+
+async function loadMyWorkSubmissions() {
+  const list = $("#myWorkSubmissions");
+  if (!db || !currentUser || !list) return;
+
+  list.textContent = "Memuat pengajuan...";
+  try {
+    const { data, error } = await db
+      .from("work_submissions")
+      .select(
+        "id, title, category, submission_type, drive_url, attachment_path, attachment_name, status, review_notes, created_at",
+      )
+      .eq("user_id", currentUser.id)
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+
+    if (!data?.length) {
+      list.textContent = "Belum ada karya yang dikirim untuk ditinjau.";
+      return;
+    }
+
+    const statusLabels = {
+      pending: "Menunggu review",
+      approved: "Disetujui",
+      rejected: "Ditolak",
+    };
+    const cards = await Promise.all(
+      data.map(async (submission) => {
+        let attachmentMarkup = "";
+        if (submission.attachment_path) {
+          const { data: signedFile, error: signedFileError } = await db.storage
+            .from("pengajuan-karya")
+            .createSignedUrl(submission.attachment_path, 3600);
+          if (signedFileError) throw signedFileError;
+          attachmentMarkup = signedFile?.signedUrl
+            ? `<a class="text-cemara underline" href="${window.CEMARA.esc(signedFile.signedUrl)}" target="_blank" rel="noopener noreferrer">${window.CEMARA.esc(submission.attachment_name)}</a>`
+            : "";
+        }
+
+        return `
+          <article class="classic-card p-4 rounded-2xl space-y-2">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h3 class="font-serif font-bold text-stone-900 dark:text-stone-100">${window.CEMARA.esc(submission.title)}</h3>
+              <span class="text-xs font-semibold">${window.CEMARA.esc(statusLabels[submission.status] || submission.status)}</span>
+            </div>
+            <p class="text-sm text-stone-600 dark:text-stone-300">${window.CEMARA.esc(submission.category)} · ${window.CEMARA.formatDate(submission.created_at)}</p>
+            ${submission.submission_type === "drive" ? `<p class="text-sm"><a class="text-cemara underline" href="${window.CEMARA.esc(submission.drive_url)}" target="_blank" rel="noopener noreferrer">Buka karya di Google Drive</a></p>` : ""}
+            ${attachmentMarkup ? `<p class="text-sm">${attachmentMarkup}</p>` : ""}
+            ${submission.review_notes ? `<p class="text-sm text-stone-600 dark:text-stone-300">Catatan admin: ${window.CEMARA.esc(submission.review_notes)}</p>` : ""}
+          </article>
+        `;
+      }),
+    );
+    list.innerHTML = cards.join("");
+  } catch (err) {
+    console.error("loadMyWorkSubmissions error:", err);
+    list.textContent = `Status pengajuan gagal dimuat: ${err.message}`;
+  }
 }
 
 /* =========================================================
@@ -1273,27 +1565,35 @@ if (uploadForm) {
 
 const avatarInput = $("#avatarInput");
 if (avatarInput) {
-  avatarInput.addEventListener("change", () => {
+  avatarInput.addEventListener("change", async () => {
     const file = avatarInput.files[0];
     if (!file) return;
 
-    if (file.size > 2 * 1024 * 1024) {
-      showToast("Ukuran foto maksimal 2MB.");
-      return;
-    }
+    try {
+      // Dipangkas 1:1 → 512×512 px, WebP/JPEG, EXIF dibuang.
+      const result = await window.CEMARA.images.prepare(file, "avatar");
 
-    pendingAvatarFile = file;
-    const previewUrl = URL.createObjectURL(file);
-    $("#profAvatarPreview").innerHTML =
-      `<img src="${previewUrl}" class="w-full h-full object-cover">`;
-    showToast('Foto dipilih! Klik "Simpan Foto Avatar" di samping.');
+      if (avatarPreviewUrl) URL.revokeObjectURL(avatarPreviewUrl);
+      avatarPreviewUrl = URL.createObjectURL(result.blob);
+      pendingAvatar = result;
+
+      $("#profAvatarPreview").innerHTML =
+        `<img src="${avatarPreviewUrl}" alt="Pratinjau foto profil" width="${result.width}" height="${result.height}" class="w-full h-full object-cover">`;
+      showToast(
+        `Foto siap (${result.width}×${result.height} px, ${window.CEMARA.images.formatBytes(result.bytes)}). Klik "Simpan Foto Avatar".`,
+      );
+    } catch (error) {
+      pendingAvatar = null;
+      avatarInput.value = "";
+      showToast(error.message);
+    }
   });
 }
 
 const uploadAvatarBtn = $("#uploadAvatarBtn");
 if (uploadAvatarBtn) {
   uploadAvatarBtn.addEventListener("click", async () => {
-    if (!pendingAvatarFile) {
+    if (!pendingAvatar) {
       showToast("Silakan pilih berkas foto terlebih dahulu.");
       return;
     }
@@ -1302,14 +1602,14 @@ if (uploadAvatarBtn) {
     uploadAvatarBtn.innerHTML = `<span>Menyimpan...</span>`;
 
     try {
-      const ext = pendingAvatarFile.name.split(".").pop() || "jpg";
-      const filename = `${currentUser.id}/avatar-${Date.now()}.${ext}`;
+      const filename = `${currentUser.id}/avatar-${Date.now()}.${pendingAvatar.ext}`;
 
       const { error: storageError } = await db.storage
         .from("avatars")
-        .upload(filename, pendingAvatarFile, {
+        .upload(filename, pendingAvatar.blob, {
           cacheControl: "3600",
           upsert: true,
+          contentType: pendingAvatar.type,
         });
 
       if (storageError) {
@@ -1334,7 +1634,7 @@ if (uploadAvatarBtn) {
       currentProfile.avatar_url = avatarUrl;
       renderProfileInfo();
       showToast("Foto profil avatar berhasil disimpan! ✦");
-      pendingAvatarFile = null;
+      pendingAvatar = null;
     } catch (err) {
       console.error("Avatar upload error:", err);
       showToast(err.message);

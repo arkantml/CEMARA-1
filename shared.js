@@ -120,6 +120,282 @@ window.CEMARA.normalizeImages = function normalizeImages(value) {
 };
 
 /* =========================================================
+   KEBIJAKAN GAMBAR — ukuran & resolusi (input → output)
+   Setiap gambar diproses di browser SEBELUM diunggah:
+     1. divalidasi (tipe JPG/PNG/WebP, ukuran berkas, resolusi minimum),
+     2. dipangkas dari tengah ke rasio tetap,
+     3. diperkecil ke resolusi tetap (tidak pernah diperbesar),
+     4. dikompres ke WebP (cadangan JPEG), metadata EXIF/GPS terbuang.
+   Output yang tampil di halaman memakai rasio yang sama (lihat CSS),
+   jadi tidak ada gambar raksasa yang terunduh dan tata letak tidak bergeser.
+========================================================= */
+(function () {
+  const KB = 1024;
+  const MB = 1024 * KB;
+
+  const SPECS = {
+    // Sampul karya: potret 3:4 → 900 × 1200 px
+    cover: {
+      label: "Sampul karya",
+      ratioLabel: "3:4",
+      ratio: 3 / 4,
+      width: 900,
+      height: 1200,
+      minWidth: 450,
+      minHeight: 600,
+      maxInputBytes: 10 * MB,
+      targetBytes: 350 * KB,
+      maxOutputBytes: 1 * MB,
+      quality: 0.82,
+    },
+    // Gambar karya (seni/komik/foto) pada pengajuan: TIDAK dipangkas,
+    // hanya diperkecil agar sisi terpanjang ≤ 2400 px (cukup untuk dibaca layar)
+    artwork: {
+      label: "Gambar karya",
+      ratio: null,
+      width: 2400,
+      height: 2400,
+      minWidth: 300,
+      minHeight: 300,
+      maxInputBytes: 10 * MB,
+      targetBytes: Math.round(1.5 * MB),
+      maxOutputBytes: 4 * MB,
+      quality: 0.86,
+    },
+    // Foto profil: persegi 1:1 → 512 × 512 px
+    avatar: {
+      label: "Foto profil",
+      ratioLabel: "1:1",
+      ratio: 1,
+      width: 512,
+      height: 512,
+      minWidth: 128,
+      minHeight: 128,
+      maxInputBytes: 5 * MB,
+      targetBytes: 120 * KB,
+      maxOutputBytes: 300 * KB,
+      quality: 0.85,
+    },
+  };
+
+  const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
+
+  function formatBytes(bytes) {
+    if (!Number.isFinite(bytes)) return "-";
+    if (bytes < KB) return `${bytes} B`;
+    if (bytes < MB) return `${Math.round(bytes / KB)} KB`;
+    return `${(bytes / MB).toFixed(1).replace(/\.0$/, "").replace(".", ",")} MB`;
+  }
+
+  // Hitung area pangkas (dari tengah) dan ukuran keluaran. Fungsi murni.
+  function plan(sourceWidth, sourceHeight, spec) {
+    // Tanpa rasio tetap: tidak dipangkas, hanya diperkecil agar muat di kotak.
+    if (!spec.ratio) {
+      const scale = Math.min(
+        1,
+        spec.width / sourceWidth,
+        spec.height / sourceHeight,
+      );
+      return {
+        cropX: 0,
+        cropY: 0,
+        cropWidth: sourceWidth,
+        cropHeight: sourceHeight,
+        outWidth: Math.round(sourceWidth * scale),
+        outHeight: Math.round(sourceHeight * scale),
+      };
+    }
+
+    let cropWidth = sourceWidth;
+    let cropHeight = sourceHeight;
+
+    if (sourceWidth / sourceHeight > spec.ratio) {
+      cropWidth = Math.round(sourceHeight * spec.ratio);
+    } else {
+      cropHeight = Math.round(sourceWidth / spec.ratio);
+    }
+
+    const outWidth = Math.min(spec.width, cropWidth);
+    return {
+      cropX: Math.floor((sourceWidth - cropWidth) / 2),
+      cropY: Math.floor((sourceHeight - cropHeight) / 2),
+      cropWidth,
+      cropHeight,
+      outWidth,
+      outHeight: Math.round(outWidth / spec.ratio),
+    };
+  }
+
+  async function loadSource(file) {
+    if (typeof createImageBitmap === "function") {
+      try {
+        const bitmap = await createImageBitmap(file, {
+          imageOrientation: "from-image",
+        });
+        return {
+          image: bitmap,
+          width: bitmap.width,
+          height: bitmap.height,
+          release: () => bitmap.close?.(),
+        };
+      } catch (_) {
+        /* browser lama: pakai <img> di bawah */
+      }
+    }
+
+    const url = URL.createObjectURL(file);
+    const image = new Image();
+    image.decoding = "async";
+
+    try {
+      image.src = url;
+      await image.decode();
+    } catch (_) {
+      URL.revokeObjectURL(url);
+      throw new Error("Gambar tidak dapat dibaca. Berkas mungkin rusak.");
+    }
+
+    return {
+      image,
+      width: image.naturalWidth,
+      height: image.naturalHeight,
+      release: () => URL.revokeObjectURL(url),
+    };
+  }
+
+  const toBlob = (canvas, type, quality) =>
+    new Promise((resolve) => canvas.toBlob(resolve, type, quality));
+
+  // WebP dulu; jika browser tidak mendukung (mis. Safari lama), pakai JPEG.
+  async function encode(canvas, quality) {
+    let blob = await toBlob(canvas, "image/webp", quality);
+    if (!blob || blob.type !== "image/webp") {
+      blob = await toBlob(canvas, "image/jpeg", quality);
+    }
+    return blob;
+  }
+
+  async function prepare(file, specName) {
+    const spec = SPECS[specName];
+    if (!spec) throw new Error("Jenis gambar tidak dikenal.");
+    if (!(file instanceof Blob)) throw new Error("Berkas gambar tidak valid.");
+
+    if (!ACCEPTED_TYPES.includes(file.type)) {
+      throw new Error(
+        `${spec.label}: gunakan JPG, PNG, atau WebP (GIF tidak didukung).`,
+      );
+    }
+
+    if (file.size > spec.maxInputBytes) {
+      throw new Error(
+        `${spec.label}: ukuran berkas maksimal ${formatBytes(spec.maxInputBytes)} (berkas ini ${formatBytes(file.size)}).`,
+      );
+    }
+
+    const source = await loadSource(file);
+
+    try {
+      if (source.width < spec.minWidth || source.height < spec.minHeight) {
+        throw new Error(
+          `${spec.label}: resolusi terlalu kecil (${source.width}×${source.height} px). Minimal ${spec.minWidth}×${spec.minHeight} px.`,
+        );
+      }
+
+      const area = plan(source.width, source.height, spec);
+      let outWidth = area.outWidth;
+      let outHeight = area.outHeight;
+      let quality = spec.quality;
+
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+      if (!context) {
+        throw new Error("Browser ini tidak mendukung pemrosesan gambar.");
+      }
+
+      let blob = null;
+
+      for (let attempt = 0; attempt < 10; attempt += 1) {
+        canvas.width = outWidth;
+        canvas.height = outHeight;
+        context.fillStyle = "#ffffff";
+        context.fillRect(0, 0, outWidth, outHeight);
+        context.imageSmoothingEnabled = true;
+        context.imageSmoothingQuality = "high";
+        context.drawImage(
+          source.image,
+          area.cropX,
+          area.cropY,
+          area.cropWidth,
+          area.cropHeight,
+          0,
+          0,
+          outWidth,
+          outHeight,
+        );
+
+        blob = await encode(canvas, quality);
+        if (!blob) throw new Error("Gambar gagal dikompres. Coba berkas lain.");
+        if (blob.size <= spec.targetBytes) break;
+
+        if (quality > 0.62) {
+          quality = Math.max(0.6, quality - 0.08);
+        } else {
+          const nextWidth = Math.round(outWidth * 0.9);
+          const nextHeight = Math.round((nextWidth * outHeight) / outWidth);
+          if (nextWidth < spec.minWidth || nextHeight < spec.minHeight) break;
+          outWidth = nextWidth;
+          outHeight = nextHeight;
+        }
+      }
+
+      if (blob.size > spec.maxOutputBytes) {
+        throw new Error(
+          `${spec.label}: hasil kompresi masih ${formatBytes(blob.size)} (maks. ${formatBytes(spec.maxOutputBytes)}). Coba gambar yang lebih sederhana.`,
+        );
+      }
+
+      return {
+        spec: specName,
+        blob,
+        type: blob.type,
+        ext: blob.type === "image/webp" ? "webp" : "jpg",
+        width: outWidth,
+        height: outHeight,
+        bytes: blob.size,
+        sourceWidth: source.width,
+        sourceHeight: source.height,
+        sourceBytes: file.size,
+      };
+    } finally {
+      source.release();
+    }
+  }
+
+  function describe(result) {
+    return `${result.width}×${result.height} px · ${result.ext.toUpperCase()} · ${formatBytes(result.bytes)} (asli ${result.sourceWidth}×${result.sourceHeight} px, ${formatBytes(result.sourceBytes)})`;
+  }
+
+  function hint(specName) {
+    const spec = SPECS[specName];
+    if (!spec.ratio) {
+      return `JPG/PNG/WebP · maks. ${formatBytes(spec.maxInputBytes)} · otomatis diperkecil hingga ${spec.width} px pada sisi terpanjang`;
+    }
+    return `JPG/PNG/WebP · maks. ${formatBytes(spec.maxInputBytes)} · otomatis dipangkas ${spec.ratioLabel} menjadi ${spec.width}×${spec.height} px`;
+  }
+
+  window.CEMARA.IMAGE_SPECS = SPECS;
+  window.CEMARA.images = Object.freeze({
+    ACCEPT: ACCEPTED_TYPES.join(","),
+    specs: SPECS,
+    formatBytes,
+    plan,
+    prepare,
+    describe,
+    hint,
+  });
+})();
+
+/* =========================================================
    SUPABASE READY CHECK
 ========================================================= */
 

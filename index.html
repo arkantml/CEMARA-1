@@ -18,6 +18,10 @@
       property="og:description"
       content="Wadah digital karya siswa untuk dibaca, dilihat, dan diapresiasi."
     />
+    <meta
+      property="og:image"
+      content="https://cemaraic.netlify.app/assets/Aksara Cendekia Emblem (1).png"
+    />
 
     <meta name="theme-color" content="#f7f5eb" />
     <script>
@@ -84,6 +88,8 @@
         <a href="#beranda" class="active"> Beranda </a>
 
         <a href="app.html" class="nav-highlight"> Koleksi Karya </a>
+
+        <a href="arsip.html"> Arsip </a>
 
         <a href="#sorotan"> Sorotan </a>
 
@@ -476,10 +482,9 @@
               role="region"
               aria-labelledby="faq-btn-3"
             >
-              Tim Duta Literasi akan memberi kabar maksimal 7 hari kerja. Karya
-              yang lolos akan diedit ringan untuk keterbacaan dan diterbitkan
-              dengan nama kreator, pastikan karya yang dikirim memenuhi kriteria
-              yang ditentukan dan telah mendaftar akun user.
+              Admin, super admin, atau developer meninjau setiap karya secara
+              manual. Status dan catatan tinjauan dapat dipantau di dashboard.
+              Karya hanya diterbitkan setelah disetujui.
             </div>
           </article>
         </div>
@@ -533,8 +538,8 @@
           <h2>Bagikan karyamu.</h2>
 
           <p>
-            Hubungi tim Duta Literasi untuk proses kurasi dan publikasi karya
-            siswa.
+            Kirim karya melalui dashboard. Setiap karya akan ditinjau sebelum
+            diterbitkan.
           </p>
         </div>
 
@@ -562,13 +567,8 @@
           <button class="btn btn-primary" id="copyEmail" type="button">
             Salin Email
           </button>
-          <a
-            class="btn-whatsapp"
-            href="https://wa.me/629505386319?text=Halo%20Duta%20Literasi%2C%20saya%20ingin%20mengirim%20karya%20untuk%20CEMARA."
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Kirim Karya via WhatsApp <span>↗</span>
+          <a class="btn btn-primary" href="admin/index.html">
+            Tulis / Unggah Karya <span>↗</span>
           </a>
         </div>
       </section>
@@ -608,8 +608,8 @@
           <article class="summary-card">
             <h3>Mulai dari mana?</h3>
             <p>
-              Siapkan karya, hubungi Duta Literasi via WhatsApp, lalu tunggu
-              proses kurasi maksimal 7 hari.
+              Masuk ke akun, kirim karya melalui dashboard, lalu pantau status
+              tinjauan dari menu yang sama.
             </p>
           </article>
         </div>
@@ -797,8 +797,6 @@
         <h2 id="adminModalTitle">Kelola CEMARA</h2>
 
         <div id="authView"></div>
-
-        <div id="uploadView"></div>
       </div>
     </div>
 
