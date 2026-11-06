@@ -1,311 +1,19 @@
-/* =========================================================
-   CEMARA — stylesheet gabungan
-   Bagian 1: dasar (dulu styles.css)
-   Bagian 2: tema CEMARA (dulu cemara.css), tetap di bawah
-   supaya urutan cascade sama persis seperti sebelumnya.
-   Font DM Sans dimuat lewat <link> di HTML (bukan @import).
-   ========================================================= */
 
-/* ===== Bagian 1: dasar ===== */
 :root {
-  --site-spacing-1-rem: 1rem;
-  --site-viewport-size-3-2-vw: 3.2vw;
-  --site-spacing-3-5-rem: 3.5rem;
-  --site-type-size-3-125-rem: 3.125rem;
-  --site-type-scale-7-8-vw: 7.8vw;
-  --site-type-size-7-rem: 7rem;
-  --site-type-size-2-25-rem: 2.25rem;
-  --site-type-size-1-5-rem: 1.5rem;
-  --site-type-size-1-0625-rem: 1.0625rem;
-  --site-type-size-1-rem: 1rem;
-  --site-easing-point-0-22: 0.22;
-  --site-easing-point-1: 1;
-  --site-easing-point-0-36: 0.36;
-  --site-easing-point-0-32: 0.32;
-  --site-easing-point-0-72: 0.72;
-  --site-easing-point-0: 0;
-  --site-numeric-value-0: 0;
-  --site-line-height-1-55: 1.55;
-  --site-border-size-2-px: 2px;
-  --site-spacing-6-rem: 6rem;
-  --site-viewport-size-12-vw: 12vw;
-  --site-spacing-12-rem: 12rem;
-  --site-line-height-1-4: 1.4;
-  --site-text-measure-18-ch: 18ch;
-  --site-line-height-0-98: 0.98;
-  --site-letter-spacing-negative-0-035-em: -0.035em;
-  --site-font-weight-500: 500;
-  --site-element-size-6-25-rem: 6.25rem;
-  --site-spacing-2-rem: 2rem;
-  --site-spacing-0-72-rem: 0.72rem;
-  --site-font-weight-600: 600;
-  --site-line-height-1-05: 1.05;
-  --site-element-size-2-7-rem: 2.7rem;
-  --site-proportion-50-percent: 50%;
-  --site-line-height-1: 1;
-  --site-spacing-1-2-rem: 1.2rem;
-  --site-viewport-size-3-vw: 3vw;
-  --site-spacing-3-2-rem: 3.2rem;
-  --site-spacing-0-6-rem: 0.6rem;
-  --site-motion-duration-220-ms: 220ms;
-  --site-transform-distance-negative-2-px: -2px;
-  --site-spacing-4-rem: 4rem;
-  --site-viewport-size-8-vw: 8vw;
-  --site-spacing-8-rem: 8rem;
-  --site-element-size-13-rem: 13rem;
-  --site-viewport-size-25-vw: 25vw;
-  --site-element-size-24-rem: 24rem;
-  --site-grid-track-1-3-fr: 1.3fr;
-  --site-grid-track-0-72-fr: 0.72fr;
-  --site-grid-track-1-fr: 1fr;
-  --site-grid-track-0-9-fr: 0.9fr;
-  --site-spacing-2-px: 2px;
-  --site-proportion-100-percent: 100%;
-  --site-motion-duration-900-ms: 900ms;
-  --site-transform-scale-1-035: 1.035;
-  --site-image-crop-52-percent: 52%;
-  --site-image-crop-50-percent: 50%;
-  --site-image-crop-44-percent: 44%;
-  --site-image-crop-54-percent: 54%;
-  --site-image-crop-48-percent: 48%;
-  --site-grid-share-42-percent: 42%;
-  --site-grid-track-0: 0;
-  --site-spacing-1-5-rem: 1.5rem;
-  --site-spacing-2-5-rem: 2.5rem;
-  --site-viewport-size-6-vw: 6vw;
-  --site-numeric-value-1: 1;
-  --site-numeric-value-2: 2;
-  --site-text-measure-17-ch: 17ch;
-  --site-spacing-0-9-rem: 0.9rem;
-  --site-text-measure-12-ch: 12ch;
-  --site-line-height-0-9: 0.9;
-  --site-letter-spacing-negative-0-045-em: -0.045em;
-  --site-spacing-0-1-em: 0.1em;
-  --site-spacing-1-6-rem: 1.6rem;
-  --site-spacing-3-rem: 3rem;
-  --site-text-measure-37-ch: 37ch;
-  --site-element-size-3-6-rem: 3.6rem;
-  --site-spacing-1-3-rem: 1.3rem;
-  --site-spacing-0-5-rem: 0.5rem;
-  --site-spacing-0-55-rem: 0.55rem;
-  --site-spacing-1-45-rem: 1.45rem;
-  --site-corner-radius-999-px: 999px;
-  --site-type-size-0-94-rem: 0.94rem;
-  --site-motion-duration-240-ms: 240ms;
-  --site-transform-scale-1-015: 1.015;
-  --site-transform-scale-0-98: 0.98;
-  --site-element-size-2-5-rem: 2.5rem;
-  --site-color-component-255: 255;
-  --site-color-component-18-percent: 18%;
-  --site-type-size-1-15-rem: 1.15rem;
-  --site-transform-distance-3-px: 3px;
-  --site-transform-scale-1-05: 1.05;
-  --site-spacing-1-4-rem: 1.4rem;
-  --site-spacing-0-7-rem: 0.7rem;
-  --site-element-size-2-6-rem: 2.6rem;
-  --site-element-size-0-3-rem: 0.3rem;
-  --site-spacing-1-15-rem: 1.15rem;
-  --site-element-size-66-rem: 66rem;
-  --site-text-measure-47-ch: 47ch;
-  --site-spacing-1-8-rem: 1.8rem;
-  --site-line-height-1-45: 1.45;
-  --site-viewport-size-7-vw: 7vw;
-  --site-spacing-6-5-rem: 6.5rem;
-  --site-spacing-2-6-rem: 2.6rem;
-  --site-spacing-0-3-rem: 0.3rem;
-  --site-letter-spacing-negative-0-025-em: -0.025em;
-  --site-flex-factor-0: 0;
-  --site-spacing-0-2-rem: 0.2rem;
-  --site-grid-track-3: 3;
-  --site-viewport-size-2-8-vw: 2.8vw;
-  --site-viewport-size-4-vw: 4vw;
-  --site-spacing-3-7-rem: 3.7rem;
-  --site-element-size-9-rem: 9rem;
-  --site-viewport-size-17-vw: 17vw;
-  --site-element-size-16-rem: 16rem;
-  --site-spacing-0-75-rem: 0.75rem;
-  --site-viewport-size-1-7-vw: 1.7vw;
-  --site-spacing-1-35-rem: 1.35rem;
-  --site-text-measure-15-ch: 15ch;
-  --site-line-height-1-3: 1.3;
-  --site-letter-spacing-0: 0;
-  --site-spacing-0-85-rem: 0.85rem;
-  --site-line-height-1-2: 1.2;
-  --site-spacing-2-2-rem: 2.2rem;
-  --site-dimension-3-2-rem: 3.2rem;
-  --site-color-component-0-25-rem: 0.25rem;
-  --site-line-height-1-1: 1.1;
-  --site-text-measure-43-ch: 43ch;
-  --site-color-component-86-percent: 86%;
-  --site-proportion-42-percent: 42%;
-  --site-viewport-size-5-vw: 5vw;
-  --site-spacing-4-5-rem: 4.5rem;
-  --site-spacing-0-45-rem: 0.45rem;
-  --site-element-size-4-5-rem: 4.5rem;
-  --site-element-size-7-rem: 7rem;
-  --site-dimension-6-rem: 6rem;
-  --site-grid-track-0-5-fr: 0.5fr;
-  --site-dimension-12-rem: 12rem;
-  --site-grid-track-1-25-fr: 1.25fr;
-  --site-dimension-11-rem: 11rem;
-  --site-dimension-2-rem: 2rem;
-  --site-border-size-0-25-rem: 0.25rem;
-  --site-transform-distance-5-px: 5px;
-  --site-spacing-5-rem: 5rem;
-  --site-viewport-size-10-vw: 10vw;
-  --site-spacing-10-rem: 10rem;
-  --site-text-measure-10-ch: 10ch;
-  --site-spacing-0-4-rem: 0.4rem;
-  --site-line-height-0-92: 0.92;
-  --site-element-size-17-rem: 17rem;
-  --site-letter-spacing-negative-0-04-em: -0.04em;
-  --site-spacing-0-8-rem: 0.8rem;
-  --site-opacity-0: 0;
-  --site-opacity-1: 1;
-  --site-motion-duration-760-ms: 760ms;
-  --site-transform-distance-110-percent: 110%;
-  --site-motion-delay-130-ms: 130ms;
-  --site-transform-factor-0: 0;
-  --site-viewport-size-100-dvh: 100dvh;
-  --site-dimension-16-rem: 16rem;
-  --site-color-component-1-px: 1px;
-  --site-color-component-0: 0;
-  --site-color-component-0-06: 0.06;
-  --site-spacing-0-35-rem: 0.35rem;
-  --site-element-size-3-rem: 3rem;
-  --site-corner-radius-4-px: 4px;
-  --site-motion-duration-200-ms: 200ms;
-  --site-motion-duration-180-ms: 180ms;
-  --site-color-component-0-03: 0.03;
-  --site-element-size-1-5-rem: 1.5rem;
-  --site-spacing-0-25-rem: 0.25rem;
-  --site-element-size-82-rem: 82rem;
-  --site-text-measure-60-ch: 60ch;
-  --site-element-size-5-rem: 5rem;
-  --site-spacing-0-65-rem: 0.65rem;
-  --site-color-component-0-28: 0.28;
-  --site-element-size-2-35-rem: 2.35rem;
-  --site-type-size-0-95-rem: 0.95rem;
-  --site-dimension-14-rem: 14rem;
-  --site-grid-track-0-85-fr: 0.85fr;
-  --site-spacing-2-8-rem: 2.8rem;
-  --site-text-measure-16-ch: 16ch;
-  --site-line-height-0-95: 0.95;
-  --site-text-measure-38-ch: 38ch;
-  --site-element-size-11-rem: 11rem;
-  --site-viewport-size-21-vw: 21vw;
-  --site-element-size-20-rem: 20rem;
-  --site-grid-track-1-15-fr: 1.15fr;
-  --site-corner-radius-3-px: 3px;
-  --site-image-crop-38-percent: 38%;
-  --site-image-crop-45-percent: 45%;
-  --site-image-crop-55-percent: 55%;
-  --site-motion-duration-1-2-s: 1.2s;
-  --site-transform-scale-1-06: 1.06;
-  --site-transform-scale-1: 1;
-  --site-dimension-15-rem: 15rem;
-  --site-element-size-2-75-rem: 2.75rem;
-  --site-element-size-0-5-rem: 0.5rem;
-  --site-spacing-0-95-rem: 0.95rem;
-  --site-motion-duration-550-ms: 550ms;
-  --site-dimension-6-5-rem: 6.5rem;
-  --site-element-size-22-rem: 22rem;
-  --site-proportion-48-percent: 48%;
-  --site-element-size-3-2-rem: 3.2rem;
-  --site-border-size-3-px: 3px;
-  --site-element-size-2-65-rem: 2.65rem;
-  --site-dimension-4-rem: 4rem;
-  --site-dimension-7-rem: 7rem;
-  --site-grid-track-0-8-fr: 0.8fr;
-  --site-grid-track-0-7-fr: 0.7fr;
-  --site-viewport-size-1-8-vw: 1.8vw;
-  --site-element-size-6-4-rem: 6.4rem;
-  --site-transform-distance-4-px: 4px;
-  --site-color-component-3-px: 3px;
-  --site-color-component-12-px: 12px;
-  --site-color-component-0-04: 0.04;
-  --site-element-size-3-5-rem: 3.5rem;
-  --site-element-size-4-6-rem: 4.6rem;
-  --site-corner-radius-2-px: 2px;
-  --site-line-height-1-12: 1.12;
-  --site-element-size-0-45-rem: 0.45rem;
-  --site-spacing-0-px: 0px;
-  --site-element-size-26-rem: 26rem;
-  --site-viewport-size-100-vw: 100vw;
-  --site-element-size-2-rem: 2rem;
-  --site-transform-distance-0-8-rem: 0.8rem;
-  --site-layer-100: 100;
-  --site-color-component-4-px: 4px;
-  --site-color-component-16-px: 16px;
-  --site-color-component-0-18: 0.18;
-  --site-element-size-1-px: 1px;
-  --site-transform-distance-50-percent: 50%;
-  --site-spacing-1-1-rem: 1.1rem;
-  --site-dimension-0-2-em: 0.2em;
-  --site-dimension-1-5-rem: 1.5rem;
-  --site-layer-50: 50;
-  --site-viewport-size-3-5-vw: 3.5vw;
-  --site-color-component-0-08: 0.08;
-  --site-color-component-2-px: 2px;
-  --site-color-component-10-px: 10px;
-  --site-type-size-0-875-rem: 0.875rem;
-  --site-viewport-size-26-vw: 26vw;
-  --site-spacing-1-25-rem: 1.25rem;
-  --site-dimension-3-6-rem: 3.6rem;
-  --site-grid-track-1-4-fr: 1.4fr;
-  --site-element-size-5-5-rem: 5.5rem;
-  --site-spacing-1-px: 1px;
-  --site-text-measure-32-ch: 32ch;
-  --site-element-size-3-25-rem: 3.25rem;
-  --site-element-size-2-25-rem: 2.25rem;
-  --site-element-size-8-7-rem: 8.7rem;
-  --site-spacing-negative-1-2-rem: -1.2rem;
-  --site-numeric-value-3: 3;
-  --site-type-size-0-8125-rem: 0.8125rem;
-  --site-element-size-1-35-rem: 1.35rem;
-  --site-type-size-0-75-rem: 0.75rem;
-  --site-element-size-11-5-rem: 11.5rem;
-  --site-dimension-5-rem: 5rem;
-  --site-element-size-5-2-rem: 5.2rem;
-  --site-type-size-2-2-rem: 2.2rem;
-  --site-type-scale-11-vw: 11vw;
-  --site-type-size-2-75-rem: 2.75rem;
-  --site-element-size-2-1-rem: 2.1rem;
-  --site-type-size-1-05-rem: 1.05rem;
-  --site-spacing-0-15-rem: 0.15rem;
-  --site-element-size-1-2-rem: 1.2rem;
-  --site-type-size-0-7-rem: 0.7rem;
-  --site-motion-duration-0-01-ms: 0.01ms;
   color-scheme: light;
-  --bg: #fff;
-  --surface: #f3f3f3;
-  --ink: #0a0a0a;
-  --muted: #404040;
-  --accent: #2436ff;
-  --accent-ink: #fff;
-  --red: #ff3b1f;
-  --blue-deep: #050a5c;
-  --page-gutter: clamp(
     var(--site-spacing-1-rem),
     var(--site-viewport-size-3-2-vw),
     var(--site-spacing-3-5-rem)
   );
-  --display: clamp(
     var(--site-type-size-3-125-rem),
     var(--site-type-scale-7-8-vw),
     var(--site-type-size-7-rem)
   );
-  --headline: var(--site-type-size-2-25-rem);
-  --lead: var(--site-type-size-1-5-rem);
-  --body: var(--site-type-size-1-0625-rem);
-  --small: var(--site-type-size-1-rem);
-  --ease-out: cubic-bezier(
     var(--site-easing-point-0-22),
     var(--site-easing-point-1),
     var(--site-easing-point-0-36),
     var(--site-easing-point-1)
   );
-  --ease-motion: cubic-bezier(
     var(--site-easing-point-0-32),
     var(--site-easing-point-0-72),
     var(--site-easing-point-0),
@@ -1085,7 +793,6 @@ h4 {
     minmax(var(--site-dimension-6-rem), var(--site-grid-track-0-5-fr))
     minmax(var(--site-dimension-12-rem), var(--site-grid-track-1-25-fr))
     minmax(var(--site-dimension-11-rem), var(--site-grid-track-1-fr)) var(
-      --site-dimension-2-rem
     );
   gap: var(--site-spacing-1-rem);
   align-items: center;
@@ -1207,9 +914,6 @@ h4 {
   font-size: var(--small);
 }
 
-/* ==========================================================================
-   Ruang Baca (App) Styles
-   ========================================================================== */
 
 .app-body {
   background: var(--surface);
@@ -1467,7 +1171,6 @@ h4 {
   );
   display: grid;
   grid-template-columns: var(--site-grid-track-1-15-fr) var(
-      --site-grid-track-0-85-fr
     );
   grid-template-rows: var(--site-grid-track-1-fr) var(--site-grid-track-1-fr);
   gap: var(--site-spacing-2-px);
@@ -2005,9 +1708,6 @@ h4 {
   text-underline-offset: var(--site-dimension-0-2-em);
 }
 
-/* ==========================================================================
-   Responsive Breakpoints
-   ========================================================================== */
 
 @media (max-width: 900px) {
   .hero-copy {
@@ -2049,7 +1749,6 @@ h4 {
     gap: 0.75rem;
   }
 
-  /* App Shell on Tablet */
   .app-shell {
     display: block;
     position: relative;
@@ -2201,7 +1900,6 @@ h4 {
 
 @media (max-width: 640px) {
   :root {
-    --page-gutter: var(--site-spacing-1-rem);
   }
   .site-header {
     min-height: var(--site-element-size-5-5-rem);
@@ -2386,7 +2084,6 @@ h4 {
     padding-top: 2rem;
   }
 
-  /* App on Mobile */
   .app-sidebar {
     padding: var(--site-spacing-0-75-rem) var(--site-spacing-1-rem);
   }
@@ -2472,7 +2169,6 @@ h4 {
     grid-area: actions;
     display: grid;
     grid-template-columns: var(--site-grid-track-1-fr) var(
-        --site-grid-track-1-fr
       );
     gap: var(--site-spacing-0-5-rem);
     width: var(--site-proportion-100-percent);
@@ -2497,7 +2193,6 @@ h4 {
 
 @media (max-width: 380px) {
   :root {
-    --display: clamp(
       var(--site-type-size-2-2-rem),
       var(--site-type-scale-11-vw),
       var(--site-type-size-2-75-rem)
@@ -2570,422 +2265,10 @@ h4 {
   }
 }
 
-/* ===== Bagian 2: tema CEMARA ===== */
 :root {
-  --cemara-easing-point-0-32: 0.32;
-  --cemara-easing-point-0-72: 0.72;
-  --cemara-easing-point-0: 0;
-  --cemara-easing-point-1: 1;
-  --cemara-element-size-320-px: 320px;
-  --cemara-type-size-17-px: 17px;
-  --cemara-line-height-1-55: 1.55;
-  --cemara-border-size-3-px: 3px;
-  --cemara-border-size-4-px: 4px;
-  --cemara-proportion-100-percent: 100%;
-  --cemara-numeric-value-0: 0;
-  --cemara-opacity-0: 0;
-  --cemara-transform-distance-1-2-rem: 1.2rem;
-  --cemara-opacity-1: 1;
-  --cemara-motion-duration-720-ms: 720ms;
-  --cemara-motion-duration-820-ms: 820ms;
-  --cemara-motion-delay-0-ms: 0ms;
-  --cemara-layer-50: 50;
-  --cemara-element-size-5-5-rem: 5.5rem;
-  --cemara-spacing-1-5-rem: 1.5rem;
-  --cemara-spacing-0-8-rem: 0.8rem;
-  --cemara-spacing-1-25-rem: 1.25rem;
-  --cemara-viewport-size-5-vw: 5vw;
-  --cemara-spacing-5-rem: 5rem;
-  --cemara-flex-factor-0: 0;
-  --cemara-element-size-2-8-rem: 2.8rem;
-  --cemara-proportion-50-percent: 50%;
-  --cemara-type-size-1-35-rem: 1.35rem;
-  --cemara-line-height-1: 1;
-  --cemara-type-size-1-rem: 1rem;
-  --cemara-letter-spacing-negative-0-035-em: -0.035em;
-  --cemara-spacing-0-1-rem: 0.1rem;
-  --cemara-type-size-0-76-rem: 0.76rem;
-  --cemara-line-height-1-3: 1.3;
-  --cemara-flex-factor-1: 1;
-  --cemara-viewport-size-1-6-vw: 1.6vw;
-  --cemara-spacing-1-6-rem: 1.6rem;
-  --cemara-type-size-0-88-rem: 0.88rem;
-  --cemara-font-weight-500: 500;
-  --cemara-motion-duration-180-ms: 180ms;
-  --cemara-motion-duration-220-ms: 220ms;
-  --cemara-transform-distance-negative-2-px: -2px;
-  --cemara-font-weight-700: 700;
-  --cemara-spacing-0-6-rem: 0.6rem;
-  --cemara-element-size-2-75-rem: 2.75rem;
-  --cemara-spacing-0-75-rem: 0.75rem;
-  --cemara-corner-radius-999-px: 999px;
-  --cemara-element-size-1-2-rem: 1.2rem;
-  --cemara-element-size-2-px: 2px;
-  --cemara-spacing-negative-0-36-rem: -0.36rem;
-  --cemara-spacing-0-36-rem: 0.36rem;
-  --cemara-element-size-3-1-rem: 3.1rem;
-  --cemara-spacing-0-7-rem: 0.7rem;
-  --cemara-spacing-1-2-rem: 1.2rem;
-  --cemara-type-size-0-92-rem: 0.92rem;
-  --cemara-font-weight-600: 600;
-  --cemara-line-height-1-2: 1.2;
-  --cemara-transform-scale-0-98: 0.98;
-  --cemara-element-size-1600-px: 1600px;
-  --cemara-element-size-46-rem: 46rem;
-  --cemara-viewport-size-100-svh: 100svh;
-  --cemara-grid-track-0: 0;
-  --cemara-grid-track-1-08-fr: 1.08fr;
-  --cemara-dimension-22-rem: 22rem;
-  --cemara-grid-track-0-92-fr: 0.92fr;
-  --cemara-spacing-2-rem: 2rem;
-  --cemara-spacing-5-5-rem: 5.5rem;
-  --cemara-spacing-3-5-rem: 3.5rem;
-  --cemara-viewport-size-7-vw: 7vw;
-  --cemara-spacing-7-rem: 7rem;
-  --cemara-viewport-size-7-5-vw: 7.5vw;
-  --cemara-spacing-7-5-rem: 7.5rem;
-  --cemara-text-measure-10-5-ch: 10.5ch;
-  --cemara-type-size-3-7-rem: 3.7rem;
-  --cemara-type-scale-7-vw: 7vw;
-  --cemara-type-size-6-9-rem: 6.9rem;
-  --cemara-line-height-0-91: 0.91;
-  --cemara-letter-spacing-negative-0-05-em: -0.05em;
-  --cemara-text-measure-43-ch: 43ch;
-  --cemara-type-size-1-08-rem: 1.08rem;
-  --cemara-type-scale-1-45-vw: 1.45vw;
-  --cemara-type-size-1-3-rem: 1.3rem;
-  --cemara-line-height-1-5: 1.5;
-  --cemara-spacing-1-8-rem: 1.8rem;
-  --cemara-spacing-1-rem: 1rem;
-  --cemara-viewport-size-2-5-vw: 2.5vw;
-  --cemara-spacing-2-5-rem: 2.5rem;
-  --cemara-type-size-1-8-rem: 1.8rem;
-  --cemara-type-size-0-86-rem: 0.86rem;
-  --cemara-element-size-23-rem: 23rem;
-  --cemara-viewport-size-42-vw: 42vw;
-  --cemara-element-size-37-rem: 37rem;
-  --cemara-proportion-8-percent: 8%;
-  --cemara-proportion-10-percent: 10%;
-  --cemara-layer-negative-1: -1;
-  --cemara-proportion-76-percent: 76%;
-  --cemara-element-size-25-rem: 25rem;
-  --cemara-aspect-ratio-1: 1;
-  --cemara-motion-duration-850-ms: 850ms;
-  --cemara-proportion-3-percent: 3%;
-  --cemara-border-size-0-35-rem: 0.35rem;
-  --cemara-proportion-12-percent: 12%;
-  --cemara-border-size-0-2-rem: 0.2rem;
-  --cemara-proportion-75-percent: 75%;
-  --cemara-proportion-56-percent: 56%;
-  --cemara-rotation-negative-5-deg: -5deg;
-  --cemara-motion-duration-900-ms: 900ms;
-  --cemara-motion-duration-120-ms: 120ms;
-  --cemara-proportion-negative-5-percent: -5%;
-  --cemara-proportion-negative-10-percent: -10%;
-  --cemara-proportion-17-percent: 17%;
-  --cemara-proportion-9-percent: 9%;
-  --cemara-rotation-5-deg: 5deg;
-  --cemara-spacing-0-55-rem: 0.55rem;
-  --cemara-element-size-0-28-rem: 0.28rem;
-  --cemara-proportion-84-percent: 84%;
-  --cemara-proportion-67-percent: 67%;
-  --cemara-proportion-91-percent: 91%;
-  --cemara-type-size-1-2-rem: 1.2rem;
-  --cemara-type-scale-2-5-vw: 2.5vw;
-  --cemara-type-size-2-3-rem: 2.3rem;
-  --cemara-line-height-0-95: 0.95;
-  --cemara-type-size-0-7-rem: 0.7rem;
-  --cemara-type-scale-1-vw: 1vw;
-  --cemara-type-size-0-9-rem: 0.9rem;
-  --cemara-spacing-0-5-rem: 0.5rem;
-  --cemara-element-size-0-7-rem: 0.7rem;
-  --cemara-proportion-48-percent: 48%;
-  --cemara-rotation-29-deg: 29deg;
-  --cemara-element-size-4-rem: 4rem;
-  --cemara-element-size-7-rem: 7rem;
-  --cemara-opacity-0-95: 0.95;
-  --cemara-rotation-negative-40-deg: -40deg;
-  --cemara-proportion-7-percent: 7%;
-  --cemara-proportion-11-percent: 11%;
-  --cemara-rotation-138-deg: 138deg;
-  --cemara-element-size-2-7-rem: 2.7rem;
-  --cemara-element-size-4-7-rem: 4.7rem;
-  --cemara-rotation-50-deg: 50deg;
-  --cemara-layer-2: 2;
-  --cemara-element-size-3-5-rem: 3.5rem;
-  --cemara-type-size-1-55-rem: 1.55rem;
-  --cemara-proportion-1-percent: 1%;
-  --cemara-rotation-negative-8-deg: -8deg;
-  --cemara-proportion-18-percent: 18%;
-  --cemara-rotation-7-deg: 7deg;
-  --cemara-proportion-negative-2-percent: -2%;
-  --cemara-proportion-4-percent: 4%;
-  --cemara-spacing-0-9-rem: 0.9rem;
-  --cemara-element-size-0-55-rem: 0.55rem;
-  --cemara-element-size-0-65-rem: 0.65rem;
-  --cemara-rotation-45-deg: 45deg;
-  --cemara-transform-distance-1-rem: 1rem;
-  --cemara-rotation-negative-12-deg: -12deg;
-  --cemara-transform-scale-0-96: 0.96;
-  --cemara-transform-scale-1: 1;
-  --cemara-spacing-4-5-rem: 4.5rem;
-  --cemara-viewport-size-9-vw: 9vw;
-  --cemara-spacing-8-rem: 8rem;
-  --cemara-element-size-1380-px: 1380px;
-  --cemara-grid-track-1-fr: 1fr;
-  --cemara-dimension-15-rem: 15rem;
-  --cemara-grid-track-0-6-fr: 0.6fr;
-  --cemara-spacing-3-rem: 3rem;
-  --cemara-text-measure-17-ch: 17ch;
-  --cemara-type-size-2-6-rem: 2.6rem;
-  --cemara-type-scale-5-vw: 5vw;
-  --cemara-type-size-4-6-rem: 4.6rem;
-  --cemara-line-height-0-98: 0.98;
-  --cemara-letter-spacing-negative-0-04-em: -0.04em;
-  --cemara-text-measure-40-ch: 40ch;
-  --cemara-type-size-1-1-rem: 1.1rem;
-  --cemara-grid-track-3: 3;
-  --cemara-motion-duration-240-ms: 240ms;
-  --cemara-element-size-17-rem: 17rem;
-  --cemara-element-size-12-rem: 12rem;
-  --cemara-transform-distance-negative-4-px: -4px;
-  --cemara-type-size-1-6-rem: 1.6rem;
-  --cemara-line-height-1-1: 1.1;
-  --cemara-grid-track-1-1-fr: 1.1fr;
-  --cemara-grid-track-0-9-fr: 0.9fr;
-  --cemara-spacing-1-4-rem: 1.4rem;
-  --cemara-viewport-size-4-vw: 4vw;
-  --cemara-type-size-2-1-rem: 2.1rem;
-  --cemara-type-scale-4-vw: 4vw;
-  --cemara-type-size-3-6-rem: 3.6rem;
-  --cemara-text-measure-46-ch: 46ch;
-  --cemara-type-size-1-05-rem: 1.05rem;
-  --cemara-numeric-value-2: 2;
-  --cemara-viewport-size-3-vw: 3vw;
-  --cemara-text-measure-68-ch: 68ch;
-  --cemara-type-scale-3-vw: 3vw;
-  --cemara-type-size-2-8-rem: 2.8rem;
-  --cemara-line-height-1-05: 1.05;
-  --cemara-text-measure-15-ch: 15ch;
-  --cemara-text-measure-57-ch: 57ch;
-  --cemara-type-size-1-15-rem: 1.15rem;
-  --cemara-type-scale-1-8-vw: 1.8vw;
-  --cemara-type-size-1-5-rem: 1.5rem;
-  --cemara-grid-track-5: 5;
-  --cemara-spacing-0-65-rem: 0.65rem;
-  --cemara-element-size-13-rem: 13rem;
-  --cemara-type-size-2-2-rem: 2.2rem;
-  --cemara-spacing-0-3-rem: 0.3rem;
-  --cemara-line-height-1-4: 1.4;
-  --cemara-element-size-900-px: 900px;
-  --cemara-element-size-4-6-rem: 4.6rem;
-  --cemara-type-scale-2-vw: 2vw;
-  --cemara-type-size-1-4-rem: 1.4rem;
-  --cemara-text-measure-70-ch: 70ch;
-  --cemara-text-measure-18-ch: 18ch;
-  --cemara-spacing-4-rem: 4rem;
-  --cemara-spacing-1-3-rem: 1.3rem;
-  --cemara-border-size-0-25-rem: 0.25rem;
-  --cemara-numeric-value-1: 1;
-  --cemara-numeric-value-negative-1: -1;
-  --cemara-text-measure-42-ch: 42ch;
-  --cemara-color-component-247: 247;
-  --cemara-color-component-245: 245;
-  --cemara-color-component-235: 235;
-  --cemara-color-component-86-percent: 86%;
-  --cemara-dimension-18-rem: 18rem;
-  --cemara-grid-track-0-8-fr: 0.8fr;
-  --cemara-viewport-size-6-vw: 6vw;
-  --cemara-spacing-6-rem: 6rem;
-  --cemara-element-size-41-rem: 41rem;
-  --cemara-text-measure-12-ch: 12ch;
-  --cemara-text-measure-44-ch: 44ch;
-  --cemara-element-size-1-5-rem: 1.5rem;
-  --cemara-spacing-0-2-rem: 0.2rem;
-  --cemara-grid-track-4: 4;
-  --cemara-element-size-14-rem: 14rem;
-  --cemara-type-size-1-45-rem: 1.45rem;
-  --cemara-spacing-0-45-rem: 0.45rem;
-  --cemara-type-size-2-rem: 2rem;
-  --cemara-text-measure-65-ch: 65ch;
-  --cemara-dimension-0-2-em: 0.2em;
-  --cemara-layer-40: 40;
-  --cemara-element-size-3-rem: 3rem;
-  --cemara-transform-distance-0-5-rem: 0.5rem;
-  --cemara-motion-duration-200-ms: 200ms;
-  --cemara-transform-distance-negative-3-px: -3px;
-  --cemara-layer-120: 120;
-  --cemara-layer-100: 100;
-  --cemara-color-component-26: 26;
-  --cemara-color-component-54: 54;
-  --cemara-color-component-93: 93;
-  --cemara-color-component-76-percent: 76%;
-  --cemara-element-size-54-rem: 54rem;
-  --cemara-viewport-size-90-svh: 90svh;
-  --cemara-element-size-56-rem: 56rem;
-  --cemara-type-size-3-5-rem: 3.5rem;
-  --cemara-border-size-1-px: 1px;
-  --cemara-line-height-1-75: 1.75;
-  --cemara-element-size-60-rem: 60rem;
-  --cemara-spacing-0-4-rem: 0.4rem;
-  --cemara-type-size-0-85-rem: 0.85rem;
-  --cemara-spacing-0-35-rem: 0.35rem;
-  --cemara-type-size-0-82-rem: 0.82rem;
-  --cemara-dimension-19-rem: 19rem;
-  --cemara-grid-track-0-82-fr: 0.82fr;
-  --cemara-type-size-5-8-rem: 5.8rem;
-  --cemara-element-size-5-rem: 5rem;
-  --cemara-element-size-24-rem: 24rem;
-  --cemara-element-size-11-rem: 11rem;
-  --cemara-grid-track-2: 2;
-  --cemara-type-size-16-px: 16px;
-  --cemara-element-size-4-75-rem: 4.75rem;
-  --cemara-element-size-2-4-rem: 2.4rem;
-  --cemara-spacing-0-15-rem: 0.15rem;
-  --cemara-element-size-2-5-rem: 2.5rem;
-  --cemara-spacing-2-25-rem: 2.25rem;
-  --cemara-spacing-3-25-rem: 3.25rem;
-  --cemara-text-measure-11-ch: 11ch;
-  --cemara-type-size-3-25-rem: 3.25rem;
-  --cemara-type-scale-13-vw: 13vw;
-  --cemara-type-size-5-25-rem: 5.25rem;
-  --cemara-text-measure-39-ch: 39ch;
-  --cemara-text-measure-10-ch: 10ch;
-  --cemara-type-size-0-84-rem: 0.84rem;
-  --cemara-line-height-1-35: 1.35;
-  --cemara-viewport-size-86-vw: 86vw;
-  --cemara-type-size-2-45-rem: 2.45rem;
-  --cemara-type-scale-10-vw: 10vw;
-  --cemara-element-size-10-5-rem: 10.5rem;
-  --cemara-element-size-4-2-rem: 4.2rem;
-  --cemara-dimension-2-2-rem: 2.2rem;
-  --cemara-viewport-size-92-svh: 92svh;
-  --cemara-element-size-2-15-rem: 2.15rem;
-  --cemara-type-size-3-rem: 3rem;
-  --cemara-type-scale-12-5-vw: 12.5vw;
-  --cemara-type-size-3-8-rem: 3.8rem;
-  --cemara-proportion-40-percent: 40%;
-  --cemara-motion-duration-0-01-ms: 0.01ms;
-  --cemara-animation-count-1: 1;
-  --cemara-grid-track-1-2-fr: 1.2fr;
-  --cemara-dimension-16-rem: 16rem;
-  --cemara-spacing-6-5-rem: 6.5rem;
-  --cemara-element-size-58-rem: 58rem;
-  --cemara-type-size-6-7-rem: 6.7rem;
-  --cemara-line-height-0-93: 0.93;
-  --cemara-text-measure-53-ch: 53ch;
-  --cemara-type-scale-1-5-vw: 1.5vw;
-  --cemara-type-size-1-25-rem: 1.25rem;
-  --cemara-spacing-1-7-rem: 1.7rem;
-  --cemara-spacing-0-85-rem: 0.85rem;
-  --cemara-element-size-15-rem: 15rem;
-  --cemara-viewport-size-27-vw: 27vw;
-  --cemara-spacing-3-2-rem: 3.2rem;
-  --cemara-proportion-14-percent: 14%;
-  --cemara-rotation-negative-6-deg: -6deg;
-  --cemara-layer-1: 1;
-  --cemara-type-size-2-7-rem: 2.7rem;
-  --cemara-type-scale-6-vw: 6vw;
-  --cemara-type-size-5-6-rem: 5.6rem;
-  --cemara-letter-spacing-negative-0-07-em: -0.07em;
-  --cemara-line-height-0-9: 0.9;
-  --cemara-viewport-size-28-vw: 28vw;
-  --cemara-text-measure-13-ch: 13ch;
-  --cemara-type-size-2-25-rem: 2.25rem;
-  --cemara-type-scale-9-vw: 9vw;
-  --cemara-element-size-9-rem: 9rem;
-  --cemara-viewport-size-8-vw: 8vw;
-  --cemara-grid-track-0-7-fr: 0.7fr;
-  --cemara-type-size-4-4-rem: 4.4rem;
-  --cemara-spacing-1-1-rem: 1.1rem;
-  --cemara-spacing-2-2-rem: 2.2rem;
-  --cemara-border-size-2-px: 2px;
-  --cemara-element-size-0-8-rem: 0.8rem;
-  --cemara-motion-duration-1-5-s: 1.5s;
-  --cemara-proportion-35-percent: 35%;
-  --cemara-element-size-1-3-rem: 1.3rem;
-  --cemara-opacity-0-45: 0.45;
-  --cemara-viewport-size-21-vw: 21vw;
-  --cemara-element-size-18-rem: 18rem;
-  --cemara-type-size-2-4-rem: 2.4rem;
-  --cemara-type-scale-4-8-vw: 4.8vw;
-  --cemara-type-size-4-rem: 4rem;
-  --cemara-grid-track-1-35-fr: 1.35fr;
-  --cemara-grid-track-0-75-fr: 0.75fr;
-  --cemara-grid-track-0-95-fr: 0.95fr;
-  --cemara-viewport-size-23-vw: 23vw;
-  --cemara-element-size-21-rem: 21rem;
-  --cemara-dimension-14-rem: 14rem;
-  --cemara-type-size-5-rem: 5rem;
-  --cemara-type-size-3-1-rem: 3.1rem;
-  --cemara-type-scale-12-vw: 12vw;
-  --cemara-type-size-4-5-rem: 4.5rem;
-  --cemara-type-scale-17-vw: 17vw;
-  --cemara-type-size-2-5-rem: 2.5rem;
-  --cemara-dimension-7-rem: 7rem;
-  --cemara-numeric-value-3: 3;
 }
 
 body.cemara-page {
-  --cemara-hero-scene-duration: 4s;
-  --cemara-hero-orbit-duration: 16s;
-  --cemara-hero-orbit-reverse-duration: 12s;
-  --cemara-hero-card-duration: 3.2s;
-  --cemara-hero-card-reverse-duration: 3.8s;
-  --cemara-hero-card-delay: 0.5s;
-  --cemara-hero-pen-duration: 2.6s;
-  --cemara-hero-leaf-duration: 6s;
-  --cemara-hero-leaf-second-delay: 0.7s;
-  --cemara-hero-leaf-third-delay: 1.1s;
-  --cemara-hero-pulse-duration: 1.5s;
-  --cemara-hero-spark-duration: 2.4s;
-  --cemara-hero-float-distance: 0.75rem;
-  --cemara-hero-drift-distance: 0.5rem;
-  --cemara-hero-card-rotation: 4deg;
-  --cemara-rotation-360-deg: 360deg;
-  --cemara-transform-scale-1-2: 1.2;
-  --cemara-transform-scale-1-4: 1.4;
-  --cemara-opacity-0-7: 0.7;
-  --cemara-opacity-0-9: 0.9;
-  --cemara-collection-art-desktop-scale: 0.72;
-  --cemara-collection-art-mobile-scale: 0.48;
-  --cemara-collection-art-scene-offset: -50%;
-  --cemara-catalog-sidebar-width: 17rem;
-  --cemara-catalog-layout-gap: clamp(2rem, 4vw, 4rem);
-  --cemara-catalog-card-gap: 1.25rem;
-  --cemara-catalog-card-padding: 1.25rem;
-  --cemara-catalog-cover-width: 10rem;
-  --cemara-catalog-mobile-cover-width: 7rem;
-  --cemara-catalog-filter-gap: 0.25rem;
-  --cemara-catalog-filter-indent: 0.85rem;
-  --cemara-catalog-sidebar-top: 7rem;
-  --cemara-catalog-search-height: 3.5rem;
-  --cemara-catalog-skeleton-cover-height: 13rem;
-  --cemara-catalog-skeleton-line-height: 1rem;
-  --cemara-catalog-skeleton-title-height: 1.5rem;
-  --cemara-catalog-description-height: 3rem;
-  --cemara-catalog-mobile-cover-height: 10rem;
-  --cemara-catalog-category-width: 25%;
-  --cemara-catalog-title-width: 65%;
-  --cemara-catalog-description-lines: 3;
-  --bg: #f7f5eb;
-  --surface: #e9d8a6;
-  --surface-2: #f0e8cb;
-  --ink: #1a365d;
-  --text: #1a365d;
-  --muted: #36506f;
-  --accent: #c53030;
-  --accent-fg: #c53030;
-  --accent-ink: #f7f5eb;
-  --accent-hover: #a92727;
-  --primary: #c53030;
-  --red: #c53030;
-  --green: #2f855a;
-  --green-deep: #236944;
-  --gold: #9a7b31;
-  --blue-deep: #1a365d;
-  --border: #e9d8a6;
-  --ease-motion: cubic-bezier(
     var(--cemara-easing-point-0-32),
     var(--cemara-easing-point-0-72),
     var(--cemara-easing-point-0),
@@ -3005,23 +2288,6 @@ body.cemara-page {
 body.cemara-page[data-theme="dark"],
 html[data-theme="dark"] body.cemara-page {
   color-scheme: dark;
-  --bg: #000;
-  --surface: #171717;
-  --surface-2: #242424;
-  --ink: #f7f5eb;
-  --text: #f7f5eb;
-  --muted: #c9c9c9;
-  --accent: #ff6b6b;
-  --accent-fg: #ff9999;
-  --accent-ink: #000;
-  --accent-hover: #ff9292;
-  --primary: #ff6b6b;
-  --red: #ff6b6b;
-  --green: #65d6a2;
-  --green-deep: #4bd18f;
-  --gold: #f5d76e;
-  --blue-deep: #91aaff;
-  --border: #454545;
 }
 
 .cemara-page *,
@@ -4565,7 +3831,6 @@ html[data-theme="dark"] body.cemara-page .modal-close {
   .cemara-page .hero {
     min-height: var(--cemara-numeric-value-0);
     grid-template-columns: var(--cemara-grid-track-1-fr) var(
-        --cemara-grid-track-0-9-fr
       );
     gap: var(--cemara-spacing-2-rem);
     padding-block: var(--cemara-spacing-4-rem);
@@ -4579,7 +3844,6 @@ html[data-theme="dark"] body.cemara-page .modal-close {
   }
   .cemara-page .event-banner {
     grid-template-columns: var(--cemara-grid-track-1-fr) var(
-        --cemara-grid-track-0-8-fr
       );
   }
   .cemara-page .meaning-grid {
@@ -4757,7 +4021,6 @@ html[data-theme="dark"] body.cemara-page .modal-close {
   }
   .cemara-page .steps li {
     grid-template-columns: var(--cemara-dimension-2-2-rem) var(
-        --cemara-grid-track-1-fr
       );
   }
   .cemara-page .steps h3,
@@ -5681,19 +4944,11 @@ html[data-theme="dark"] body.cemara-page .modal-close {
 
 @media (max-width: 900px) {
   body.collection-page {
-    --cemara-catalog-sidebar-width: 14rem;
-    --cemara-catalog-cover-width: 8rem;
-    --cemara-catalog-card-gap: 1rem;
-    --cemara-catalog-card-padding: 1rem;
   }
 }
 
 @media (max-width: 640px) {
   body.collection-page {
-    --cemara-catalog-sidebar-top: 0;
-    --cemara-catalog-cover-width: var(--cemara-catalog-mobile-cover-width);
-    --cemara-catalog-card-gap: 0.85rem;
-    --cemara-catalog-card-padding: 0.85rem;
   }
 
   .collection-page .collection-layout {
@@ -5759,13 +5014,6 @@ html[data-theme="dark"] body.cemara-page .modal-close {
   }
 }
 
-/* =========================================================
-   KARTU KARYA — beranda (.featured-card) & koleksi (.work-card)
-   Sampul = gambar unggahan (.card-cover > img). Tanpa gambar,
-   kartu hanya berisi teks; tidak ada blok visual pengganti.
-   Aturan lama kartu hanya berlaku di .collection-page, sehingga
-   beranda tidak mendapat gaya; blok ini berlaku untuk keduanya.
-========================================================= */
 
 .cemara-page .featured-card {
   position: relative;
@@ -5795,7 +5043,6 @@ html[data-theme="dark"] body.cemara-page .modal-close {
   line-height: 1.2;
 }
 
-/* Sampul */
 .cemara-page .card-cover {
   display: block;
   width: 100%;
@@ -5827,7 +5074,6 @@ html[data-theme="dark"] body.cemara-page .modal-close {
   outline-offset: 2px;
 }
 
-/* Teks kartu */
 .cemara-page .featured-card .work-info {
   min-width: 0;
   display: flex;
@@ -5933,7 +5179,6 @@ html[data-theme="dark"] body.cemara-page .modal-close {
   flex: 0 0 auto;
 }
 
-/* Kartu koleksi tanpa sampul: satu kolom penuh */
 .collection-page .work-card.no-cover {
   grid-template-columns: minmax(0, 1fr);
 }
@@ -5942,7 +5187,6 @@ html[data-theme="dark"] body.cemara-page .modal-close {
   align-self: start;
 }
 
-/* Sampul di dalam modal detail */
 .cemara-page .modal-cover img {
   display: block;
   width: 100%;
@@ -5976,19 +5220,10 @@ html[data-theme="dark"] body.cemara-page .modal-close {
   }
 }
 
-/* =========================================================
-   SISTEM TOMBOL — semua tombol punya warna & status
-   Varian: primary (merah), secondary (krem), success (hijau),
-   danger (garis merah), warning (emas), ghost, mini.
-   Warna teks diatur agar kontras ≥ 4,5:1 di mode terang & gelap.
-   ========================================================= */
 .cemara-page {
-  --success-ink: #ffffff;
-  --warning-ink: #1a1400;
 }
 html[data-theme="dark"] body.cemara-page,
 body.cemara-page[data-theme="dark"] {
-  --success-ink: #00160a;
 }
 
 .cemara-page .btn-secondary {
@@ -6026,7 +5261,6 @@ body.cemara-page[data-theme="dark"] {
   box-shadow: inset 0 0 0 1px var(--ink);
 }
 
-/* Tombol kecil di baris (Edit / Hapus komentar) */
 .cemara-page .comment-actions {
   display: flex;
   flex-wrap: wrap;
@@ -6063,7 +5297,6 @@ body.cemara-page[data-theme="dark"] {
   color: var(--accent-ink);
 }
 
-/* Tab Masuk / Daftar */
 .cemara-page .auth-tabs {
   display: flex;
   gap: 0.4rem;
@@ -6095,7 +5328,6 @@ body.cemara-page[data-theme="dark"] {
   color: var(--bg);
 }
 
-/* Cadangan: tombol tanpa kelas tetap berwarna, bukan tombol bawaan browser */
 .cemara-page button:not([class]) {
   min-height: 2.25rem;
   padding: 0.35rem 0.95rem;
@@ -6112,7 +5344,6 @@ body.cemara-page[data-theme="dark"] {
   color: var(--bg);
 }
 
-/* Status nonaktif & fokus untuk semua tombol */
 .cemara-page button:disabled,
 .cemara-page .btn[aria-disabled="true"] {
   opacity: 0.55;
@@ -6125,10 +5356,6 @@ body.cemara-page[data-theme="dark"] {
   outline-offset: 3px;
 }
 
-/* =========================================================
-   KEBIJAKAN GAMBAR — ukuran tampil (output)
-   Sampul 3:4 (sumber 900×1200 px), foto profil 1:1 (512×512 px).
-   ========================================================= */
 .cemara-page .field-hint {
   display: block;
   margin-top: 0.15rem;
@@ -6184,14 +5411,7 @@ body.cemara-page[data-theme="dark"] {
   height: auto;
 }
 
-/* =========================================================
-   ARSIP (arsip.html)
-   ========================================================= */
 .arsip-page {
-  --kind-proposal: var(--gold);
-  --kind-penelitian: var(--green);
-  --kind-presentasi: var(--accent);
-  --kind-tech_stack: var(--blue-deep);
 }
 .arsip-page .arsip-main {
   width: min(100% - 2rem, 72rem);
@@ -6378,16 +5598,12 @@ body.cemara-page[data-theme="dark"] {
   font-weight: 700;
 }
 .arsip-page .arsip-kind-proposal {
-  --kind: var(--kind-proposal);
 }
 .arsip-page .arsip-kind-penelitian {
-  --kind: var(--kind-penelitian);
 }
 .arsip-page .arsip-kind-presentasi {
-  --kind: var(--kind-presentasi);
 }
 .arsip-page .arsip-kind-tech_stack {
-  --kind: var(--kind-tech_stack);
 }
 
 .arsip-page .arsip-chip {

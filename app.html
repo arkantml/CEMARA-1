@@ -18,7 +18,6 @@
 
     <meta name="theme-color" content="#f7f5eb" />
     <script>
-      // Terapkan tema tersimpan sebelum CSS dirender (hindari kilatan tema terang)
       try {
         if (localStorage.getItem("cemara_theme") === "dark")
           document.documentElement.dataset.theme = "dark";
@@ -41,8 +40,6 @@
     />
     <link rel="stylesheet" href="styles.css" />
 
-    <!-- SUPABASE & SHARED -->
-    <!-- Pinned version. Add integrity="sha384-..." (see jsdelivr.com SRI hash) -->
     <script
       src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"
       crossorigin="anonymous"
@@ -52,14 +49,8 @@
   </head>
 
   <body class="cemara-page collection-page">
-    <!-- =====================================================
-       TOAST
-    ====================================================== -->
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-    <!-- =====================================================
-       HEADER
-    ====================================================== -->
     <header class="site-header">
       <a class="brand" href="index.html" aria-label="CEMARA Beranda">
         <span class="brand-mark">
@@ -107,13 +98,7 @@
       </div>
     </header>
 
-    <!-- =====================================================
-       MAIN
-    ====================================================== -->
     <main class="collection-main">
-      <!-- ===================================================
-         APP HERO BANNER
-      ==================================================== -->
       <section class="app-hero">
         <div class="collection-intro">
           <h1>
@@ -176,9 +161,6 @@
         </div>
       </section>
 
-      <!-- ===================================================
-         KOLEKSI KARYA (VIEW KARYA UTAMA)
-      ==================================================== -->
       <section id="karya" class="works-section" aria-labelledby="worksTitle">
         <div class="section-heading">
           <div>
@@ -338,9 +320,6 @@
       </section>
     </main>
 
-    <!-- =====================================================
-       FOOTER
-    ====================================================== -->
     <footer class="footer">
       <div>
         <strong> CEMARA </strong>
@@ -393,9 +372,6 @@
       </details>
     </footer>
 
-    <!-- =====================================================
-       BACK TO TOP
-    ====================================================== -->
     <button
       id="backTop"
       class="back-top"
@@ -405,9 +381,6 @@
       ↑
     </button>
 
-    <!-- =====================================================
-       WORK DETAIL MODAL
-    ====================================================== -->
     <div class="modal-overlay" id="workModal" aria-hidden="true">
       <div
         class="modal"
@@ -488,9 +461,6 @@
       </div>
     </div>
 
-    <!-- =====================================================
-       ACCOUNT / ADMIN MODAL
-    ====================================================== -->
     <div class="modal-overlay" id="adminModal" aria-hidden="true">
       <div
         class="admin-modal modal"

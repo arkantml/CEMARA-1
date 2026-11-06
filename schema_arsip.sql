@@ -1,6 +1,3 @@
--- CEMARA archive schema.
--- Run after schema.sql and any earlier archive schema. Existing archive rows
--- are retained; all archives require staff verification before public access.
 
 BEGIN;
 
@@ -441,6 +438,3 @@ CREATE POLICY cemara_arsip_delete_staff ON storage.objects
   USING (bucket_id = 'arsip' AND public.cemara_is_staff());
 
 COMMIT;
-
--- After running this script, refresh the Supabase API schema cache:
--- NOTIFY pgrst, 'reload schema';

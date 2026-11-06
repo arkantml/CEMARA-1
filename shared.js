@@ -1,13 +1,6 @@
-/* =========================================================
-   CEMARA — SHARED.JS
-   Shared utilities used by app.js, reader.js, admin.js
-========================================================= */
 
 window.CEMARA = window.CEMARA || {};
 
-/* =========================================================
-   ESCAPE HTML
-========================================================= */
 
 window.CEMARA.esc = function esc(value) {
   return String(value ?? "").replace(
@@ -38,9 +31,6 @@ window.CEMARA.isGoogleDriveUrl = function isGoogleDriveUrl(value) {
   }
 };
 
-/* =========================================================
-   FORMAT DATE
-========================================================= */
 
 window.CEMARA.formatDate = function formatDate(value) {
   if (!value) {
@@ -60,9 +50,6 @@ window.CEMARA.formatDate = function formatDate(value) {
   });
 };
 
-/* =========================================================
-   TOAST
-========================================================= */
 
 window.CEMARA.toast = function toast(message) {
   if (window.CEMARA.ui) {
@@ -85,9 +72,6 @@ window.CEMARA.toast = function toast(message) {
   }, 2200);
 };
 
-/* =========================================================
-   IMAGE PARSER
-========================================================= */
 
 window.CEMARA.normalizeImages = function normalizeImages(value) {
   if (Array.isArray(value)) {
@@ -104,7 +88,6 @@ window.CEMARA.normalizeImages = function normalizeImages(value) {
         return parsed.map((item) => String(item || "").trim()).filter(Boolean);
       }
     } catch (_) {
-      /* not JSON */
     }
 
     if (
@@ -119,22 +102,11 @@ window.CEMARA.normalizeImages = function normalizeImages(value) {
   return [];
 };
 
-/* =========================================================
-   KEBIJAKAN GAMBAR — ukuran & resolusi (input → output)
-   Setiap gambar diproses di browser SEBELUM diunggah:
-     1. divalidasi (tipe JPG/PNG/WebP, ukuran berkas, resolusi minimum),
-     2. dipangkas dari tengah ke rasio tetap,
-     3. diperkecil ke resolusi tetap (tidak pernah diperbesar),
-     4. dikompres ke WebP (cadangan JPEG), metadata EXIF/GPS terbuang.
-   Output yang tampil di halaman memakai rasio yang sama (lihat CSS),
-   jadi tidak ada gambar raksasa yang terunduh dan tata letak tidak bergeser.
-========================================================= */
 (function () {
   const KB = 1024;
   const MB = 1024 * KB;
 
   const SPECS = {
-    // Sampul karya: potret 3:4 → 900 × 1200 px
     cover: {
       label: "Sampul karya",
       ratioLabel: "3:4",
@@ -148,8 +120,6 @@ window.CEMARA.normalizeImages = function normalizeImages(value) {
       maxOutputBytes: 1 * MB,
       quality: 0.82,
     },
-    // Gambar karya (seni/komik/foto) pada pengajuan: TIDAK dipangkas,
-    // hanya diperkecil agar sisi terpanjang ≤ 2400 px (cukup untuk dibaca layar)
     artwork: {
       label: "Gambar karya",
       ratio: null,
@@ -162,7 +132,6 @@ window.CEMARA.normalizeImages = function normalizeImages(value) {
       maxOutputBytes: 4 * MB,
       quality: 0.86,
     },
-    // Foto profil: persegi 1:1 → 512 × 512 px
     avatar: {
       label: "Foto profil",
       ratioLabel: "1:1",
@@ -187,9 +156,7 @@ window.CEMARA.normalizeImages = function normalizeImages(value) {
     return `${(bytes / MB).toFixed(1).replace(/\.0$/, "").replace(".", ",")} MB`;
   }
 
-  // Hitung area pangkas (dari tengah) dan ukuran keluaran. Fungsi murni.
   function plan(sourceWidth, sourceHeight, spec) {
-    // Tanpa rasio tetap: tidak dipangkas, hanya diperkecil agar muat di kotak.
     if (!spec.ratio) {
       const scale = Math.min(
         1,
@@ -239,7 +206,6 @@ window.CEMARA.normalizeImages = function normalizeImages(value) {
           release: () => bitmap.close?.(),
         };
       } catch (_) {
-        /* browser lama: pakai <img> di bawah */
       }
     }
 
@@ -266,7 +232,6 @@ window.CEMARA.normalizeImages = function normalizeImages(value) {
   const toBlob = (canvas, type, quality) =>
     new Promise((resolve) => canvas.toBlob(resolve, type, quality));
 
-  // WebP dulu; jika browser tidak mendukung (mis. Safari lama), pakai JPEG.
   async function encode(canvas, quality) {
     let blob = await toBlob(canvas, "image/webp", quality);
     if (!blob || blob.type !== "image/webp") {
@@ -395,9 +360,6 @@ window.CEMARA.normalizeImages = function normalizeImages(value) {
   });
 })();
 
-/* =========================================================
-   SUPABASE READY CHECK
-========================================================= */
 
 window.CEMARA.isSupabaseReady = function isSupabaseReady() {
   const C = window.CEMARA_CONFIG || {};
@@ -410,9 +372,6 @@ window.CEMARA.isSupabaseReady = function isSupabaseReady() {
   );
 };
 
-/* =========================================================
-   CREATE SUPABASE CLIENT
-========================================================= */
 
 window.CEMARA.createDB = function createDB() {
   const C = window.CEMARA_CONFIG || {};
@@ -425,9 +384,6 @@ window.CEMARA.createDB = function createDB() {
   return createClient(C.SUPABASE_URL, C.SUPABASE_PUBLISHABLE_KEY);
 };
 
-/* =========================================================
-   ROLE DEFINITIONS
-========================================================= */
 
 window.CEMARA.ROLES = {
   SUPER_ADMIN: "super_admin",
@@ -450,10 +406,6 @@ window.CEMARA.ROLE_COLORS = {
   user: "#2ecc71",
 };
 
-/* =========================================================
-   ROLE CHECK
-   Returns { role, isAdmin, isSuperAdmin, isDev, profile }
-========================================================= */
 
 window.CEMARA.roleCheck = async function roleCheck(db, user) {
   const result = {
@@ -469,7 +421,6 @@ window.CEMARA.roleCheck = async function roleCheck(db, user) {
   }
 
   try {
-    // 1. Fetch user_profiles
     let profile = null;
     const { data, error } = await db
       .from("user_profiles")
@@ -481,7 +432,6 @@ window.CEMARA.roleCheck = async function roleCheck(db, user) {
       profile = data;
     }
 
-    // 2. Check legacy admin_profiles
     let isLegacyAdmin = false;
     try {
       const { data: oldAdmin } = await db
@@ -493,10 +443,8 @@ window.CEMARA.roleCheck = async function roleCheck(db, user) {
       isLegacyAdmin = Boolean(oldAdmin);
     } catch (_) {}
 
-    // Determine final role
     let finalRole = profile?.role || (isLegacyAdmin ? "admin" : "user");
 
-    // If profile says 'user' but user is in admin_profiles, synchronize and upgrade to admin
     if (finalRole === "user" && isLegacyAdmin) {
       finalRole = "admin";
       if (profile) {
@@ -522,23 +470,17 @@ window.CEMARA.roleCheck = async function roleCheck(db, user) {
   return result;
 };
 
-/* =========================================================
-   ENSURE PROFILE EXISTS
-   Auto-creates user_profiles row on login
-========================================================= */
 
 window.CEMARA.ensureProfile = async function ensureProfile(db, user) {
   if (!db || !user) return null;
 
   try {
-    // 1. Check existing
     const { data: existing } = await db
       .from("user_profiles")
       .select("*")
       .eq("user_id", user.id)
       .maybeSingle();
 
-    // 2. Check legacy admin_profiles
     let isLegacyAdmin = false;
     try {
       const { data: adminData } = await db
@@ -594,12 +536,6 @@ window.CEMARA.ensureProfile = async function ensureProfile(db, user) {
   }
 };
 
-/* =========================================================
-   CONTENT FILTER - CHECK FOR INAPPROPRIATE CONTENT
-   Harus selaras dengan public.check_comment_content() di
-   schema_v3_comment_filter.sql. Cek ini hanya untuk umpan balik
-   cepat; keputusan akhir ada di trigger database.
-========================================================= */
 
 window.CEMARA.BAD_WORDS = [
   "kontol",
@@ -645,8 +581,6 @@ window.CEMARA.BAD_WORDS = [
   "motherfucker",
 ];
 
-// Kata < 5 huruf dicocokkan utuh; kata >= 5 huruf dicocokkan sebagai awalan kata.
-// Mencegah "assalamualaikum", "hello", "pantai", "asumsi" ikut terblokir.
 window.CEMARA.BAD_WORD_PATTERN = new RegExp(
   window.CEMARA.BAD_WORDS.map(
     (word) => "\\b" + word + (word.length >= 5 ? "" : "\\b"),
@@ -657,12 +591,10 @@ window.CEMARA.BAD_WORD_PATTERN = new RegExp(
 window.CEMARA.checkCommentContent = function checkCommentContent(text) {
   const trimmed = String(text || "").trim();
 
-  // Check 1: Too short
   if (trimmed.length < 2) {
     return { flagged: true, reason: "Komentar terlalu pendek" };
   }
 
-  // Check 2: Excessive capitalization (>70% of letters, min. 8 letters)
   const letters = (trimmed.match(/[A-Za-z]/g) || []).length;
   const upperCount = (trimmed.match(/[A-Z]/g) || []).length;
   if (letters >= 8 && upperCount / letters > 0.7) {
@@ -672,7 +604,6 @@ window.CEMARA.checkCommentContent = function checkCommentContent(text) {
     };
   }
 
-  // Check 3: Excessive repeated characters (5+ in a row)
   if (/(.)\1{4,}/.test(trimmed)) {
     return {
       flagged: true,
@@ -680,7 +611,6 @@ window.CEMARA.checkCommentContent = function checkCommentContent(text) {
     };
   }
 
-  // Check 4: Banned words
   if (window.CEMARA.BAD_WORD_PATTERN.test(trimmed)) {
     return {
       flagged: true,
@@ -691,9 +621,6 @@ window.CEMARA.checkCommentContent = function checkCommentContent(text) {
   return { flagged: false, reason: "" };
 };
 
-/* =========================================================
-   MODAL HELPER
-========================================================= */
 
 window.CEMARA.modal = function modal(id, open) {
   if (open === undefined) {

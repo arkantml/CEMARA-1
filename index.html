@@ -25,7 +25,6 @@
 
     <meta name="theme-color" content="#f7f5eb" />
     <script>
-      // Terapkan tema tersimpan sebelum CSS dirender (hindari kilatan tema terang)
       try {
         if (localStorage.getItem("cemara_theme") === "dark")
           document.documentElement.dataset.theme = "dark";
@@ -41,7 +40,6 @@
       rel="stylesheet"
     />
 
-    <!-- CSS -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -50,8 +48,6 @@
     />
     <link rel="stylesheet" href="styles.css" />
 
-    <!-- SUPABASE & SHARED -->
-    <!-- Pinned version. Add integrity="sha384-..." (see jsdelivr.com SRI hash) -->
     <script
       src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"
       crossorigin="anonymous"
@@ -63,15 +59,9 @@
   </head>
 
   <body class="cemara-page">
-    <!-- =====================================================
-       TOAST
-    ====================================================== -->
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-    <!-- =====================================================
-       HEADER
-    ====================================================== -->
 
     <header class="site-header">
       <a class="brand" href="#beranda" aria-label="CEMARA Beranda">
@@ -133,14 +123,8 @@
       </div>
     </header>
 
-    <!-- =====================================================
-       MAIN
-    ====================================================== -->
 
     <main>
-      <!-- ===================================================
-         HERO
-      ==================================================== -->
 
       <section id="beranda" class="hero">
         <div class="hero-copy">
@@ -182,7 +166,6 @@
           </div>
         </div>
 
-        <!-- HERO ART -->
 
         <div class="hero-art" aria-label="Ilustrasi penulis dan karya kreatif">
           <div class="leaf leaf-1"></div>
@@ -235,9 +218,6 @@
         </div>
       </section>
 
-      <!-- ===================================================
-         SOROTAN & EVENT
-      ==================================================== -->
 
       <section
         id="sorotan"
@@ -270,7 +250,6 @@
           >
         </section>
 
-        <!-- CTA KE APLIKASI KARYA -->
         <div class="explore-catalog-banner">
           <div>
             <h3>Ingin membaca lebih banyak karya siswa?</h3>
@@ -284,9 +263,6 @@
         </div>
       </section>
 
-      <!-- ===================================================
-         PROFIL KREATOR
-      ==================================================== -->
 
       <section class="creators-section" aria-labelledby="creatorsTitle">
         <div class="section-heading">
@@ -301,9 +277,6 @@
         <div id="creatorsGrid" class="creators-grid" aria-live="polite"></div>
       </section>
 
-      <!-- ===================================================
-         TENTANG CEMARA
-      ==================================================== -->
 
       <section id="tentang" class="about-section">
         <div class="about-card">
@@ -419,9 +392,6 @@
         </div>
       </section>
 
-      <!-- ===================================================
-         PANDUAN PENGIRIMAN
-      ==================================================== -->
 
       <section class="guidelines-section" aria-labelledby="guidelinesTitle">
         <div class="section-heading center">
@@ -496,9 +466,6 @@
         </div>
       </section>
 
-      <!-- ===================================================
-         CARA KERJA
-      ==================================================== -->
 
       <section id="cara" class="process-section">
         <div class="section-heading center">
@@ -535,9 +502,6 @@
         </ol>
       </section>
 
-      <!-- ===================================================
-         KONTAK
-      ==================================================== -->
 
       <section id="kontak" class="contact-section">
         <div>
@@ -579,9 +543,6 @@
         </div>
       </section>
 
-      <!-- ===================================================
-         RINGKASAN
-      ==================================================== -->
 
       <section class="summary-section" aria-labelledby="summaryTitle">
         <div class="section-heading">
@@ -622,9 +583,6 @@
       </section>
     </main>
 
-    <!-- =====================================================
-       FOOTER
-    ====================================================== -->
 
     <footer class="footer">
       <div>
@@ -683,9 +641,6 @@
       </details>
     </footer>
 
-    <!-- =====================================================
-       BACK TO TOP
-    ====================================================== -->
 
     <button
       id="backTop"
@@ -696,9 +651,6 @@
       ↑
     </button>
 
-    <!-- =====================================================
-       WORK DETAIL MODAL
-    ====================================================== -->
 
     <div class="modal-overlay" id="workModal" aria-hidden="true">
       <div
@@ -780,9 +732,6 @@
       </div>
     </div>
 
-    <!-- =====================================================
-       ACCOUNT / ADMIN MODAL
-    ====================================================== -->
 
     <div class="modal-overlay" id="adminModal" aria-hidden="true">
       <div

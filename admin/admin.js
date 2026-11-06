@@ -1,7 +1,3 @@
-/* =========================================================
-   CEMARA — ADMIN.JS (Classic Theme Edition)
-   Logic for Admin & Super Admin Management Portal
-========================================================= */
 
 const C = window.CEMARA_CONFIG || {};
 let db = null;
@@ -17,9 +13,6 @@ let pendingAvatar = null; // hasil CEMARA.images.prepare(file, "avatar")
 let avatarPreviewUrl = null;
 let currentPublishedWorkCount = 0;
 
-/* =========================================================
-   HELPERS & TOAST
-========================================================= */
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -44,9 +37,6 @@ function showToast(message) {
   }, 2500);
 }
 
-/* =========================================================
-   THEME TOGGLE
-========================================================= */
 
 function setupTheme() {
   const saved = localStorage.getItem("cemara_theme");
@@ -74,14 +64,10 @@ function setupTheme() {
   });
 }
 
-/* =========================================================
-   TAB SWITCHING
-========================================================= */
 
 window.switchTab = function switchTab(tabId) {
   const role = currentRoleData?.role || "user";
 
-  // Permissions validation
   if (tabId === "users" && !(role === "super_admin" || role === "dev")) {
     showToast(
       "Hanya Super Admin atau Developer yang dapat mengelola pengguna.",
@@ -103,13 +89,11 @@ window.switchTab = function switchTab(tabId) {
     tabId = "dashboard";
   }
 
-  // Update tabs UI
   $$(".nav-tab").forEach((btn) => {
     const isTarget = btn.dataset.tab === tabId;
     if (isTarget) {
       btn.classList.add("bg-cemara", "text-white", "shadow-sm");
       btn.classList.remove("text-stone-700", "dark:text-stone-300");
-      // Change child icon color to white
       const icon = btn.querySelector("i");
       if (icon)
         icon.className = icon.className.replace(/text-\w+-\d+/g, "text-white");
@@ -119,7 +103,6 @@ window.switchTab = function switchTab(tabId) {
     }
   });
 
-  // Toggle views
   $$(".tab-view").forEach((view) => {
     if (view.id === `view-${tabId}`) {
       view.classList.remove("hidden");
@@ -128,7 +111,6 @@ window.switchTab = function switchTab(tabId) {
     }
   });
 
-  // Update headings
   const headings = {
     dashboard: {
       title: "Ikhtisar Ruang Karya",
@@ -177,9 +159,6 @@ window.switchTab = function switchTab(tabId) {
   }
 };
 
-/* =========================================================
-   BOOT & AUTHENTICATION
-========================================================= */
 
 async function bootAdmin() {
   setupTheme();
@@ -196,7 +175,6 @@ async function bootAdmin() {
       return;
     }
 
-    // Get current user session
     const { data: sessionData, error: sessionError } =
       await db.auth.getSession();
     if (sessionError) {
@@ -217,7 +195,6 @@ async function bootAdmin() {
       return;
     }
 
-    // Ensure profile & check role
     await window.CEMARA.ensureProfile(db, currentUser);
     currentRoleData = await window.CEMARA.roleCheck(db, currentUser);
     currentProfile = currentRoleData.profile;
@@ -232,25 +209,20 @@ async function bootAdmin() {
       return;
     }
 
-    // Apply role-based visibility in UI
     applyRolePermissions(currentRoleData.role);
 
-    // Populate user profile info in UI
     renderProfileInfo();
     await loadAccountInboxActivity();
 
-    // Load Data
     await refreshAllData();
     $("#dashboardLoading")?.classList.add("is-hidden");
 
-    // Listen to tab clicks
     $$(".nav-tab").forEach((btn) => {
       btn.addEventListener("click", () => {
         switchTab(btn.dataset.tab);
       });
     });
 
-    // Default tab
     switchTab("dashboard");
     $("#accountChartUser")?.addEventListener("change", loadAccountStatsChart);
     $("#accountChartRange")?.addEventListener("change", loadAccountStatsChart);
@@ -270,16 +242,12 @@ async function bootAdmin() {
   }
 }
 
-/* =========================================================
-   ROLE PERMISSIONS UI GATING
-========================================================= */
 
 function applyRolePermissions(role) {
   const isSuper = role === "super_admin";
   const isAdmin = role === "admin" || role === "dev" || isSuper;
   const isDev = role === "dev" || isSuper;
 
-  // Sidebar sections
   if (isSuper || role === "dev") {
     $("#superAdminMenu")?.classList.remove("hidden");
     $("#mobileNavUsers")?.classList.remove("hidden");
@@ -301,7 +269,6 @@ function applyRolePermissions(role) {
     $("#devMenu")?.classList.remove("hidden");
   }
 
-  // Set single source of truth badge
   const roleConfig = {
     super_admin: { text: "Super Admin", color: "bg-red-700 text-white" },
     admin: { text: "Admin", color: "bg-cemara text-white" },
@@ -316,9 +283,6 @@ function applyRolePermissions(role) {
   }
 }
 
-/* =========================================================
-   RENDER PROFILE DATA IN UI
-========================================================= */
 
 function renderProfileInfo() {
   const name =
@@ -329,7 +293,6 @@ function renderProfileInfo() {
   const email = currentUser.email || "-";
   const avatarUrl = currentProfile?.avatar_url;
 
-  // Sidebar
   $("#sideUserName").textContent = name;
   $("#sideUserEmail").textContent = email;
   if ($("#upAuthor")) $("#upAuthor").value = name;
@@ -338,7 +301,6 @@ function renderProfileInfo() {
       `<img src="${window.CEMARA.esc(avatarUrl)}" alt="Avatar" width="512" height="512" decoding="async" class="w-full h-full object-cover">`;
   }
 
-  // Profile Settings form
   $("#profName").value = name;
   $("#profBio").value = currentProfile?.bio || "";
   $("#profCardEmoji").value = currentProfile?.custom_card_emoji || "★";
@@ -359,9 +321,6 @@ function renderProfileInfo() {
   }
 }
 
-/* =========================================================
-   DATA LOADING & REFRESH
-========================================================= */
 
 async function refreshAllData() {
   const requests = [
@@ -616,7 +575,6 @@ async function loadStatsAndWorks() {
 
     $("#statWorks").textContent = allWorks.length;
 
-    // Render Dashboard recent works
     const dashTbody = $("#dashWorksTbody");
     if (dashTbody) {
       if (allWorks.length === 0) {
@@ -650,7 +608,6 @@ async function loadStatsAndWorks() {
       }
     }
 
-    // Render All Works in Works tab
     const allWorksTbody = $("#allWorksTableBody");
     if (allWorksTbody) {
       if (allWorks.length === 0) {
@@ -1007,7 +964,6 @@ async function loadCommentsList() {
   if (!db) return;
 
   try {
-    // Load approved comments
     const { data: approvedData, error: approvedError } = await db
       .from("comments")
       .select("*")
@@ -1016,7 +972,6 @@ async function loadCommentsList() {
 
     if (approvedError) throw approvedError;
 
-    // Load flagged/pending comments (danger box)
     const { data: flaggedData, error: flaggedError } = await db
       .from("comments")
       .select("*")
@@ -1035,7 +990,6 @@ async function loadCommentsList() {
       currentRoleData?.role,
     );
 
-    // Render approved comments
     const commentsTbody = $("#commentsTableBody");
     if (commentsTbody) {
       if (allComments.length === 0) {
@@ -1066,7 +1020,6 @@ async function loadCommentsList() {
       }
     }
 
-    // Render danger box (flagged comments)
     const dangerBoxTbody = $("#dangerBoxTableBody");
     if (dangerBoxTbody) {
       if (flaggedComments.length === 0) {
@@ -1111,9 +1064,6 @@ async function loadCommentsList() {
   }
 }
 
-/* =========================================================
-   FLAGGED COMMENTS ACTIONS
-========================================================= */
 
 window.approveFlaggedComment = async function approveFlaggedComment(commentId) {
   if (!db) return;
@@ -1162,9 +1112,6 @@ window.deleteFlaggedComment = async function deleteFlaggedComment(commentId) {
   }
 };
 
-/* =========================================================
-   ACTIONS
-========================================================= */
 
 window.changeUserRole = async function changeUserRole(targetUserId, newRole) {
   if (
@@ -1271,9 +1218,6 @@ window.deleteUserProfile = async function deleteUserProfile(targetUserId) {
   }
 };
 
-/* =========================================================
-   WORK UPLOAD
-========================================================= */
 
 const uploadForm = $("#adminWorkUploadForm");
 const fileInput = $("#upAttachment");
@@ -1314,8 +1258,6 @@ $$('input[name="upSubmissionType"]').forEach((radio) =>
 );
 updateUploadSubmissionFields();
 
-// Gambar karya (JPG/PNG/WebP) diperkecil di browser: sisi terpanjang maks.
-// 2400 px, WebP/JPEG, metadata EXIF/GPS dibuang. PDF/DOC/DOCX tidak diubah.
 let preparedAttachment = null; // { file, result }
 
 if (fileInput && fileNameLabel) {
@@ -1403,7 +1345,6 @@ if (uploadForm) {
       return;
     }
 
-    // Lampiran yang akan diunggah: dokumen apa adanya, gambar sudah diperkecil.
     let attachment = file
       ? { blob: file, type: file.type, name: file.name }
       : null;
@@ -1559,9 +1500,6 @@ async function loadMyWorkSubmissions() {
   }
 }
 
-/* =========================================================
-   PROFILE & AVATAR EDITING
-========================================================= */
 
 const avatarInput = $("#avatarInput");
 if (avatarInput) {
@@ -1570,7 +1508,6 @@ if (avatarInput) {
     if (!file) return;
 
     try {
-      // Dipangkas 1:1 → 512×512 px, WebP/JPEG, EXIF dibuang.
       const result = await window.CEMARA.images.prepare(file, "avatar");
 
       if (avatarPreviewUrl) URL.revokeObjectURL(avatarPreviewUrl);
@@ -1705,9 +1642,6 @@ if (profileForm) {
   });
 }
 
-/* =========================================================
-   REFRESH & LOGOUT
-========================================================= */
 
 $("#refreshBtn")?.addEventListener("click", async () => {
   showToast("Menyegarkan data...");
@@ -1725,8 +1659,5 @@ $("#logoutBtn")?.addEventListener("click", async () => {
   }, 600);
 });
 
-/* =========================================================
-   INITIALIZATION
-========================================================= */
 
 document.addEventListener("DOMContentLoaded", bootAdmin);

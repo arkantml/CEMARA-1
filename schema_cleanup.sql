@@ -1,22 +1,3 @@
--- CEMARA temporary artifact cleanup.
--- Run after schema.sql and schema_arsip.sql.
--- Deploy supabase/functions/cleanup-temporary-artifacts first with JWT verification disabled.
--- Example: supabase functions deploy cleanup-temporary-artifacts --no-verify-jwt
---
--- Before running this script, add these three secrets to Supabase Vault:
---   cemara_project_url        = https://<project-ref>.supabase.co
---   cemara_publishable_key    = <project publishable key>
---   cemara_cleanup_cron_secret = same random secret as Edge Function CLEANUP_CRON_SECRET
---
--- Set the Edge Function secret with:
---   supabase secrets set CLEANUP_CRON_SECRET=<same random secret>
---
--- The scheduled function deletes:
---   * rejected work submissions reviewed more than 7 days ago, including their attachments
---   * read inbox notifications older than 7 days
---   * unreferenced Storage objects older than 7 days in the four CEMARA buckets
--- Pending submissions, approved works, archives, current avatars, unread notifications,
--- comments, and account activity are retained.
 
 BEGIN;
 

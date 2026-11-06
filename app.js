@@ -1,7 +1,3 @@
-/* =========================================================
-   CEMARA — APP.JS
-   Homepage + Supabase + Auth + Admin + Upload + Comments
-========================================================= */
 
 const C = window.CEMARA_CONFIG || {};
 const { createClient } = window.supabase || {};
@@ -65,18 +61,12 @@ function toast(message) {
   window.CEMARA.ui.announce(message);
 }
 
-/* =========================================================
-   MODAL
-========================================================= */
 
 function modal(id, open = true) {
   if (open) window.CEMARA.ui.openModal(id);
   else window.CEMARA.ui.closeModal(id);
 }
 
-/* =========================================================
-   SUPABASE CONFIG
-========================================================= */
 
 function isReady() {
   return Boolean(
@@ -87,11 +77,6 @@ function isReady() {
   );
 }
 
-/* =========================================================
-   COVER (SAMPUL) KARYA
-   Sampul = satu gambar unggahan (works.cover_url). Tanpa gambar,
-   kartu tidak menampilkan blok visual buatan apa pun.
-========================================================= */
 
 const READ_ICON =
   '<svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>';
@@ -103,9 +88,6 @@ function coverMarkup(work, title) {
   return `<button class="card-cover" type="button" data-preview="${esc(work.id)}" aria-label="Lihat detail ${esc(title)}"><img src="${esc(url)}" alt="Sampul ${esc(title)}" width="900" height="1200" loading="lazy" decoding="async"></button>`;
 }
 
-/* =========================================================
-   IMAGE PARSER
-========================================================= */
 
 function normalizeImages(value) {
   if (Array.isArray(value)) {
@@ -122,7 +104,6 @@ function normalizeImages(value) {
         return parsed.map((item) => String(item || "").trim()).filter(Boolean);
       }
     } catch (_) {
-      /* bukan JSON */
     }
 
     if (
@@ -137,9 +118,6 @@ function normalizeImages(value) {
   return [];
 }
 
-/* =========================================================
-   BOOT
-========================================================= */
 
 async function boot() {
   try {
@@ -203,7 +181,6 @@ async function boot() {
     authUI();
 
     db.auth.onAuthStateChange(async (event, session) => {
-      // INITIAL_SESSION sudah ditangani boot(); TOKEN_REFRESHED tidak mengubah peran.
       if (event === "INITIAL_SESSION") return;
       user = session?.user || null;
       if (event === "TOKEN_REFRESHED") return;
@@ -307,9 +284,6 @@ async function adminCheck() {
   }
 }
 
-/* =========================================================
-   DYNAMIC STATS
-========================================================= */
 
 async function loadDynamicStats() {
   if (!db) {
@@ -357,9 +331,6 @@ function updateStatsUI(wCount, cCount, aCount) {
   if (aEl) aEl.textContent = aCount == null ? "—" : String(aCount);
 }
 
-/* =========================================================
-   FEATURED WORKS (SOROTAN KURATOR)
-========================================================= */
 
 function renderFeaturedWorks() {
   const container = $("#featuredGrid");
@@ -425,7 +396,6 @@ function renderFeaturedWorks() {
     })
     .join("");
 
-  // Re-bind preview & open buttons
   container.querySelectorAll("[data-preview]").forEach((btn) => {
     btn.addEventListener("click", () => preview(btn.dataset.preview));
   });
@@ -434,9 +404,6 @@ function renderFeaturedWorks() {
   });
 }
 
-/* =========================================================
-   CREATOR SPOTLIGHT
-========================================================= */
 
 async function loadCreatorsSpotlight() {
   const container = $("#creatorsGrid");
@@ -478,7 +445,6 @@ async function loadCreatorsSpotlight() {
       }))
       .filter((profile) => profile.workCount > 0);
 
-    // If database has profiles, render them
     if (profiles.length > 0) {
       container.innerHTML = profiles
         .map((p) => {
@@ -517,7 +483,6 @@ async function loadCreatorsSpotlight() {
       return;
     }
 
-    // Use published work authors when profile rows are not available.
     const authors = [
       ...new Set(
         works
@@ -563,9 +528,6 @@ async function loadCreatorsSpotlight() {
   }
 }
 
-/* =========================================================
-   LOAD WORKS (WITH SKELETON)
-========================================================= */
 
 async function loadWorks() {
   if (!db) return;
@@ -584,7 +546,6 @@ async function loadWorks() {
     .order("published_at", { ascending: false });
 
   if (error) {
-    // Nama kolom di database mungkin berbeda: coba lagi dengan semua kolom.
     console.warn(
       "Select kolom daftar gagal, mencoba select(*):",
       error.message,
@@ -656,9 +617,6 @@ async function loadWorkEngagement() {
   );
 }
 
-/* =========================================================
-   RENDER WORKS
-========================================================= */
 
 function render() {
   const grid = $("#worksGrid");
@@ -737,9 +695,6 @@ function render() {
   });
 }
 
-/* =========================================================
-   PREVIEW WORK
-========================================================= */
 
 function preview(id, readFull = false) {
   selected = works.find((work) => String(work.id) === String(id));
@@ -750,7 +705,6 @@ function preview(id, readFull = false) {
   }
 
   if (editing || String(current?.id) !== String(selected.id)) {
-    // Jangan bawa mode edit atau draf komentar ke karya lain.
     editing = null;
     const commentText = $("#commentText");
     if (commentText) commentText.value = "";
@@ -921,9 +875,6 @@ async function loadWorkContent(work) {
   if (current?.id === work.id) renderFullText(work);
 }
 
-/* =========================================================
-   OPEN READER
-========================================================= */
 
 function openReader(id) {
   const work = works.find((item) => String(item.id) === String(id));
@@ -937,9 +888,6 @@ function openReader(id) {
   preview(work.id, true);
 }
 
-/* =========================================================
-   COMMENTS
-========================================================= */
 
 async function loadComments() {
   if (!db || !current) {
@@ -1068,9 +1016,6 @@ async function loadComments() {
   }
 }
 
-/* =========================================================
-   EDIT COMMENT
-========================================================= */
 
 async function editComment(id) {
   if (!user) {
@@ -1118,9 +1063,6 @@ async function editComment(id) {
   toast("Mode edit aktif.");
 }
 
-/* =========================================================
-   DELETE COMMENT
-========================================================= */
 
 async function deleteComment(id) {
   if (!user) {
@@ -1166,9 +1108,6 @@ async function deleteComment(id) {
   await loadComments();
 }
 
-/* =========================================================
-   COMMENT FORM
-========================================================= */
 
 function setupCommentForm() {
   const form = $("#commentForm");
@@ -1204,7 +1143,6 @@ function setupCommentForm() {
       return;
     }
 
-    // Check content for inappropriate words
     const contentCheck = window.CEMARA.checkCommentContent(content);
     if (contentCheck.flagged) {
       toast(`⚠️ ${contentCheck.reason}. Harap perbaiki komentar Anda.`);
@@ -1274,9 +1212,6 @@ function setupCommentForm() {
   });
 }
 
-/* =========================================================
-   AUTH UI
-========================================================= */
 
 function authUI() {
   const container = $("#authView");
@@ -1353,7 +1288,6 @@ function authUI() {
             : ""
         }
 
-        <!-- Direct Portal Pengelola Button -->
         <a
           href="admin/index.html"
           class="btn btn-primary"
@@ -1560,9 +1494,6 @@ function authUI() {
   $("#register")?.addEventListener("submit", register);
 }
 
-/* =========================================================
-   LOGIN
-========================================================= */
 
 async function login(event) {
   event.preventDefault();
@@ -1616,9 +1547,6 @@ async function login(event) {
   window.location.href = "admin/index.html";
 }
 
-/* =========================================================
-   REGISTER
-========================================================= */
 
 async function register(event) {
   event.preventDefault();
@@ -1671,9 +1599,6 @@ async function register(event) {
   }
 }
 
-/* =========================================================
-   LOGOUT
-========================================================= */
 
 async function logout() {
   const { error } = await db.auth.signOut();
@@ -1687,19 +1612,12 @@ async function logout() {
   toast("Berhasil keluar. 👋");
 }
 
-/* =========================================================
-   HEADER / NAVIGATION
-========================================================= */
 
 function setupNavigation() {
   document.addEventListener("cemara:beforeopen", (event) => {
     if (event.detail?.id === "adminModal") authUI();
   });
 
-  /*
-    Detail karya:
-    tetap buka preview modal.
-  */
 
   $("#openWorkBtn")?.addEventListener("click", () => {
     if (!selected) return;
@@ -1711,10 +1629,6 @@ function setupNavigation() {
     }
   });
 
-  /*
-    Komentar:
-    langsung menuju reader.
-  */
 
   $("#modalCommentBtn")?.addEventListener("click", () => {
     if (!selected) return;
@@ -1723,15 +1637,9 @@ function setupNavigation() {
     $("#commentText")?.focus();
   });
 
-  /*
-    Search
-  */
 
   $("#searchInput")?.addEventListener("input", render);
 
-  /*
-    Filter kategori
-  */
 
   $$(".filter-btn").forEach((button) => {
     button.addEventListener("click", () => {
@@ -1747,9 +1655,6 @@ function setupNavigation() {
     });
   });
 
-  /*
-    Reset search
-  */
 
   $("#resetSearch")?.addEventListener("click", () => {
     const search = $("#searchInput");
@@ -1770,9 +1675,6 @@ function setupNavigation() {
   });
 }
 
-/* =========================================================
-   INITIALIZE
-========================================================= */
 
 function initialize() {
   setupNavigation();
@@ -1787,9 +1689,6 @@ function initialize() {
   }
 }
 
-/* =========================================================
-   START
-========================================================= */
 
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", initialize);

@@ -1,9 +1,3 @@
-/* =========================================================
-   CEMARA — ARSIP.JS
-   Arsip proposal, hasil penelitian, presentasi, dan tech stack.
-   Dipakai oleh: arsip.html (jelajah + versi) dan admin/index.html (input).
-   Bergantung pada: config.js, shared.js, supabase-js. Data: schema_arsip.sql
-========================================================= */
 (() => {
   const CEMARA = (window.CEMARA = window.CEMARA || {});
   if (CEMARA.archive) return;
@@ -13,7 +7,6 @@
   const $$ = (selector, root = document) => [
     ...root.querySelectorAll(selector),
   ];
-  // Portal punya showToast sendiri; halaman publik memakai CEMARA.toast.
   const toast = (message) =>
     typeof window.showToast === "function"
       ? window.showToast(message)
@@ -23,7 +16,6 @@
   const BUCKET = "arsip";
   const SIGNED_URL_SECONDS = 120;
 
-  /* ---------- Kamus ---------- */
 
   const KINDS = {
     proposal: {
@@ -70,8 +62,6 @@
     rejected: "Ditolak",
   };
 
-  // Ekstensi → MIME. Diisi manual karena browser sering mengosongkan type
-  // untuk .md; bucket `arsip` memeriksa MIME ini.
   const MIME_BY_EXT = {
     pdf: "application/pdf",
     ppt: "application/vnd.ms-powerpoint",
@@ -93,7 +83,6 @@
   const UUID =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-  /* ---------- Util ---------- */
 
   let dbInstance = null;
   function getDb() {
@@ -146,7 +135,6 @@
     return { ext, mime: MIME_BY_EXT[ext] };
   }
 
-  // "a, b\nc" → ["a","b","c"]; tanpa duplikat, panjang & jumlah dibatasi.
   function parseList(text, { maxItems, maxLength, label }) {
     const seen = new Set();
     const items = [];
@@ -196,7 +184,6 @@
       .join("");
   }
 
-  // Tabel belum dibuat / cache skema PostgREST belum dimuat ulang.
   function explainDbError(error, fallback) {
     const text = `${error?.code || ""} ${error?.message || ""}`;
     if (
@@ -211,7 +198,6 @@
     return fallback;
   }
 
-  /* ---------- Akses & data ---------- */
 
   async function getAccess(db) {
     const access = { user: null, role: "user", isStaff: false };
@@ -221,7 +207,6 @@
       const { data } = await db.auth.getSession();
       access.user = data?.session?.user || null;
       if (access.user) {
-        // Peran resmi dari server (fungsi SECURITY DEFINER), bukan dari browser.
         const { data: role, error } = await db.rpc("cemara_role");
         if (!error && typeof role === "string") access.role = role;
         access.isStaff = ["admin", "super_admin", "dev"].includes(access.role);
@@ -466,7 +451,6 @@
     }
   }
 
-  // mode "download" → paksa unduh; "view" → buka di tab baru (PDF/gambar).
   async function openFile(db, file, mode) {
     if (file.external_url) {
       window.open(file.external_url, "_blank", "noopener,noreferrer");
@@ -495,7 +479,6 @@
     else window.location.assign(data.signedUrl);
   }
 
-  /* ---------- Tampilan ---------- */
 
   function chips(items, className) {
     return items
@@ -665,7 +648,6 @@
     `;
   }
 
-  /* ---------- Halaman publik (arsip.html) ---------- */
 
   async function initPublicPage() {
     const grid = $("#archiveGrid");
@@ -899,7 +881,6 @@
     route();
   }
 
-  /* ---------- Formulir input di Portal (admin/index.html) ---------- */
 
   async function initPortalForm() {
     const form = $("#arsipForm");
@@ -1093,7 +1074,6 @@
     await loadRecent();
   }
 
-  /* ---------- Ekspor & mulai ---------- */
 
   CEMARA.archive = Object.freeze({
     KINDS,
