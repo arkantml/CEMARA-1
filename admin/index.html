@@ -317,12 +317,11 @@
       >
         <div class="flex items-center gap-4">
           <a href="../index.html" class="flex items-center gap-3 group">
-            <img
-              src="../assets/aksara-cendekia-mark.png"
-              alt=""
-              aria-hidden="true"
-              class="w-12 h-10 rounded-lg bg-white object-contain p-0.5 group-hover:scale-105 transition-transform"
-            />
+            <span
+              class="w-10 h-10 rounded-xl bg-cemara text-white font-serif font-bold text-xl flex items-center justify-center shadow-md group-hover:scale-105 transition-transform"
+            >
+              C
+            </span>
             <div>
               <div class="flex items-center gap-2">
                 <span
@@ -1174,14 +1173,13 @@
               </h2>
               <p class="text-xs text-stone-500 dark:text-stone-400 mt-1">
                 Simpan proposal, hasil penelitian, presentasi, atau tech stack
-                beserta versinya. Arsip dan setiap versi baru berstatus
-                menunggu verifikasi; hanya arsip terverifikasi yang dapat
-                dibaca publik.
+                beserta versinya. Berkas disimpan di bucket privat; akses
+                mengikuti pengaturan visibilitas.
               </p>
             </div>
 
             <form id="arsipForm" class="space-y-4" novalidate>
-              <div class="grid grid-cols-1 gap-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label
                     class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5"
@@ -1277,6 +1275,23 @@
                     <option value="review">Ditinjau</option>
                     <option value="final" selected>Final</option>
                     <option value="archived">Diarsipkan</option>
+                  </select>
+                </div>
+                <div>
+                  <label
+                    class="block text-xs font-serif font-bold text-stone-700 dark:text-stone-300 mb-1.5"
+                    for="arsVisibility"
+                    >Visibilitas</label
+                  >
+                  <select
+                    id="arsVisibility"
+                    class="w-full bg-stone-50 dark:bg-stone-800/60 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-cemara"
+                  >
+                    <option value="public" selected>
+                      Publik — semua orang
+                    </option>
+                    <option value="members">Anggota — wajib login</option>
+                    <option value="private">Privat — hanya pengelola</option>
                   </select>
                 </div>
               </div>
@@ -1455,7 +1470,7 @@
                 class="w-full py-3.5 px-6 rounded-2xl bg-cemara hover:bg-cemara-dark text-white font-bold text-sm flex items-center justify-center gap-2 transition disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 <i data-lucide="archive" class="w-4 h-4"></i>
-                <span>Kirim untuk Verifikasi</span>
+                <span>Simpan Arsip</span>
               </button>
               <p
                 id="arsStatusMsg"
@@ -1471,7 +1486,7 @@
             <h2
               class="font-serif font-bold text-lg text-stone-900 dark:text-stone-100"
             >
-              Arsip dan verifikasi
+              Arsip terbaru
             </h2>
             <div class="overflow-x-auto">
               <table class="w-full text-left">
@@ -1482,7 +1497,7 @@
                     <th class="py-2 pr-3">Judul</th>
                     <th class="py-2 pr-3">Jenis</th>
                     <th class="py-2 pr-3">Versi</th>
-                    <th class="py-2 pr-3">Verifikasi</th>
+                    <th class="py-2 pr-3">Akses</th>
                     <th class="py-2 text-right">Aksi</th>
                   </tr>
                 </thead>
